@@ -53,16 +53,16 @@ class _NacionalCard extends StatelessWidget {
             children: [
               Text(
                 'Nacional',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 2),
               Text(
                 '0 / 1025',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -129,9 +129,9 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            letterSpacing: 1.1,
-          ),
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        letterSpacing: 1.1,
+      ),
     );
   }
 }
@@ -147,6 +147,7 @@ class _PokedexCard extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) => PokedexScreen(
+          pokedexId: entry.name.toLowerCase().replaceAll(' ', '_'),
           pokedexName: entry.name,
           totalPokemon: entry.total,
           pokemonIds: List.generate(
@@ -223,9 +224,9 @@ class _PokedexCard extends StatelessWidget {
       children: [
         Text(
           entry.name,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -233,9 +234,9 @@ class _PokedexCard extends StatelessWidget {
         Text(
           '${entry.caught} / ${entry.total}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: complete ? Colors.green : null,
-              ),
+            fontWeight: FontWeight.w500,
+            color: complete ? Colors.green : null,
+          ),
         ),
       ],
     );

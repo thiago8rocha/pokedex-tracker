@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
+import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
 import 'package:pokedex_tracker/screens/pokemon_detail_screen.dart';
 
 class PokedexScreen extends StatefulWidget {
+  final String pokedexId;
   final String pokedexName;
   final int totalPokemon;
   final List<int> pokemonIds;
 
   const PokedexScreen({
     super.key,
+    required this.pokedexId,
     required this.pokedexName,
     required this.totalPokemon,
     required this.pokemonIds,
@@ -21,30 +25,33 @@ class PokedexScreen extends StatefulWidget {
 }
 
 class _PokedexScreenState extends State<PokedexScreen> {
-  final PokeApiService _service = PokeApiService();
+  final PokeApiService _pokeApi = PokeApiService();
+  final StorageService _storage = StorageService();
   final List<Pokemon> _pokemons = [];
-  final Set<int> _caught = {};
+  Set<int> _caught = {};
   bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadPokemons();
+    _loadData();
   }
 
-  Future<void> _loadPokemons() async {
+  Future<void> _loadData() async {
+    final caught = await _storage.getCaught(widget.pokedexId);
     final results = await Future.wait(
-      widget.pokemonIds.map((id) => _service.fetchPokemon(id)),
+      widget.pokemonIds.map((id) => _pokeApi.fetchPokemon(id)),
     );
     if (mounted) {
       setState(() {
+        _caught = caught;
         _pokemons.addAll(results.whereType<Pokemon>());
         _loading = false;
       });
     }
   }
 
-  void _toggleCaught(int pokemonId) {
+  Future<void> _toggleCaught(int pokemonId) async {
     setState(() {
       if (_caught.contains(pokemonId)) {
         _caught.remove(pokemonId);
@@ -52,6 +59,22 @@ class _PokedexScreenState extends State<PokedexScreen> {
         _caught.add(pokemonId);
       }
     });
+    await _storage.saveCaught(widget.pokedexId, _caught);
+  }
+
+  void _showCaughtFeedback(BuildContext context, String pokemonName, bool nowCaught) {
+    HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          nowCaught ? '$pokemonName capturado!' : '$pokemonName removido',
+        ),
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
@@ -104,6 +127,11 @@ class _PokedexScreenState extends State<PokedexScreen> {
                       ),
                     );
                   },
+                  onLongPress: () {
+                    final nowCaught = !caught;
+                    _toggleCaught(pokemon.id);
+                    _showCaughtFeedback(context, pokemon.name, nowCaught);
+                  },
                 );
               },
             ),
@@ -115,11 +143,13 @@ class _PokemonCard extends StatelessWidget {
   final Pokemon pokemon;
   final bool caught;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   const _PokemonCard({
     required this.pokemon,
     required this.caught,
     required this.onTap,
+    required this.onLongPress,
   });
 
   @override
@@ -129,73 +159,143 @@ class _PokemonCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         decoration: BoxDecoration(
-          color: typeColor.withOpacity(0.15),
+          color: typeColor.withOpacity(caught ? 0.2 : 0.08),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: caught
-                ? Colors.green.withOpacity(0.6)
-                : typeColor.withOpacity(0.3),
+                ? typeColor.withOpacity(0.6)
+                : typeColor.withOpacity(0.2),
             width: caught ? 1.5 : 0.5,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Stack(
-              alignment: Alignment.topRight,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                pokemon.spriteUrl.isNotEmpty
-                    ? Image.network(
-                        pokemon.spriteUrl,
-                        width: 64,
-                        height: 64,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.catching_pokemon,
-                          size: 40,
-                        ),
-                      )
-                    : const Icon(Icons.catching_pokemon, size: 40),
-                if (caught)
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+                Opacity(
+                  opacity: caught ? 1.0 : 0.45,
+                  child: pokemon.spriteUrl.isNotEmpty
+                      ? Image.network(
+                          pokemon.spriteUrl,
+                          width: 64,
+                          height: 64,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.catching_pokemon,
+                            size: 40,
+                          ),
+                        )
+                      : const Icon(Icons.catching_pokemon, size: 40),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '#${pokemon.id.toString().padLeft(3, '0')}',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                Text(
+                  pokemon.name,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 3),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: pokemon.types
+                      .map((t) => _TypeBadge(type: _typeInPortuguese(t)))
+                      .toList(),
+                ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              '#${pokemon.id.toString().padLeft(3, '0')}',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            Text(
-              pokemon.name,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 3),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: pokemon.types
-                  .map((t) => _TypeBadge(type: _typeInPortuguese(t)))
-                  .toList(),
-            ),
+            if (caught)
+              Positioned(
+                top: 5,
+                right: 5,
+                child: _PokeballIcon(size: 16),
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+class _PokeballIcon extends StatelessWidget {
+  final double size;
+  const _PokeballIcon({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        painter: _PokeballPainter(),
+      ),
+    );
+  }
+}
+
+class _PokeballPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    final topPaint = Paint()..color = const Color(0xFFE53935);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      3.14159,
+      3.14159,
+      true,
+      topPaint,
+    );
+
+    final bottomPaint = Paint()..color = Colors.white;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0,
+      3.14159,
+      true,
+      bottomPaint,
+    );
+
+    final linePaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = size.width * 0.12;
+    canvas.drawLine(
+      Offset(0, center.dy),
+      Offset(size.width, center.dy),
+      linePaint,
+    );
+
+    final outerCirclePaint = Paint()..color = Colors.black;
+    canvas.drawCircle(center, radius * 0.32, outerCirclePaint);
+
+    final innerCirclePaint = Paint()..color = Colors.white;
+    canvas.drawCircle(center, radius * 0.20, innerCirclePaint);
+
+    final borderPaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = size.width * 0.08
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(
+      center,
+      radius - borderPaint.strokeWidth / 2,
+      borderPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _TypeBadge extends StatelessWidget {
