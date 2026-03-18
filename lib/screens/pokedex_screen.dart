@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
+import 'package:pokedex_tracker/screens/pokemon_detail_screen.dart';
 
 class PokedexScreen extends StatefulWidget {
   final String pokedexName;
@@ -92,7 +92,18 @@ class _PokedexScreenState extends State<PokedexScreen> {
                 return _PokemonCard(
                   pokemon: pokemon,
                   caught: caught,
-                  onTap: () => _toggleCaught(pokemon.id),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PokemonDetailScreen(
+                          pokemon: pokemon,
+                          caught: caught,
+                          onToggleCaught: () => _toggleCaught(pokemon.id),
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -140,8 +151,10 @@ class _PokemonCard extends StatelessWidget {
                         pokemon.spriteUrl,
                         width: 64,
                         height: 64,
-                        errorBuilder: (_, __, ___) =>
-                            const Icon(Icons.catching_pokemon, size: 40),
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.catching_pokemon,
+                          size: 40,
+                        ),
                       )
                     : const Icon(Icons.catching_pokemon, size: 40),
                 if (caught)
