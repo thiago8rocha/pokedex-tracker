@@ -1,50 +1,86 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
-  static const String _capturesKey = 'captures';
+  static const String _caughtPrefix = 'caught_';
+  static const String _sectionPrefix = 'section_';
 
-  // Retorna o Set de IDs capturados para uma Pokedex específica
+  // ─── CAPTURA ────────────────────────────────────────────────────
+
+  Future<bool> isCaught(String pokedexId, int speciesId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('${_caughtPrefix}${pokedexId}_$speciesId') ?? false;
+  }
+
+  Future<void> setCaught(String pokedexId, int speciesId, bool caught) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('${_caughtPrefix}${pokedexId}_$speciesId', caught);
+  }
+
   Future<Set<int>> getCaught(String pokedexId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString('${_capturesKey}_$pokedexId');
-      if (raw == null) return {};
-      final List<dynamic> list = jsonDecode(raw);
-      return list.map((e) => e as int).toSet();
-    } catch (e) {
-      log('Erro ao carregar capturas de $pokedexId: $e');
-      return {};
-    }
+    final prefs = await SharedPreferences.getInstance();
+    final prefix = '${_caughtPrefix}${pokedexId}_';
+    return prefs.getKeys()
+        .where((k) => k.startsWith(prefix) && prefs.getBool(k) == true)
+        .map((k) => int.tryParse(k.substring(prefix.length)))
+        .whereType<int>()
+        .toSet();
   }
 
-  // Salva o Set de IDs capturados para uma Pokedex específica
   Future<void> saveCaught(String pokedexId, Set<int> caught) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
-        '${_capturesKey}_$pokedexId',
-        jsonEncode(caught.toList()),
-      );
-    } catch (e) {
-      log('Erro ao salvar capturas de $pokedexId: $e');
-    }
+    final prefs = await SharedPreferences.getInstance();
+    final prefix = '${_caughtPrefix}${pokedexId}_';
+    final existing = prefs.getKeys().where((k) => k.startsWith(prefix)).toList();
+    for (final k in existing) await prefs.remove(k);
+    for (final id in caught) await prefs.setBool('$prefix$id', true);
   }
 
-  // Retorna quantos Pokémon foram capturados em uma Pokedex
   Future<int> getCaughtCount(String pokedexId) async {
     final caught = await getCaught(pokedexId);
     return caught.length;
   }
 
-  // Limpa todos os dados do app
-  Future<void> clearAll() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-    } catch (e) {
-      log('Erro ao limpar dados: $e');
+  Future<Map<int, bool>> getCaughtMap(String pokedexId, List<int> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    final map = <int, bool>{};
+    for (final id in ids) {
+      map[id] = prefs.getBool('${_caughtPrefix}${pokedexId}_$id') ?? false;
     }
+    return map;
+  }
+
+  // ─── CACHE DE ENTRIES (entryNumber + speciesId) ──────────────────
+  // Salva como CSV: "entryNum:speciesId,entryNum:speciesId,..."
+
+  Future<void> saveSectionEntries(
+      String pokedexId, String sectionApiName, List<Map<String, int>> entries) async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = entries
+        .map((e) => '${e['entryNumber']}:${e['speciesId']}')
+        .join(',');
+    await prefs.setString('$_sectionPrefix${pokedexId}_$sectionApiName', encoded);
+  }
+
+  Future<List<Map<String, int>>?> getSectionEntries(
+      String pokedexId, String sectionApiName) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('$_sectionPrefix${pokedexId}_$sectionApiName');
+    if (raw == null || raw.isEmpty) return null;
+    return raw.split(',').map((s) {
+      final parts = s.split(':');
+      return {
+        'entryNumber': int.parse(parts[0]),
+        'speciesId': int.parse(parts[1]),
+      };
+    }).toList();
+  }
+
+  Future<bool> hasSectionEntries(String pokedexId, String sectionApiName) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey('$_sectionPrefix${pokedexId}_$sectionApiName');
+  }
+
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }
