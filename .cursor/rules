@@ -1,0 +1,75 @@
+# Pokedex Tracker — Cursor Rules
+# App Android em Flutter para rastreamento de capturas em múltiplas Pokedex
+
+## Contexto do projeto
+- App pessoal, gratuito, sem conta de usuário, sem monetização
+- Plataforma: Android (Flutter/Dart)
+- Dados primários: PokéAPI (REST, sem autenticação)
+- Dados Pokémon GO: PvPoke (JSON público)
+- Dados Pokopia: curadoria manual em JSON local
+- Armazenamento: local (SQLite ou shared_preferences) + backup manual/automático
+
+## Regras de idioma — CRÍTICO
+- Nomes de Pokémon: SEMPRE em inglês (Bulbasaur, Charizard, Pikachu...)
+- Tipos de Pokémon: SEMPRE em português (Fogo, Água, Planta, Elétrico...)
+- Interface: português brasileiro
+- O termo correto é "Pokedex" — sem acento, sem plural
+- Moves: nomes em inglês por padrão, com tradução PT opcional via configuração
+- Especialidades Pokopia: em inglês (Grow, Burn, Water...) com tradução PT opcional
+
+## Estrutura de pastas
+lib/
+  main.dart
+  models/          # Pokémon, Time, Captura, Move, etc.
+  screens/         # Telas do app
+  widgets/         # Componentes reutilizáveis
+  services/        # PokéAPI, armazenamento local, backup
+  theme/           # Temas e paletas de cores
+assets/
+  habitats/        # Imagens locais do Pokopia (assets/habitats/nome.jpg)
+
+## Convenções de código (Dart/Flutter)
+- PascalCase para classes e widgets: `PokemonCard`, `HomeScreen`
+- camelCase para variáveis, funções e métodos: `fetchPokemon()`, `isCapturado`
+- snake_case para arquivos e diretórios: `pokemon_card.dart`, `home_screen.dart`
+- Prefixo `_` para membros privados: `_buildCard()`, `_isLoading`
+- Usar `const` sempre que possível para reduzir rebuilds
+- Usar `StatelessWidget` para componentes sem estado interno
+- Evitar widgets com mais de 200 linhas — extrair em componentes menores
+- Sempre usar `package:` imports para arquivos do próprio projeto
+- Usar `log()` (dart:developer) em vez de `print()` para debug
+- Linhas com no máximo 100 caracteres
+
+## Arquitetura
+- Separar UI, lógica de negócio e acesso a dados
+- Repository pattern para persistência de dados
+- State management: Provider (simples) ou Riverpod
+- Não misturar lógica de API com widgets
+- Models devem ser imutáveis quando possível (usar copyWith)
+
+## Temas
+- O app tem 8 paletas: Sistema, Claro, Escuro, Pokébola, Floresta, Psíquico, Fogo, Oceano
+- Sempre usar ThemeData e nunca hardcodar cores nos widgets
+- Cores de tipo Pokémon devem vir de um mapa centralizado em theme/
+
+## Pokedex cobertas (ativas por padrão)
+- Pokémon GO (2016), Let's Go (2018), Sword/Shield (2019), BDSP (2021),
+  Legends: Arceus (2022), Scarlet/Violet (2022), Legends: Z-A (2025),
+  FireRed/LeafGreen Switch (2026), Pokopia (2026), Nacional (sempre ativa)
+- Demais gerações (Gen 1–7) ficam desabilitadas por padrão
+
+## Regras específicas por contexto
+- Moves: só aparecem nas Pokedex de jogos Switch principais (não GO, não Pokopia, não Nacional)
+- Montador de times: só jogos principais (não GO)
+- Coroa (👑) indica Pokedex/DLC 100% completa
+- Pokémon GO aparece sempre por último na Home, separado com label "Mobile"
+- Jogos na Home ordenados por data de lançamento no console
+- Ao filtrar: mostrar contador de resultados nas pills de filtro ativo
+
+## O que NÃO fazer
+- Não usar print() — usar log() de dart:developer
+- Não hardcodar strings de UI — usar constantes ou l10n
+- Não buscar dados diretamente nos widgets — usar services/repositories
+- Não criar widgets gigantes — extrair componentes
+- Não usar cores hardcodadas — sempre ThemeData
+- Não usar plural "Pokedexes" — sempre "Pokedex"

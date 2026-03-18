@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
+import 'package:pokedex_tracker/screens/pokedex_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -52,16 +53,16 @@ class _NacionalCard extends StatelessWidget {
             children: [
               Text(
                 'Nacional',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 2),
               Text(
                 '0 / 1025',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -128,9 +129,9 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
-        letterSpacing: 1.1,
-      ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            letterSpacing: 1.1,
+          ),
     );
   }
 }
@@ -141,46 +142,66 @@ class _PokedexCard extends StatelessWidget {
 
   const _PokedexCard({required this.entry, this.fullWidth = false});
 
+  void _openPokedex(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PokedexScreen(
+          pokedexName: entry.name,
+          totalPokemon: entry.total,
+          pokemonIds: List.generate(
+            entry.total > 20 ? 20 : entry.total,
+            (i) => i + 1,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool complete = entry.caught >= entry.total;
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: complete
-              ? Colors.green.withOpacity(0.4)
-              : Theme.of(context).colorScheme.outlineVariant,
-          width: 0.5,
+    return GestureDetector(
+      onTap: () => _openPokedex(context),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: complete
+                ? Colors.green.withOpacity(0.4)
+                : Theme.of(context).colorScheme.outlineVariant,
+            width: 0.5,
+          ),
         ),
+        child: fullWidth
+            ? Row(
+                children: [
+                  _cardIcon(context),
+                  const SizedBox(width: 10),
+                  Expanded(child: _cardInfo(context, complete)),
+                  if (complete)
+                    const Text('👑', style: TextStyle(fontSize: 18)),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _cardIcon(context),
+                      if (complete)
+                        const Text('👑', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _cardInfo(context, complete),
+                ],
+              ),
       ),
-      child: fullWidth
-          ? Row(
-              children: [
-                _cardIcon(context),
-                const SizedBox(width: 10),
-                Expanded(child: _cardInfo(context, complete)),
-                if (complete) const Text('👑', style: TextStyle(fontSize: 18)),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _cardIcon(context),
-                    if (complete)
-                      const Text('👑', style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                _cardInfo(context, complete),
-              ],
-            ),
     );
   }
 
@@ -202,9 +223,9 @@ class _PokedexCard extends StatelessWidget {
       children: [
         Text(
           entry.name,
-          style: Theme.of(
-            context,
-          ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -212,9 +233,9 @@ class _PokedexCard extends StatelessWidget {
         Text(
           '${entry.caught} / ${entry.total}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: complete ? Colors.green : null,
-          ),
+                fontWeight: FontWeight.w500,
+                color: complete ? Colors.green : null,
+              ),
         ),
       ],
     );
