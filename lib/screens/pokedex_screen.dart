@@ -308,41 +308,92 @@ class _PokedexScreenState extends State<PokedexScreen> {
 
   // ─── DETALHE ──────────────────────────────────────────────────────
 
-  void _openDetail(_Entry entry) async {
-    final data = _pokemonData[entry.speciesId];
-    if (data == null) return;
-    bool isCaught = _caughtMap[entry.speciesId] ?? false;
-
-    final stats = _api.extractStats(data);
+  /// Constrói um Pokemon a partir do speciesId carregado em _pokemonData
+  Pokemon? _buildPokemon(int speciesId) {
+    final data = _pokemonData[speciesId];
+    if (data == null) return null;
+    final stats   = _api.extractStats(data);
     final rawName = data['name'] as String;
     final baseName = rawName.split('-').first;
     final displayName = baseName[0].toUpperCase() + baseName.substring(1);
-
     final sprites = _api.extractAllSprites(data);
-
-    final pokemon = Pokemon(
+    return Pokemon(
       id: data['id'] as int,
       name: displayName,
       types: _api.extractTypes(data),
-      baseHp: stats['hp'] ?? 0,
-      baseAttack: stats['attack'] ?? 0,
-      baseDefense: stats['defense'] ?? 0,
-      baseSpAttack: stats['special-attack'] ?? 0,
+      baseHp:        stats['hp'] ?? 0,
+      baseAttack:    stats['attack'] ?? 0,
+      baseDefense:   stats['defense'] ?? 0,
+      baseSpAttack:  stats['special-attack'] ?? 0,
       baseSpDefense: stats['special-defense'] ?? 0,
-      baseSpeed: stats['speed'] ?? 0,
-      spriteUrl: sprites['default'] ?? sprites['pixel'] ?? '',
-      spriteShinyUrl: sprites['shiny'],
-      spritePixelUrl: sprites['pixel'],
-      spritePixelShinyUrl: sprites['pixelShiny'],
-      spritePixelFemaleUrl: sprites['pixelFemale'],
-      spriteHomeUrl: sprites['home'],
+      baseSpeed:     stats['speed'] ?? 0,
+      spriteUrl:          sprites['default'] ?? sprites['pixel'] ?? '',
+      spriteShinyUrl:     sprites['shiny'],
+      spritePixelUrl:     sprites['pixel'],
+      spritePixelShinyUrl:sprites['pixelShiny'],
+      spritePixelFemaleUrl:sprites['pixelFemale'],
+      spriteHomeUrl:      sprites['home'],
       spriteHomeShinyUrl: sprites['homeShiny'],
-      spriteHomeFemaleUrl: sprites['homeFemale'],
+      spriteHomeFemaleUrl:sprites['homeFemale'],
     );
+  }
 
-    final isNacional = widget.pokedexId == 'nacional';
-    final isGo = widget.pokedexId.contains('pokémon_go') || widget.pokedexId.contains('pokemon_go');
-    final isPokopia = widget.pokedexId.contains('pokopia');
+  void _openDetail(_Entry entry) async {
+    final filtered = _allFilteredEntries();
+    final idx = filtered.indexWhere((e) => e.speciesId == entry.speciesId);
+    await _openDetailAt(filtered, idx);
+  }
+
+  Future<void> _openDetailAt(List<_Entry> filtered, int idx) async {
+    if (idx < 0 || idx >= filtered.length) return;
+    final entry = filtered[idx];
+
+    // Garante que o Pokémon atual está carregado
+    if (!_pokemonData.containsKey(entry.speciesId)) {
+      final batch = await _api.fetchPokemonBatch([entry.speciesId]);
+      if (!mounted) return;
+      for (final p in batch) _pokemonData[p['id'] as int] = p;
+    }
+
+    final pokemon = _buildPokemon(entry.speciesId);
+    if (pokemon == null) return;
+
+    bool isCaught = _caughtMap[entry.speciesId] ?? false;
+
+    // Vizinhos — pré-carrega os dados se necessário
+    final prevEntry = idx > 0 ? filtered[idx - 1] : null;
+    final nextEntry = idx < filtered.length - 1 ? filtered[idx + 1] : null;
+
+    if (prevEntry != null && !_pokemonData.containsKey(prevEntry.speciesId)) {
+      _api.fetchPokemonBatch([prevEntry.speciesId]).then((batch) {
+        if (mounted) for (final p in batch) _pokemonData[p['id'] as int] = p;
+      });
+    }
+    if (nextEntry != null && !_pokemonData.containsKey(nextEntry.speciesId)) {
+      _api.fetchPokemonBatch([nextEntry.speciesId]).then((batch) {
+        if (mounted) for (final p in batch) _pokemonData[p['id'] as int] = p;
+      });
+    }
+
+    String? _prevName, _nextName;
+    int?    _prevId,   _nextId;
+
+    if (prevEntry != null) {
+      final d = _pokemonData[prevEntry.speciesId];
+      if (d != null) {
+        final raw = (d['name'] as String).split('-').first;
+        _prevName = raw[0].toUpperCase() + raw.substring(1);
+        _prevId   = d['id'] as int;
+      }
+    }
+    if (nextEntry != null) {
+      final d = _pokemonData[nextEntry.speciesId];
+      if (d != null) {
+        final raw = (d['name'] as String).split('-').first;
+        _nextName = raw[0].toUpperCase() + raw.substring(1);
+        _nextId   = d['id'] as int;
+      }
+    }
 
     final onToggle = () async {
       isCaught = !isCaught;
@@ -350,23 +401,55 @@ class _PokedexScreenState extends State<PokedexScreen> {
       if (mounted) setState(() => _caughtMap[entry.speciesId] = isCaught);
     };
 
-    await Navigator.push(
+    final isNacional = widget.pokedexId == 'nacional';
+    final isGo = widget.pokedexId.contains('pokémon_go') || widget.pokedexId.contains('pokemon_go');
+    final isPokopia = widget.pokedexId.contains('pokopia');
+
+    if (!mounted) return;
+    await Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) {
-        if (isNacional) {
-          return NacionalDetailScreen(
-            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
-        } else if (isGo) {
-          return GoDetailScreen(
-            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
-        } else if (isPokopia) {
-          return PokopiaDetailScreen(
-            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
-        } else {
-          return SwitchDetailScreen(
-            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
-        }
-      }),
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) {
+          if (isNacional) {
+            return NacionalDetailScreen(
+              pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
+              prevName: _prevName, prevId: _prevId,
+              nextName: _nextName, nextId: _nextId,
+              onPrev: prevEntry != null ? () {
+                Navigator.pop(context);
+                _openDetailAt(filtered, idx - 1);
+              } : null,
+              onNext: nextEntry != null ? () {
+                Navigator.pop(context);
+                _openDetailAt(filtered, idx + 1);
+              } : null,
+            );
+          } else if (isGo) {
+            return GoDetailScreen(
+              pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
+          } else if (isPokopia) {
+            return PokopiaDetailScreen(
+              pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
+          } else {
+            return SwitchDetailScreen(
+              pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
+              prevName: _prevName, prevId: _prevId,
+              nextName: _nextName, nextId: _nextId,
+              onPrev: prevEntry != null ? () {
+                Navigator.pop(context);
+                _openDetailAt(filtered, idx - 1);
+              } : null,
+              onNext: nextEntry != null ? () {
+                Navigator.pop(context);
+                _openDetailAt(filtered, idx + 1);
+              } : null,
+            );
+          }
+        },
+        transitionsBuilder: (_, anim, __, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: const Duration(milliseconds: 180),
+      ),
     );
 
     if (mounted) {

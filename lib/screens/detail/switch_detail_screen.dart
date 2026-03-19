@@ -8,12 +8,21 @@ class SwitchDetailScreen extends StatefulWidget {
   final Pokemon pokemon;
   final bool caught;
   final VoidCallback onToggleCaught;
+  final String? prevName;
+  final int?    prevId;
+  final String? nextName;
+  final int?    nextId;
+  final VoidCallback? onPrev;
+  final VoidCallback? onNext;
 
   const SwitchDetailScreen({
     super.key,
     required this.pokemon,
     required this.caught,
     required this.onToggleCaught,
+    this.prevName, this.prevId,
+    this.nextName, this.nextId,
+    this.onPrev, this.onNext,
   });
 
   @override
@@ -160,51 +169,18 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
     if (_speciesData == null) return;
     final varieties = _speciesData!['varieties'] as List<dynamic>? ?? [];
     if (varieties.length <= 1) return;
-    const vgToGame = {
-      'lets-go-pikachu-lets-go-eevee': "Let's Go P/E",
-      'sword-shield': 'Sword / Shield',
-      'brilliant-diamond-and-shining-pearl': 'BD / Shining Pearl',
-      'legends-arceus': 'Legends: Arceus',
-      'scarlet-violet': 'Scarlet / Violet',
-    };
     final forms = <Map<String, dynamic>>[];
     for (final v in varieties) {
-      final url = v['pokemon']['url'] as String;
+      final url  = v['pokemon']['url'] as String;
       final name = v['pokemon']['name'] as String;
       try {
         final r = await http.get(Uri.parse(url));
         if (r.statusCode != 200) continue;
-        final fd = json.decode(r.body) as Map<String, dynamic>;
-        final fid = fd['id'] as int;
-        final types = (fd['types'] as List<dynamic>).map((t) => t['type']['name'] as String).toList();
-        String? gameLabel;
-        final formsRaw = fd['forms'] as List<dynamic>? ?? [];
-        if (formsRaw.isNotEmpty) {
-          try {
-            final rf = await http.get(Uri.parse(formsRaw[0]['url'] as String));
-            if (rf.statusCode == 200) {
-              final formData = json.decode(rf.body) as Map<String, dynamic>;
-              final vgName = formData['version_group']?['name'] as String?;
-              if (vgName != null) gameLabel = vgToGame[vgName];
-            }
-          } catch (_) {}
-        }
-        if (gameLabel == null) {
-          final lowerName = name.toLowerCase();
-          if (lowerName.contains('-mega')) {
-            gameLabel = 'Sword / Shield';
-          } else if (lowerName.contains('-gmax')) {
-            gameLabel = 'Sword / Shield';
-          } else if (lowerName.contains('-hisui') || lowerName.contains('-hisuian')) {
-            gameLabel = 'Legends: Arceus';
-          } else if (lowerName.contains('-paldea') || lowerName.contains('-paldean')) {
-            gameLabel = 'Scarlet / Violet';
-          } else if (lowerName.contains('-alola') || lowerName.contains('-alolan')) {
-            gameLabel = 'Sword / Shield';
-          } else if (lowerName.contains('-galar') || lowerName.contains('-galarian')) {
-            gameLabel = 'Sword / Shield';
-          }
-        }
+        final fd    = json.decode(r.body) as Map<String, dynamic>;
+        final fid   = fd['id'] as int;
+        final types = (fd['types'] as List<dynamic>)
+            .map((t) => t['type']['name'] as String).toList();
+        final gameLabel = gameForForm(name);
         forms.add({'name': name, 'id': fid, 'types': types,
           'isDefault': v['is_default'] as bool, 'game': gameLabel});
       } catch (_) {}
@@ -274,6 +250,9 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
             pokemon: widget.pokemon,
             caught: _caught,
             onToggleCaught: () { setState(() => _caught = !_caught); widget.onToggleCaught(); },
+            prevName: widget.prevName, prevId: widget.prevId,
+            nextName: widget.nextName, nextId: widget.nextId,
+            onPrev: widget.onPrev, onNext: widget.onNext,
           ),
         ],
         body: Column(children: [

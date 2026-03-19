@@ -8,6 +8,83 @@ import 'package:pokedex_tracker/theme/type_colors.dart';
 
 const String kApiBase = 'https://pokeapi.co/api/v2';
 
+// ─── MAPEAMENTO FORMAS → JOGO ─────────────────────────────────────
+// Megas Kanto: Let's Go P/E. Megas não-Kanto: Legends: Z-A.
+// Sword/Shield NÃO tem Megas. Gigamax é exclusivo de Sword/Shield.
+const Map<String, String> formGameMap = {
+  'mega':   "Let's Go P/E",
+  'gmax':   'Sword / Shield',
+  'alola':  'Sword / Shield',
+  'galar':  'Sword / Shield',
+  'hisui':  'Legends: Arceus',
+  'paldea': 'Scarlet / Violet',
+  'venusaur-mega':   "Let's Go P/E",
+  'charizard-mega-x':"Let's Go P/E",
+  'charizard-mega-y':"Let's Go P/E",
+  'blastoise-mega':  "Let's Go P/E",
+  'beedrill-mega':   "Let's Go P/E",
+  'pidgeot-mega':    "Let's Go P/E",
+  'alakazam-mega':   "Let's Go P/E",
+  'slowbro-mega':    "Let's Go P/E",
+  'gengar-mega':     "Let's Go P/E",
+  'kangaskhan-mega': "Let's Go P/E",
+  'pinsir-mega':     "Let's Go P/E",
+  'gyarados-mega':   "Let's Go P/E",
+  'aerodactyl-mega': "Let's Go P/E",
+  'mewtwo-mega-x':   "Let's Go P/E",
+  'mewtwo-mega-y':   "Let's Go P/E",
+  'ampharos-mega':  'Legends: Z-A',
+  'steelix-mega':   'Legends: Z-A',
+  'scizor-mega':    'Legends: Z-A',
+  'heracross-mega': 'Legends: Z-A',
+  'houndoom-mega':  'Legends: Z-A',
+  'tyranitar-mega': 'Legends: Z-A',
+  'blaziken-mega':  'Legends: Z-A',
+  'gardevoir-mega': 'Legends: Z-A',
+  'mawile-mega':    'Legends: Z-A',
+  'aggron-mega':    'Legends: Z-A',
+  'medicham-mega':  'Legends: Z-A',
+  'manectric-mega': 'Legends: Z-A',
+  'banette-mega':   'Legends: Z-A',
+  'absol-mega':     'Legends: Z-A',
+  'garchomp-mega':  'Legends: Z-A',
+  'lucario-mega':   'Legends: Z-A',
+  'abomasnow-mega': 'Legends: Z-A',
+  'latias-mega':    'Legends: Z-A',
+  'latios-mega':    'Legends: Z-A',
+  'sceptile-mega':  'Legends: Z-A',
+  'swampert-mega':  'Legends: Z-A',
+  'sableye-mega':   'Legends: Z-A',
+  'sharpedo-mega':  'Legends: Z-A',
+  'camerupt-mega':  'Legends: Z-A',
+  'altaria-mega':   'Legends: Z-A',
+  'glalie-mega':    'Legends: Z-A',
+  'salamence-mega': 'Legends: Z-A',
+  'metagross-mega': 'Legends: Z-A',
+  'rayquaza-mega':  'Legends: Z-A',
+  'lopunny-mega':   'Legends: Z-A',
+  'gallade-mega':   'Legends: Z-A',
+  'audino-mega':    'Legends: Z-A',
+  'diancie-mega':   'Legends: Z-A',
+  'dialga-origin':           'Legends: Arceus',
+  'palkia-origin':           'Legends: Arceus',
+  'basculin-whitestriped':   'Legends: Arceus',
+  'enamorus-therian':        'Legends: Arceus',
+  'tauros-paldea-combat':    'Scarlet / Violet',
+  'tauros-paldea-blaze':     'Scarlet / Violet',
+  'tauros-paldea-aqua':      'Scarlet / Violet',
+  'wooper-paldea':           'Scarlet / Violet',
+};
+
+/// Resolve o jogo a partir do slug da variedade usando o mapa estático.
+String? gameForForm(String slug) {
+  if (formGameMap.containsKey(slug)) return formGameMap[slug];
+  for (final suffix in ['mega', 'gmax', 'alola', 'galar', 'hisui', 'paldea']) {
+    if (slug.contains('-$suffix')) return formGameMap[suffix];
+  }
+  return null;
+}
+
 String ptType(String en) {
   const m = {
     'normal': 'Normal', 'fire': 'Fogo', 'water': 'Água',
@@ -50,6 +127,13 @@ class DetailHeader extends StatefulWidget {
   final bool caught;
   final VoidCallback onToggleCaught;
   final String caughtLabel;
+  // Navegação entre pokémon
+  final String? prevName;
+  final int?    prevId;
+  final String? nextName;
+  final int?    nextId;
+  final VoidCallback? onPrev;
+  final VoidCallback? onNext;
 
   const DetailHeader({
     super.key,
@@ -57,6 +141,9 @@ class DetailHeader extends StatefulWidget {
     required this.caught,
     required this.onToggleCaught,
     this.caughtLabel = 'Capturado',
+    this.prevName, this.prevId,
+    this.nextName, this.nextId,
+    this.onPrev, this.onNext,
   });
 
   @override
@@ -126,12 +213,13 @@ class _DetailHeaderState extends State<DetailHeader> {
             ? p.spritePixelShinyUrl != null
             : p.spriteShinyUrl != null;
 
-    // Feminino disponível em algum dos modos ativos
+    // Feminino: só existe na camada pixel (front_female). Ocultar em artwork e HOME
+    // a menos que o HOME tenha versão feminina explícita
     final hasFemaleNow = _isHome
         ? p.spriteHomeFemaleUrl != null
         : _isPixel
             ? p.spritePixelFemaleUrl != null
-            : p.hasFemale;
+            : false; // artwork oficial não tem versão feminina
 
     return SliverAppBar(
       expandedHeight: 260,
@@ -199,6 +287,80 @@ class _DetailHeaderState extends State<DetailHeader> {
                   const SizedBox(height: 4),
                 ],
               ),
+
+              // ── Seta anterior (esquerda) ──────────────────────
+              if (widget.onPrev != null)
+                Positioned(
+                  left: 0, top: 0, bottom: 0,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: widget.onPrev,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.chevron_left, size: 28,
+                              color: Colors.white.withOpacity(0.9)),
+                            if (widget.prevId != null)
+                              Text('#${widget.prevId.toString().padLeft(3,'0')}',
+                                style: TextStyle(fontSize: 8,
+                                  color: Colors.white.withOpacity(0.75),
+                                  fontWeight: FontWeight.w500)),
+                            if (widget.prevName != null)
+                              SizedBox(
+                                width: 52,
+                                child: Text(widget.prevName!,
+                                  style: TextStyle(fontSize: 9,
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2, overflow: TextOverflow.ellipsis),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              // ── Seta próximo (direita) ─────────────────────────
+              if (widget.onNext != null)
+                Positioned(
+                  right: 0, top: 0, bottom: 0,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: widget.onNext,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.chevron_right, size: 28,
+                              color: Colors.white.withOpacity(0.9)),
+                            if (widget.nextId != null)
+                              Text('#${widget.nextId.toString().padLeft(3,'0')}',
+                                style: TextStyle(fontSize: 8,
+                                  color: Colors.white.withOpacity(0.75),
+                                  fontWeight: FontWeight.w500)),
+                            if (widget.nextName != null)
+                              SizedBox(
+                                width: 52,
+                                child: Text(widget.nextName!,
+                                  style: TextStyle(fontSize: 9,
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2, overflow: TextOverflow.ellipsis),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
 
               // ── Coluna de botões no canto direito ─────────────
               // Aligned dentro da SafeArea, mesma coluna que o ícone da AppBar
@@ -442,9 +604,9 @@ class FormsTab extends StatelessWidget {
         crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10,
         childAspectRatio: 0.95,
       ),
-      itemCount: forms.length,
+      itemCount: altForms.length,
       itemBuilder: (ctx, i) {
-        final f = forms[i];
+        final f = altForms[i];
         final id = f['id'] as int;
         final name = f['name'] as String;
         final types = (f['types'] as List<dynamic>? ?? []).map((t) => t as String).toList();
@@ -529,25 +691,15 @@ class FormsTab extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           // Handle
           Container(width: 36, height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: 8),
             decoration: BoxDecoration(color: Theme.of(context).colorScheme.outlineVariant,
               borderRadius: BorderRadius.circular(2))),
-          // Sprite grande com fundo gradiente
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft, end: Alignment.bottomRight,
-                colors: [c1.withOpacity(0.15), c2.withOpacity(0.08)],
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Image.network(sprite, height: 180, fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
-                const Icon(Icons.catching_pokemon, size: 120)),
-          ),
-          const SizedBox(height: 16),
+          // Sprite solto, sem caixa
+          Image.network(sprite,
+            height: 220, fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) =>
+              const Icon(Icons.catching_pokemon, size: 120)),
+          const SizedBox(height: 12),
           // Nome
           Text(_formatFormName(name),
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
