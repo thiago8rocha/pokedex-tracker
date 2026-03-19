@@ -484,21 +484,37 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
                             _FormsTab(forms: _forms, loading: _loadingExtra),
                             _CpCalcTab(pokemon: widget.pokemon),
                           ]
-                        : [
-                            _InfoTab(
-                              pokemon: widget.pokemon, abilities: _abilities, evoChain: _evoChain,
-                              category: _category, height: _heightStr, weight: _weightStr,
-                              captureRate: _captureRate, loading: _loadingExtra,
-                              isNacional: widget.pokedexContext == 'nacional',
-                              availableGames: _availableGames,
-                            ),
-                            _StatusTab(pokemon: widget.pokemon),
-                            _FormsTab(forms: _forms, loading: _loadingExtra),
-                            _MovesTab(
-                              level: _movesLevel, mt: _movesMT,
-                              tutor: _movesTutor, egg: _movesEgg,
-                            ),
-                          ],
+                        : widget.pokedexContext == 'nacional'
+                            ? [
+                                _InfoTab(
+                                  pokemon: widget.pokemon, abilities: _abilities, evoChain: _evoChain,
+                                  category: _category, height: _heightStr, weight: _weightStr,
+                                  captureRate: _captureRate, loading: _loadingExtra,
+                                  isNacional: true,
+                                  availableGames: _availableGames,
+                                ),
+                                _StatusTab(pokemon: widget.pokemon),
+                                _FormsTab(forms: _forms, loading: _loadingExtra),
+                                _MovesTab(
+                                  level: _movesLevel, mt: _movesMT,
+                                  tutor: _movesTutor, egg: _movesEgg,
+                                ),
+                              ]
+                            : [
+                                _InfoTab(
+                                  pokemon: widget.pokemon, abilities: _abilities, evoChain: _evoChain,
+                                  category: _category, height: _heightStr, weight: _weightStr,
+                                  captureRate: _captureRate, loading: _loadingExtra,
+                                  isNacional: false,
+                                  availableGames: const [],
+                                ),
+                                _StatusTab(pokemon: widget.pokemon),
+                                _FormsTab(forms: _forms, loading: _loadingExtra),
+                                _MovesTab(
+                                  level: _movesLevel, mt: _movesMT,
+                                  tutor: _movesTutor, egg: _movesEgg,
+                                ),
+                              ],
               ),
             ),
           ],
