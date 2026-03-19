@@ -544,15 +544,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return row;
   }
 
-  Widget _buildSeparator(ColorScheme scheme) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 3),
-    child: Divider(
-      height: 1,
-      thickness: 0.8,
-      // onSurface com opacidade garante contraste sobre qualquer cor de fundo
-      color: scheme.onSurface.withOpacity(0.18),
-    ),
-  );
+  Widget _buildSeparator(ColorScheme scheme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Container(
+        height: 1,
+        color: scheme.onSurface.withOpacity(0.15),
+      ),
+    );
+  }
 
   // ── Região por jogo (para linha principal do DLC card) ────────
   String _regionFor(String gameName) {
