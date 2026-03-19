@@ -64,43 +64,71 @@ class DetailHeader extends StatefulWidget {
 }
 
 class _DetailHeaderState extends State<DetailHeader> {
-  // Estado dos toggles — independentes, combináveis
+  // Estados dos toggles — independentes e combináveis
   bool _isHome   = false;
   bool _isShiny  = false;
   bool _isFemale = false;
+  bool _isPixel  = false;
 
-  static const String _base =
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
-
+  /// URL do sprite atual baseado nos estados ativos
   String get _spriteUrl {
-    final id = widget.pokemon.id;
+    final p = widget.pokemon;
+    final id = p.id;
+    const base = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+
     if (_isHome) {
-      // Pokémon HOME: suporta shiny e female
-      if (_isShiny && _isFemale) return '$_base/other/home/shiny/female/$id.png';
-      if (_isShiny)              return '$_base/other/home/shiny/$id.png';
-      if (_isFemale)             return '$_base/other/home/female/$id.png';
-      return '$_base/other/home/$id.png';
+      if (_isShiny && _isFemale) return p.spriteHomeShinyUrl ?? p.spriteHomeUrl ?? p.spriteUrl;
+      if (_isShiny)  return p.spriteHomeShinyUrl ?? p.spriteUrl;
+      if (_isFemale) return p.spriteHomeFemaleUrl ?? p.spriteHomeUrl ?? p.spriteUrl;
+      return p.spriteHomeUrl ?? p.spriteUrl;
+    }
+    if (_isPixel) {
+      if (_isShiny && _isFemale) return p.spritePixelShinyUrl ?? p.spritePixelUrl ?? p.spriteUrl;
+      if (_isShiny)  return p.spritePixelShinyUrl ?? p.spritePixelUrl ?? p.spriteUrl;
+      if (_isFemale) return p.spritePixelFemaleUrl ?? p.spritePixelUrl ?? p.spriteUrl;
+      return p.spritePixelUrl ?? p.spriteUrl;
     }
     // Official artwork
-    if (_isShiny)  return '$_base/other/official-artwork/shiny/$id.png';
-    if (_isFemale) return '$_base/front_female/$id.png'; // sprites raiz
-    return widget.pokemon.spriteUrl.isNotEmpty
-        ? widget.pokemon.spriteUrl
-        : '$_base/other/official-artwork/$id.png';
+    if (_isShiny)  return p.spriteShinyUrl ?? p.spriteUrl;
+    if (_isFemale) return p.spritePixelFemaleUrl ?? '$base/front_female/${p.id}.png';
+    return p.spriteUrl;
   }
+
+  // Quando HOME é ativado, pixel é desativado (e vice-versa)
+  void _toggleHome()  {
+    setState(() { _isHome = !_isHome; if (_isHome) _isPixel = false; });
+  }
+  void _togglePixel() {
+    setState(() { _isPixel = !_isPixel; if (_isPixel) _isHome = false; });
+  }
+  void _toggleShiny()  => setState(() => _isShiny  = !_isShiny);
+  void _toggleFemale() => setState(() => _isFemale = !_isFemale);
 
   @override
   Widget build(BuildContext context) {
-    final pt = widget.pokemon.types.isNotEmpty ? widget.pokemon.types[0] : 'normal';
+    final p = widget.pokemon;
+    final pt = p.types.isNotEmpty ? p.types[0] : 'normal';
     final c1 = TypeColors.fromType(ptType(pt));
-    final c2 = widget.pokemon.types.length > 1
-        ? TypeColors.fromType(ptType(widget.pokemon.types[1]))
-        : c1;
+    final c2 = p.types.length > 1 ? TypeColors.fromType(ptType(p.types[1])) : c1;
 
-    // Cor da pokébola: vermelha quando capturado, branca fantasma quando não
+    // Pokébola: vermelha = capturado, branca translúcida = não capturado
     final pokeballColor = widget.caught
         ? const Color(0xFFE24B4A)
         : Colors.white.withOpacity(0.75);
+
+    // Shiny disponível em algum dos modos ativos
+    final hasShinyNow = _isHome
+        ? p.spriteHomeShinyUrl != null
+        : _isPixel
+            ? p.spritePixelShinyUrl != null
+            : p.spriteShinyUrl != null;
+
+    // Feminino disponível em algum dos modos ativos
+    final hasFemaleNow = _isHome
+        ? p.spriteHomeFemaleUrl != null
+        : _isPixel
+            ? p.spritePixelFemaleUrl != null
+            : p.hasFemale;
 
     return SliverAppBar(
       expandedHeight: 260,
@@ -109,87 +137,59 @@ class _DetailHeaderState extends State<DetailHeader> {
       surfaceTintColor: Colors.transparent,
       backgroundColor: c1,
       iconTheme: const IconThemeData(color: Colors.white),
-      // Sem actions — botões ficam dentro do flexibleSpace
-      actions: const [],
+      actions: const [], // botões dentro do flexibleSpace
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              begin: Alignment.topCenter, end: Alignment.bottomCenter,
               colors: [c1, c2.withOpacity(0.85)],
             ),
           ),
           child: SafeArea(
             child: Stack(children: [
-              // ── Conteúdo centralizado ─────────────────────────
+
+              // ── Conteúdo central ──────────────────────────────
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 8),
-                  // Sprite
-                  Container(
+                  // Sprite sem borda/círculo
+                  Image.network(
+                    _spriteUrl,
                     width: 130, height: 130,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.network(
-                      _spriteUrl,
-                      width: 120, height: 120,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) {
-                        // Variante não existe — reseta para padrão
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted) setState(() {
-                            _isShiny = false;
-                            _isFemale = false;
-                          });
-                        });
-                        return const Icon(Icons.catching_pokemon,
-                            size: 80, color: Colors.white);
-                      },
-                    ),
+                    fit: BoxFit.contain,
+                    filterQuality: _isPixel ? FilterQuality.none : FilterQuality.medium,
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.catching_pokemon, size: 80, color: Colors.white),
                   ),
                   const SizedBox(height: 10),
-                  // Número
-                  Text(
-                    '#${widget.pokemon.id.toString().padLeft(3, '0')}',
-                    style: const TextStyle(color: Colors.white70,
-                        fontSize: 12, fontWeight: FontWeight.w500, letterSpacing: 1.0),
-                  ),
+                  Text('#${p.id.toString().padLeft(3, '0')}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12,
+                      fontWeight: FontWeight.w500, letterSpacing: 1.0)),
                   const SizedBox(height: 2),
-                  // Nome
-                  Text(
-                    widget.pokemon.name,
-                    style: const TextStyle(color: Colors.white,
-                        fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: 0.3),
-                  ),
+                  Text(p.name,
+                    style: const TextStyle(color: Colors.white, fontSize: 22,
+                      fontWeight: FontWeight.w700, letterSpacing: 0.3)),
                   const SizedBox(height: 8),
-                  // Badges de tipo — retangulares
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: widget.pokemon.types.map((t) {
+                    children: p.types.map((t) {
                       final tc = TypeColors.fromType(ptType(t));
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                         decoration: BoxDecoration(
                           color: tc,
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(
-                              color: Colors.white.withOpacity(0.3), width: 1),
+                          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
                           boxShadow: [BoxShadow(
                             color: Colors.black.withOpacity(0.18),
-                            blurRadius: 4, offset: const Offset(0, 2),
-                          )],
+                            blurRadius: 4, offset: const Offset(0, 2))],
                         ),
                         child: Text(ptType(t), style: TextStyle(
-                          color: typeTextColor(tc),
-                          fontSize: 12, fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5),
-                        ),
+                          color: typeTextColor(tc), fontSize: 12,
+                          fontWeight: FontWeight.w700, letterSpacing: 0.5)),
                       );
                     }).toList(),
                   ),
@@ -197,48 +197,64 @@ class _DetailHeaderState extends State<DetailHeader> {
                 ],
               ),
 
-              // ── Botões no canto superior direito, dentro do header ──
+              // ── Coluna de botões no canto direito ─────────────
+              // Aligned dentro da SafeArea, mesma coluna que o ícone da AppBar
               Positioned(
-                top: 4,
-                right: 0,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Shiny — funciona em ambos os modos
-                    _HeaderIconButton(
-                      icon: Icons.auto_awesome,
-                      active: _isShiny,
-                      activeColor: const Color(0xFFFFD700),
-                      onTap: () => setState(() => _isShiny = !_isShiny),
-                    ),
-                    // Feminino — funciona em ambos os modos
-                    _HeaderIconButton(
-                      icon: Icons.female,
-                      active: _isFemale,
-                      activeColor: Colors.pinkAccent,
-                      onTap: () => setState(() => _isFemale = !_isFemale),
-                    ),
-                    // HOME render
-                    _HeaderIconButton(
-                      icon: Icons.view_in_ar,
-                      active: _isHome,
-                      activeColor: Colors.lightBlueAccent,
-                      onTap: () => setState(() => _isHome = !_isHome),
-                    ),
-                    // Pokébola — capturado/não capturado
-                    GestureDetector(
-                      onTap: widget.onToggleCaught,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 8),
-                        child: Icon(
-                          Icons.catching_pokemon,
-                          size: 28,
-                          color: pokeballColor,
+                top: 0,
+                right: 4,
+                bottom: 0,
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 1. Pokébola (capturado)
+                        GestureDetector(
+                          onTap: widget.onToggleCaught,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(Icons.catching_pokemon,
+                              size: 28, color: pokeballColor),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        // 2. HOME render (se disponível)
+                        if (p.hasHome)
+                          _HeaderIconButton(
+                            icon: Icons.view_in_ar,
+                            active: _isHome,
+                            activeColor: Colors.lightBlueAccent,
+                            onTap: _toggleHome,
+                          ),
+                        // 3. Pixel art (se disponível)
+                        if (p.hasPixel)
+                          _HeaderIconButton(
+                            icon: Icons.grid_on,
+                            active: _isPixel,
+                            activeColor: Colors.orangeAccent,
+                            onTap: _togglePixel,
+                          ),
+                        // 4. Shiny (só mostra se existe no modo atual)
+                        if (hasShinyNow)
+                          _HeaderIconButton(
+                            icon: Icons.auto_awesome,
+                            active: _isShiny,
+                            activeColor: const Color(0xFFFFD700),
+                            onTap: _toggleShiny,
+                          ),
+                        // 5. Feminino (só mostra se existe no modo atual)
+                        if (hasFemaleNow)
+                          _HeaderIconButton(
+                            icon: Icons.female,
+                            active: _isFemale,
+                            activeColor: Colors.pinkAccent,
+                            onTap: _toggleFemale,
+                          ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ]),
@@ -940,8 +956,10 @@ class AbilityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = neutralBg(context);
-    final hiddenBg   = Theme.of(context).colorScheme.secondaryContainer;
-    final hiddenText = Theme.of(context).colorScheme.onSecondaryContainer;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Cor neutra que combina com o fundo da tela — cinza discreto
+    final hiddenBg   = isDark ? const Color(0xFF3A3A3A) : const Color(0xFFDDDDDD);
+    final hiddenText = isDark ? const Color(0xFFAAAAAA) : const Color(0xFF666666);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -958,7 +976,7 @@ class AbilityCard extends StatelessWidget {
               if (isHidden) Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
-                  color: hiddenBg, borderRadius: BorderRadius.circular(6)),
+                  color: hiddenBg, borderRadius: BorderRadius.circular(4)),
                 child: Text('Oculta',
                   style: TextStyle(color: hiddenText, fontSize: 10, fontWeight: FontWeight.w500)),
               ),
@@ -980,46 +998,148 @@ class AbilityCard extends StatelessWidget {
 
 // ─── EVO CHAIN (compartilhado) ───────────────────────────────────
 
-class EvoChainWidget extends StatelessWidget {
+class EvoChainWidget extends StatefulWidget {
   final List<Map<String, dynamic>> chain;
   const EvoChainWidget({super.key, required this.chain});
 
   @override
+  State<EvoChainWidget> createState() => _EvoChainWidgetState();
+}
+
+class _EvoChainWidgetState extends State<EvoChainWidget> {
+  // id → lista de tipos EN
+  final Map<int, List<String>> _typesCache = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTypes();
+  }
+
+  @override
+  void didUpdateWidget(EvoChainWidget old) {
+    super.didUpdateWidget(old);
+    if (old.chain != widget.chain) _loadTypes();
+  }
+
+  Future<void> _loadTypes() async {
+    for (final e in widget.chain) {
+      final id = e['id'] as int;
+      if (_typesCache.containsKey(id) || id == 0) continue;
+      // Se o chain já trouxe os tipos (nacional/switch), usa direto
+      final preloaded = e['types'];
+      if (preloaded is List && preloaded.isNotEmpty) {
+        _typesCache[id] = List<String>.from(preloaded);
+        continue;
+      }
+      // Fallback: busca da API (GO, pokopia, etc)
+      try {
+        final r = await http.get(Uri.parse('$kApiBase/pokemon/$id'));
+        if (r.statusCode == 200 && mounted) {
+          final d = json.decode(r.body) as Map<String, dynamic>;
+          final types = (d['types'] as List<dynamic>)
+              .map((t) => t['type']['name'] as String)
+              .toList();
+          setState(() => _typesCache[id] = types);
+        }
+      } catch (_) {}
+    }
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color: neutralBg(context), borderRadius: BorderRadius.circular(10)),
-      child: Row(mainAxisAlignment: MainAxisAlignment.center,
-        children: _buildWidgets(context)),
+          color: neutralBg(context), borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: _buildWidgets(context),
+      ),
     );
   }
 
   List<Widget> _buildWidgets(BuildContext ctx) {
     final ws = <Widget>[];
-    for (int i = 0; i < chain.length; i++) {
-      final e = chain[i];
-      final id = e['id'] as int;
+    for (int i = 0; i < widget.chain.length; i++) {
+      final e = widget.chain[i];
+      final id   = e['id'] as int;
       final name = e['name'] as String;
+      final displayName = name[0].toUpperCase() + name.substring(1);
+      final numStr = '#${id.toString().padLeft(3, '0')}';
       final sprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
           'sprites/pokemon/other/official-artwork/$id.png';
-      ws.add(Column(mainAxisSize: MainAxisSize.min, children: [
-        ClipRRect(borderRadius: BorderRadius.circular(32),
-          child: Image.network(sprite, width: 52, height: 52,
-              errorBuilder: (_, __, ___) => const Icon(Icons.catching_pokemon, size: 40))),
-        const SizedBox(height: 4),
-        Text(name[0].toUpperCase() + name.substring(1),
-          style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w400),
-          maxLines: 1, overflow: TextOverflow.ellipsis),
-      ]));
-      if (i < chain.length - 1) {
-        final cond = chain[i + 1]['condition'] as String;
-        ws.add(Expanded(child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.arrow_forward_ios, size: 10,
-            color: Theme.of(ctx).colorScheme.onSurfaceVariant),
-          if (cond.isNotEmpty) Text(cond, style: TextStyle(fontSize: 9,
-            color: Theme.of(ctx).colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
-        ])));
+      final types = _typesCache[id] ?? [];
+
+      ws.add(Expanded(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.network(
+              sprite,
+              width: 64, height: 64,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.catching_pokemon, size: 48),
+            ),
+            const SizedBox(height: 4),
+            // Número
+            Text(numStr, style: TextStyle(
+              fontSize: 9, fontWeight: FontWeight.w500,
+              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              letterSpacing: 0.3)),
+            const SizedBox(height: 1),
+            // Nome
+            Text(displayName,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+              maxLines: 1, overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center),
+            const SizedBox(height: 4),
+            // Badges de tipo
+            if (types.isNotEmpty)
+              Wrap(
+                spacing: 3, runSpacing: 3,
+                alignment: WrapAlignment.center,
+                children: types.map((t) {
+                  final tc = TypeColors.fromType(ptType(t));
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: tc, borderRadius: BorderRadius.circular(4)),
+                    child: Text(ptType(t), style: TextStyle(
+                      fontSize: 8, fontWeight: FontWeight.w700,
+                      color: typeTextColor(tc))),
+                  );
+                }).toList(),
+              )
+            else
+              // Placeholder enquanto carrega
+              const SizedBox(height: 16),
+          ],
+        ),
+      ));
+
+      if (i < widget.chain.length - 1) {
+        final cond = widget.chain[i + 1]['condition'] as String;
+        ws.add(SizedBox(
+          width: 32,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 24), // alinha com o meio do sprite
+              Icon(Icons.chevron_right, size: 18,
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+              if (cond.isNotEmpty)
+                Text(cond,
+                  style: TextStyle(fontSize: 8,
+                      color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+                  textAlign: TextAlign.center,
+                  maxLines: 2),
+            ],
+          ),
+        ));
       }
     }
     return ws;

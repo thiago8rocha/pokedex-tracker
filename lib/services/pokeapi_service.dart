@@ -143,6 +143,32 @@ class PokeApiService {
     }
   }
 
+  /// Extrai todos os URLs de sprite úteis para o header de detalhe.
+  /// Retorna null para variantes inexistentes (campo null na API).
+  Map<String, String?> extractAllSprites(Map<String, dynamic> pokemon) {
+    String? s(List<String> path) {
+      try {
+        dynamic node = pokemon['sprites'];
+        for (final key in path) node = node[key];
+        return node as String?;
+      } catch (_) { return null; }
+    }
+    return {
+      // Artwork oficial
+      'default':       s(['other', 'official-artwork', 'front_default']),
+      'shiny':         s(['other', 'official-artwork', 'front_shiny']),
+      // Pixel art 2D
+      'pixel':         s(['front_default']),
+      'pixelShiny':    s(['front_shiny']),
+      'pixelFemale':   s(['front_female']),
+      // Pokémon HOME (render de alta qualidade)
+      'home':          s(['other', 'home', 'front_default']),
+      'homeShiny':     s(['other', 'home', 'front_shiny']),
+      'homeFemale':    s(['other', 'home', 'front_female']),
+      'homeShinyFemale': null, // não exposto diretamente pela API no campo sprites
+    };
+  }
+
   Map<String, int> extractStats(Map<String, dynamic> pokemon) {
     final result = <String, int>{};
     for (final stat in pokemon['stats'] as List<dynamic>) {

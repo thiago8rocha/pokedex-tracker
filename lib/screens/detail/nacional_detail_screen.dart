@@ -141,7 +141,18 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
           else if (happiness != null) cond = 'Amizade';
           else cond = 'Evoluir';
         }
-        chain.add({'id': id, 'name': name, 'condition': cond});
+        // Busca os tipos do Pokémon para exibir nos badges
+        List<String> types = [];
+        try {
+          final rp = await http.get(Uri.parse('$kApiBase/pokemon/$id'));
+          if (rp.statusCode == 200) {
+            final pd = json.decode(rp.body) as Map<String, dynamic>;
+            types = (pd['types'] as List<dynamic>)
+                .map((t) => t['type']['name'] as String)
+                .toList();
+          }
+        } catch (_) {}
+        chain.add({'id': id, 'name': name, 'condition': cond, 'types': types});
         final next = cur['evolves_to'] as List<dynamic>;
         cur = next.isNotEmpty ? next[0] as Map<String, dynamic> : null;
       }

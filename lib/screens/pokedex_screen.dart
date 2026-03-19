@@ -284,6 +284,8 @@ class _PokedexScreenState extends State<PokedexScreen> {
     final baseName = rawName.split('-').first;
     final displayName = baseName[0].toUpperCase() + baseName.substring(1);
 
+    final sprites = _api.extractAllSprites(data);
+
     final pokemon = Pokemon(
       id: data['id'] as int,
       name: displayName,
@@ -294,7 +296,14 @@ class _PokedexScreenState extends State<PokedexScreen> {
       baseSpAttack: stats['special-attack'] ?? 0,
       baseSpDefense: stats['special-defense'] ?? 0,
       baseSpeed: stats['speed'] ?? 0,
-      spriteUrl: _api.extractSprite(data) ?? '',
+      spriteUrl: sprites['default'] ?? sprites['pixel'] ?? '',
+      spriteShinyUrl: sprites['shiny'],
+      spritePixelUrl: sprites['pixel'],
+      spritePixelShinyUrl: sprites['pixelShiny'],
+      spritePixelFemaleUrl: sprites['pixelFemale'],
+      spriteHomeUrl: sprites['home'],
+      spriteHomeShinyUrl: sprites['homeShiny'],
+      spriteHomeFemaleUrl: sprites['homeFemale'],
     );
 
     final isNacional = widget.pokedexId == 'nacional';
