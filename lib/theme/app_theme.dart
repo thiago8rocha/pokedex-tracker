@@ -25,9 +25,10 @@ class AppThemes {
     AppThemeDefinition(
       id: 'system',
       label: 'Sistema',
-      seedLight: Color(0xFFE53935),
-      seedDark:  Color(0xFFE53935),
-      previewColors: [Color(0xFFE53935), Color(0xFFFFCDD2), Color(0xFF212121)],
+      // Seed nula — usa o padrão Material 3 (azul/teal neutro)
+      seedLight: Color(0xFF6750A4), // roxo padrão Material 3
+      seedDark:  Color(0xFF6750A4),
+      previewColors: [Color(0xFF6750A4), Color(0xFF9C89B8), Color(0xFFEADDFF)],
     ),
     AppThemeDefinition(
       id: 'pokeball',
@@ -84,33 +85,47 @@ class AppThemes {
       all.firstWhere((t) => t.id == id, orElse: () => all.first);
 
   static ThemeData light(String themeId) {
+    final appBarTheme = const AppBarTheme(
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+    );
+    if (themeId == 'system') {
+      // Sem seed fixa — Material 3 usa o esquema padrão roxo/violeta
+      return ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        appBarTheme: appBarTheme,
+      );
+    }
     final def = byId(themeId);
-    // 'system' usa a seed padrão red; claro usa seedLight
-    final seed = def.seedLight;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorSchemeSeed: seed,
-      appBarTheme: const AppBarTheme(
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-      ),
+      colorSchemeSeed: def.seedLight,
+      appBarTheme: appBarTheme,
     );
   }
 
   static ThemeData dark(String themeId) {
+    final appBarTheme = const AppBarTheme(
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+    );
+    if (themeId == 'system') {
+      return ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        appBarTheme: appBarTheme,
+      );
+    }
     final def = byId(themeId);
-    final seed = def.seedDark;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorSchemeSeed: seed,
-      appBarTheme: const AppBarTheme(
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-      ),
+      colorSchemeSeed: def.seedDark,
+      appBarTheme: appBarTheme,
     );
   }
 }
