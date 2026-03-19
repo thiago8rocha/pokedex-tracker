@@ -9,7 +9,11 @@ class _DlcInfo {
   final String name;
   final int total;
   final String sectionApiName;
-  const _DlcInfo({required this.name, required this.total, required this.sectionApiName});
+  const _DlcInfo({
+    required this.name,
+    required this.total,
+    required this.sectionApiName,
+  });
 }
 
 class _PokedexEntry {
@@ -17,9 +21,7 @@ class _PokedexEntry {
   final String year;
   final int totalBase;
   final List<_DlcInfo> dlcs;
-  final String iconBg;
   final bool isPokopiaDex;
-  // Habitats do Pokopia — tratado no mesmo nível hierárquico das DLCs
   final int? pokopiaHabitatTotal;
 
   const _PokedexEntry({
@@ -27,42 +29,22 @@ class _PokedexEntry {
     required this.year,
     required this.totalBase,
     this.dlcs = const [],
-    this.iconBg = '#F1EFE8',
     this.isPokopiaDex = false,
     this.pokopiaHabitatTotal,
   });
-
-  bool get hasDlc => dlcs.isNotEmpty || isPokopiaDex;
 
   String get pokedexId =>
       name.toLowerCase().replaceAll(' ', '_').replaceAll('/', '_').replaceAll("'", '');
 }
 
-// ─── ÍCONES POR JOGO ─────────────────────────────────────────────
-
-IconData _iconForEntry(String name) {
-  switch (name) {
-    case "Let's Go Pikachu / Eevee":            return Icons.directions_walk;
-    case 'Sword / Shield':                       return Icons.shield_outlined;
-    case 'Brilliant Diamond / Shining Pearl':    return Icons.diamond_outlined;
-    case 'Legends: Arceus':                      return Icons.auto_awesome;
-    case 'Scarlet / Violet':                     return Icons.local_florist_outlined;
-    case 'Legends: Z-A':                         return Icons.bolt;
-    case 'FireRed / LeafGreen':                  return Icons.local_fire_department_outlined;
-    case 'Pokopia':                              return Icons.nature_people_outlined;
-    default:                                     return Icons.catching_pokemon;
-  }
-}
-
-// ─── TABS DO BOTTOM NAV ───────────────────────────────────────────
+// ─── TABS ─────────────────────────────────────────────────────────
 
 enum _NavTab { home, nacional, times, go, pokopia }
 
-// ─── HOME SCREEN ─────────────────────────────────────────────────
+// ─── HOME SCREEN ──────────────────────────────────────────────────
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -71,51 +53,52 @@ class _HomeScreenState extends State<HomeScreen> {
   final StorageService _storage = StorageService();
   final Map<String, int> _caughtCounts = {};
   Set<String>? _activePokedexIds;
-
   _NavTab _currentTab = _NavTab.home;
 
-  // ── Catálogo de Pokedex ────────────────────────────────────────
+  // ── Catálogo ─────────────────────────────────────────────────
+
+  static const _PokedexEntry _nacEntry  = _PokedexEntry(name: 'Nacional',    year: '',     totalBase: 1025);
+  static const _PokedexEntry _goEntry   = _PokedexEntry(name: 'Pokémon GO',  year: '2016', totalBase: 941);
 
   static const List<_PokedexEntry> _gameEntries = [
-    _PokedexEntry(name: "Let's Go Pikachu / Eevee", year: '2018', totalBase: 153, iconBg: '#EAF3DE'),
+    // ── Sem DLC ──────────────────────────────────────────────
+    _PokedexEntry(name: "Let's Go Pikachu / Eevee",          year: '2018', totalBase: 153),
+    _PokedexEntry(name: 'Brilliant Diamond / Shining Pearl', year: '2021', totalBase: 493),
+    _PokedexEntry(name: 'Legends: Arceus',                   year: '2022', totalBase: 242),
+    _PokedexEntry(name: 'FireRed / LeafGreen',               year: '2026', totalBase: 386),
+
+    // ── Com DLC ──────────────────────────────────────────────
     _PokedexEntry(
-      name: 'Sword / Shield', year: '2019', totalBase: 400, iconBg: '#E6F1FB',
+      name: 'Sword / Shield', year: '2019', totalBase: 400,
       dlcs: [
         _DlcInfo(name: 'Isle of Armor',  total: 210, sectionApiName: 'isle-of-armor'),
         _DlcInfo(name: 'Crown Tundra',   total: 210, sectionApiName: 'crown-tundra'),
       ],
     ),
-    _PokedexEntry(name: 'Brilliant Diamond / Shining Pearl', year: '2021', totalBase: 493, iconBg: '#FBEAF0'),
-    _PokedexEntry(name: 'Legends: Arceus', year: '2022', totalBase: 242, iconBg: '#EEEDFE'),
     _PokedexEntry(
-      name: 'Scarlet / Violet', year: '2022', totalBase: 400, iconBg: '#FAECE7',
+      name: 'Scarlet / Violet', year: '2022', totalBase: 400,
       dlcs: [
-        _DlcInfo(name: 'Teal Mask',    total: 200, sectionApiName: 'kitakami'),
-        _DlcInfo(name: 'Indigo Disk',  total: 243, sectionApiName: 'blueberry'),
+        _DlcInfo(name: 'Teal Mask',   total: 200, sectionApiName: 'kitakami'),
+        _DlcInfo(name: 'Indigo Disk', total: 243, sectionApiName: 'blueberry'),
       ],
     ),
     _PokedexEntry(
-      name: 'Legends: Z-A', year: '2025', totalBase: 132, iconBg: '#F1EFE8',
+      name: 'Legends: Z-A', year: '2025', totalBase: 132,
       dlcs: [_DlcInfo(name: 'Mega Dimension', total: 132, sectionApiName: 'mega-dimension')],
     ),
-    _PokedexEntry(name: 'FireRed / LeafGreen', year: '2026', totalBase: 386, iconBg: '#EAF3DE'),
+
+    // ── Pokopia ──────────────────────────────────────────────
     _PokedexEntry(
-      name: 'Pokopia', year: '2026', totalBase: 311, iconBg: '#E1F5EE',
+      name: 'Pokopia', year: '2026', totalBase: 311,
       isPokopiaDex: true,
       pokopiaHabitatTotal: 200,
     ),
   ];
 
-  static const _PokedexEntry _nacEntry =
-      _PokedexEntry(name: 'Nacional', year: '', totalBase: 1025);
-
-  static const _PokedexEntry _goEntry =
-      _PokedexEntry(name: 'Pokémon GO', year: '2016', totalBase: 941, iconBg: '#FCEBEB');
-
   static _PokedexEntry get _pokopiaEntry =>
       _gameEntries.firstWhere((e) => e.isPokopiaDex);
 
-  // ── Lifecycle ─────────────────────────────────────────────────
+  // ── Lifecycle ────────────────────────────────────────────────
 
   @override
   void initState() {
@@ -127,53 +110,35 @@ class _HomeScreenState extends State<HomeScreen> {
     final active = await _storage.getActivePokedexIds();
     if (!mounted) return;
     setState(() => _activePokedexIds = active);
-
-    final all = [..._gameEntries, _goEntry, _nacEntry];
-    for (final e in all) {
+    for (final e in [..._gameEntries, _goEntry, _nacEntry]) {
       final c = await _storage.getCaughtCount(e.pokedexId);
       if (!mounted) return;
       setState(() => _caughtCounts[e.pokedexId] = c);
     }
   }
 
-  bool _isActive(_PokedexEntry entry) {
-    if (_activePokedexIds == null) return true;
-    return _activePokedexIds!.contains(entry.pokedexId);
-  }
+  bool _isActive(_PokedexEntry e) =>
+      _activePokedexIds == null || _activePokedexIds!.contains(e.pokedexId);
 
-  bool get _goActive => _isActive(_goEntry);
+  bool get _goActive      => _isActive(_goEntry);
   bool get _pokopiaActive => _gameEntries.any((e) => e.isPokopiaDex && _isActive(e));
 
-  // ── Navegação ─────────────────────────────────────────────────
-
   void _openPokedex(_PokedexEntry entry, {String? sectionFilter}) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PokedexScreen(
-          pokedexId: entry.pokedexId,
-          pokedexName: entry.name,
-          totalPokemon: entry.totalBase,
-          initialSectionFilter: sectionFilter,
-        ),
+    await Navigator.push(context, MaterialPageRoute(
+      builder: (_) => PokedexScreen(
+        pokedexId: entry.pokedexId,
+        pokedexName: entry.name,
+        totalPokemon: entry.totalBase,
+        initialSectionFilter: sectionFilter,
       ),
-    );
+    ));
     _loadCounts();
   }
 
   void _onNavTap(_NavTab tab) {
-    if (tab == _NavTab.nacional) {
-      _openPokedex(_nacEntry);
-      return;
-    }
-    if (tab == _NavTab.go) {
-      _openPokedex(_goEntry);
-      return;
-    }
-    if (tab == _NavTab.pokopia) {
-      _openPokedex(_pokopiaEntry);
-      return;
-    }
+    if (tab == _NavTab.nacional) { _openPokedex(_nacEntry);      return; }
+    if (tab == _NavTab.go)       { _openPokedex(_goEntry);       return; }
+    if (tab == _NavTab.pokopia)  { _openPokedex(_pokopiaEntry);  return; }
     if (tab == _NavTab.times) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Times — em breve')),
@@ -183,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _currentTab = tab);
   }
 
-  // ── Build ─────────────────────────────────────────────────────
+  // ── Build principal ───────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -196,19 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              );
+              await Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()));
               _loadCounts();
             },
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadCounts,
-        child: _buildBody(),
-      ),
+      body: RefreshIndicator(onRefresh: _loadCounts, child: _buildBody()),
       bottomNavigationBar: _buildBottomNav(),
     );
   }
@@ -216,8 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // ── Body ──────────────────────────────────────────────────────
 
   Widget _buildBody() {
-    final nacId = _nacEntry.pokedexId;
-    final nacCaught = _caughtCounts[nacId] ?? 0;
     final activeEntries = _gameEntries.where(_isActive).toList();
 
     return SingleChildScrollView(
@@ -226,60 +184,40 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Nacional — largura total, sempre visível
-          _NacionalCard(
-            caught: nacCaught,
-            onTap: () => _openPokedex(_nacEntry),
-          ),
 
-          // Pokemon GO — logo abaixo do Nacional, some quando desabilitado
+          // 1. Card Nacional
+          _buildNacionalCard(context),
+
+          // 2. Card Pokémon GO (condicional)
           if (_goActive) ...[
             const SizedBox(height: 10),
-            _GoCard(
-              entry: _goEntry,
-              caught: _caughtCounts[_goEntry.pokedexId] ?? 0,
-              onTap: () => _openPokedex(_goEntry),
-            ),
+            _buildGoCard(context),
           ],
 
           const SizedBox(height: 14),
 
-          // Grid 2×N dos jogos ativos
+          // 3. Grid 2 colunas — altura automática por conteúdo
           if (activeEntries.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32),
-              child: Center(
-                child: Text(
-                  'Nenhuma Pokedex ativa.\nAcesse Configurações para ativar.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            )
+            _buildEmptyState(context)
           else
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.0,
-              ),
-              itemCount: activeEntries.length,
-              itemBuilder: (ctx, i) {
-                final e = activeEntries[i];
-                return _PokedexCard(
-                  entry: e,
-                  caught: _caughtCounts[e.pokedexId] ?? 0,
-                  onTap: () => _openPokedex(e),
-                  onTapDlc: (api) => _openPokedex(e, sectionFilter: api),
-                );
-              },
-            ),
+            LayoutBuilder(builder: (ctx, constraints) {
+              final w = (constraints.maxWidth - 10) / 2;
+              return Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: activeEntries.map((e) {
+                  Widget card;
+                  if (e.isPokopiaDex) {
+                    card = _buildPokopiaCard(context, e);
+                  } else if (e.dlcs.isNotEmpty) {
+                    card = _buildDlcCard(context, e);
+                  } else {
+                    card = _buildSimpleCard(context, e);
+                  }
+                  return SizedBox(width: w, child: card);
+                }).toList(),
+              );
+            }),
 
           const SizedBox(height: 8),
         ],
@@ -287,15 +225,268 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ── Bottom Navigation ─────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════
+  //  FUNÇÕES DE CARD — uma por tipo
+  // ════════════════════════════════════════════════════════════
 
+  // ── 1. Nacional ──────────────────────────────────────────────
+  // Fundo neutro levemente elevado, sem ícone, largura total
+  Widget _buildNacionalCard(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final caught = _caughtCounts[_nacEntry.pokedexId] ?? 0;
+    const total  = 1025;
+
+    return GestureDetector(
+      onTap: () => _openPokedex(_nacEntry),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          // Cor neutra elevada — sem rosa, sem cor de marca
+          color: scheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: scheme.outlineVariant, width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('National Pokédex',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600)),
+              const SizedBox(height: 2),
+              Text('$caught / $total',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant)),
+            ]),
+            Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 2. Pokémon GO ─────────────────────────────────────────────
+  // Mesmo visual da Nacional — fundo neutro, sem ícone
+  Widget _buildGoCard(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final caught = _caughtCounts[_goEntry.pokedexId] ?? 0;
+    final total  = _goEntry.totalBase;
+    final complete = caught >= total;
+
+    return GestureDetector(
+      onTap: () => _openPokedex(_goEntry),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: scheme.outlineVariant, width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Pokémon GO',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600)),
+              const SizedBox(height: 2),
+              Text('$caught / $total',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: complete
+                      ? const Color(0xFF34C759)
+                      : scheme.onSurfaceVariant)),
+            ]),
+            Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 3. Card simples (sem DLC) ─────────────────────────────────
+  // Nome centralizado, "Capturados" + X / Y centralizados
+  Widget _buildSimpleCard(BuildContext context, _PokedexEntry entry) {
+    final scheme  = Theme.of(context).colorScheme;
+    final caught  = _caughtCounts[entry.pokedexId] ?? 0;
+    final total   = entry.totalBase;
+    final complete = caught >= total;
+
+    return _CardShell(
+      complete: complete,
+      onTap: () => _openPokedex(entry),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(entry.name,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600, fontSize: 12, height: 1.3)),
+            const SizedBox(height: 8),
+            Text('Capturados',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontSize: 10, color: scheme.onSurfaceVariant)),
+            const SizedBox(height: 2),
+            Text('$caught / $total',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontSize: 13, fontWeight: FontWeight.w700,
+                color: complete ? const Color(0xFF34C759) : scheme.onSurface)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 4. Card com DLC ───────────────────────────────────────────
+  // Nome centralizado, Capturados + X/Y, separador, linhas de DLC
+  Widget _buildDlcCard(BuildContext context, _PokedexEntry entry) {
+    final scheme  = Theme.of(context).colorScheme;
+    final caught  = _caughtCounts[entry.pokedexId] ?? 0;
+    final total   = entry.totalBase;
+    final complete = caught >= total;
+
+    return _CardShell(
+      complete: complete,
+      onTap: () => _openPokedex(entry),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Nome centralizado
+            Text(entry.name,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600, fontSize: 12, height: 1.3)),
+            const SizedBox(height: 8),
+            Text('Capturados',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontSize: 10, color: scheme.onSurfaceVariant)),
+            const SizedBox(height: 2),
+            Text('$caught / $total',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontSize: 13, fontWeight: FontWeight.w700,
+                color: complete ? const Color(0xFF34C759) : scheme.onSurface)),
+            const SizedBox(height: 10),
+            // Separador
+            Divider(height: 1, thickness: 0.5, color: scheme.outlineVariant),
+            const SizedBox(height: 8),
+            // Linhas de DLC — alinhadas à esquerda
+            ...entry.dlcs.map((dlc) => _buildDlcRow(context, scheme, dlc.name,
+              dlc.total, () => _openPokedex(entry, sectionFilter: dlc.sectionApiName))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── 5. Card Pokopia ───────────────────────────────────────────
+  // Nome centralizado.
+  // Amigos e Habitats: dois contadores no mesmo nível hierárquico,
+  // separados por uma linha fina — igual a DLCs, sem nenhum "principal".
+  Widget _buildPokopiaCard(BuildContext context, _PokedexEntry entry) {
+    final scheme      = Theme.of(context).colorScheme;
+    final amigosCaught = _caughtCounts[entry.pokedexId] ?? 0;
+    final amigosTotal  = entry.totalBase;
+    final habitatTotal = entry.pokopiaHabitatTotal ?? 0;
+
+    return _CardShell(
+      complete: false, // Pokopia não tem estado "completo" claro
+      onTap: () => _openPokedex(entry),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Nome centralizado
+            Text(entry.name,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600, fontSize: 12, height: 1.3)),
+            const SizedBox(height: 10),
+            // Separador
+            Divider(height: 1, thickness: 0.5, color: scheme.outlineVariant),
+            const SizedBox(height: 8),
+            // Amigos — mesmo nível que Habitats
+            _buildDlcRow(context, scheme, 'Amigos', amigosTotal,
+              () => _openPokedex(entry),
+              caught: amigosCaught),
+            // Separador entre Amigos e Habitats
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Divider(height: 1, thickness: 0.5, color: scheme.outlineVariant),
+            ),
+            // Habitats — mesmo nível que Amigos
+            _buildDlcRow(context, scheme, 'Habitats', habitatTotal,
+              () => _openPokedex(entry, sectionFilter: 'pokopia-habitats')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Linha de DLC / contador ───────────────────────────────────
+  Widget _buildDlcRow(
+    BuildContext context,
+    ColorScheme scheme,
+    String name,
+    int total,
+    VoidCallback onTap, {
+    int? caught,
+  }) {
+    final valueText = caught != null ? '$caught / $total' : '— / $total';
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 2),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(name,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontSize: 10, color: scheme.onSurfaceVariant),
+                overflow: TextOverflow.ellipsis),
+            ),
+            Text(valueText,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontSize: 10, fontWeight: FontWeight.w500,
+                color: scheme.onSurface)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Estado vazio ──────────────────────────────────────────────
+  Widget _buildEmptyState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: Center(
+        child: Text(
+          'Nenhuma Pokedex ativa.\nAcesse Configurações para ativar.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ),
+    );
+  }
+
+  // ── Bottom Navigation ─────────────────────────────────────────
   Widget _buildBottomNav() {
     final items = <_NavItem>[
-      const _NavItem(tab: _NavTab.home,     icon: Icons.home_outlined,      label: 'Inicio'),
-      const _NavItem(tab: _NavTab.nacional,  icon: Icons.menu_book_outlined, label: 'Nacional'),
-      const _NavItem(tab: _NavTab.times,    icon: Icons.groups_2_outlined,   label: 'Times'),
+      const _NavItem(tab: _NavTab.home,     icon: Icons.home_outlined,          label: 'Inicio'),
+      const _NavItem(tab: _NavTab.nacional, icon: Icons.menu_book_outlined,     label: 'Nacional'),
+      const _NavItem(tab: _NavTab.times,    icon: Icons.groups_2_outlined,      label: 'Times'),
       if (_goActive)
-        const _NavItem(tab: _NavTab.go,     icon: Icons.public_outlined,     label: 'GO'),
+        const _NavItem(tab: _NavTab.go,     icon: Icons.public_outlined,        label: 'GO'),
       if (_pokopiaActive)
         const _NavItem(tab: _NavTab.pokopia, icon: Icons.nature_people_outlined, label: 'Pokopia'),
     ];
@@ -313,7 +504,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: items.map((item) {
             final isActive = _currentTab == item.tab;
             final color = isActive
@@ -327,14 +517,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Icon(item.icon, size: 22, color: color),
                     const SizedBox(height: 2),
-                    Text(
-                      item.label,
+                    Text(item.label,
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                        color: color,
-                      ),
-                    ),
+                        color: color)),
                   ],
                 ),
               ),
@@ -353,349 +540,38 @@ class _NavItem {
   const _NavItem({required this.tab, required this.icon, required this.label});
 }
 
-// ─── CARD NACIONAL ────────────────────────────────────────────────
-// Sem ícone específico — igual à Nacional, usa ícone de livro/pokedex na barra
+// ─── SHELL COMPARTILHADA DOS CARDS DO GRID ────────────────────────
+// Borda visível (width: 1), cor de fundo, borda-radius, GestureDetector
 
-class _NacionalCard extends StatelessWidget {
-  final int caught;
+class _CardShell extends StatelessWidget {
+  final bool complete;
   final VoidCallback onTap;
-  const _NacionalCard({required this.caught, required this.onTap});
+  final Widget child;
+
+  const _CardShell({
+    required this.complete,
+    required this.onTap,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    // Usa o primaryContainer suavizado — integra com a paleta do tema sem o cinza frio
-    final bg = Color.lerp(scheme.primaryContainer, scheme.surface, 0.55)!;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: bg,
+          color: scheme.surfaceContainer,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: scheme.outlineVariant,
-            width: 0.5,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Nacional',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '$caught / 1025',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── CARD POKEMON GO ─────────────────────────────────────────────
-// Sem ícone específico dentro do card — mesma estrutura da Nacional
-
-class _GoCard extends StatelessWidget {
-  final _PokedexEntry entry;
-  final int caught;
-  final VoidCallback onTap;
-  const _GoCard({required this.entry, required this.caught, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final complete = caught >= entry.totalBase;
-    // Mesma cor da Nacional — primaryContainer suavizado
-    final bg = Color.lerp(scheme.primaryContainer, scheme.surface, 0.55)!;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
+            // Borda com width: 1 para ficar visível — 0.5 some no subpixel
             color: complete
                 ? const Color(0xFF34C759).withOpacity(0.5)
                 : scheme.outlineVariant,
-            width: 0.5,
+            width: 1,
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entry.name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '$caught / ${entry.totalBase}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: complete ? const Color(0xFF34C759) : scheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── CARD DE POKEDEX DO GRID ──────────────────────────────────────
-
-class _PokedexCard extends StatelessWidget {
-  final _PokedexEntry entry;
-  final int caught;
-  final VoidCallback onTap;
-  final void Function(String) onTapDlc;
-
-  const _PokedexCard({
-    required this.entry,
-    required this.caught,
-    required this.onTap,
-    required this.onTapDlc,
-  });
-
-  Color _hexColor(String hex) {
-    try { return Color(int.parse(hex.replaceAll('#', '0xFF'))); }
-    catch (_) { return const Color(0xFFF1EFE8); }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final complete = caught >= entry.totalBase;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: complete
-                ? const Color(0xFF34C759).withOpacity(0.4)
-                : Theme.of(context).colorScheme.outlineVariant,
-            width: 0.5,
-          ),
-        ),
-        child: entry.hasDlc
-            ? _buildWithDlc(context, complete)
-            : _buildNoDlc(context, complete),
-      ),
-    );
-  }
-
-  // ── Sem DLC: ícone no topo + nome e contador centralizados na metade inferior
-
-  Widget _buildNoDlc(BuildContext context, bool complete) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Ícone alinhado ao topo
-        Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(
-              color: _hexColor(entry.iconBg),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(_iconForEntry(entry.name), size: 24),
-          ),
-        ),
-        // Nome e contador centralizados, expandem o espaço restante
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                entry.name,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                  height: 1.3,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '$caught / ${entry.totalBase}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: complete
-                      ? const Color(0xFF34C759)
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ── Com DLC / Pokopia: ícone no topo + nome + contador + linhas de DLC/Habitats
-
-  Widget _buildWithDlc(BuildContext context, bool complete) {
-    final scheme = Theme.of(context).colorScheme;
-
-    // Linhas de DLC normais
-    final dlcRows = entry.dlcs.map((dlc) => _DlcRow(
-      name: dlc.name,
-      total: dlc.total,
-      onTap: () => onTapDlc(dlc.sectionApiName),
-      scheme: scheme,
-    )).toList();
-
-    // Linha de Habitats do Pokopia — mesmo nível hierárquico das DLCs
-    final habitatRow = entry.isPokopiaDex && entry.pokopiaHabitatTotal != null
-        ? _DlcRow(
-            name: 'Habitats',
-            total: entry.pokopiaHabitatTotal!,
-            onTap: () => onTapDlc('pokopia-habitats'),
-            scheme: scheme,
-          )
-        : null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Ícone alinhado ao topo, centralizado
-        Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(
-              color: _hexColor(entry.iconBg),
-              borderRadius: BorderRadius.circular(11),
-            ),
-            child: Icon(_iconForEntry(entry.name), size: 22),
-          ),
-        ),
-        const SizedBox(height: 6),
-        // Nome
-        Text(
-          entry.name,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontSize: 11,
-            height: 1.3,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 2),
-        // Contador principal (Amigos X / Y para Pokopia)
-        Text(
-          entry.isPokopiaDex
-              ? 'Amigos $caught / ${entry.totalBase}'
-              : '$caught / ${entry.totalBase}',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: complete
-                ? const Color(0xFF34C759)
-                : scheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 6),
-        // Separador + linhas de DLC e Habitats (mesmo nível)
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.only(top: 6),
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: scheme.outlineVariant, width: 0.5),
-            ),
-          ),
-          child: Column(
-            children: [
-              ...dlcRows,
-              if (habitatRow != null) habitatRow,
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─── LINHA DE DLC / HABITAT ───────────────────────────────────────
-
-class _DlcRow extends StatelessWidget {
-  final String name;
-  final int total;
-  final VoidCallback onTap;
-  final ColorScheme scheme;
-
-  const _DlcRow({
-    required this.name,
-    required this.total,
-    required this.onTap,
-    required this.scheme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 3),
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                name,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontSize: 9.5,
-                  color: scheme.onSurfaceVariant,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Text(
-              '— / $total',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontSize: 9.5,
-                fontWeight: FontWeight.w500,
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+        child: child,
       ),
     );
   }
