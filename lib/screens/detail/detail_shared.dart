@@ -291,35 +291,39 @@ class _DetailHeaderState extends State<DetailHeader> {
               // ── Seta anterior (esquerda) ──────────────────────
               if (widget.onPrev != null)
                 Positioned(
-                  left: 0, top: 0, bottom: 0,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: widget.onPrev,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.chevron_left, size: 28,
-                              color: Colors.white.withOpacity(0.9)),
-                            if (widget.prevId != null)
-                              Text('#${widget.prevId.toString().padLeft(3,'0')}',
-                                style: TextStyle(fontSize: 8,
-                                  color: Colors.white.withOpacity(0.75),
-                                  fontWeight: FontWeight.w500)),
-                            if (widget.prevName != null)
-                              SizedBox(
-                                width: 52,
-                                child: Text(widget.prevName!,
+                  left: 0,
+                  bottom: 12,
+                  child: GestureDetector(
+                    onTap: widget.onPrev,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 72),
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.chevron_left, size: 20,
+                            color: Colors.white.withOpacity(0.9)),
+                          const SizedBox(width: 1),
+                          Flexible(child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (widget.prevId != null)
+                                Text('#${widget.prevId.toString().padLeft(3,'0')}',
+                                  style: TextStyle(fontSize: 8,
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontWeight: FontWeight.w500)),
+                              if (widget.prevName != null)
+                                Text(widget.prevName!,
                                   style: TextStyle(fontSize: 9,
                                     color: Colors.white.withOpacity(0.9),
                                     fontWeight: FontWeight.w600),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2, overflow: TextOverflow.ellipsis),
-                              ),
-                          ],
-                        ),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                            ],
+                          )),
+                        ],
                       ),
                     ),
                   ),
@@ -328,35 +332,39 @@ class _DetailHeaderState extends State<DetailHeader> {
               // ── Seta próximo (direita) ─────────────────────────
               if (widget.onNext != null)
                 Positioned(
-                  right: 0, top: 0, bottom: 0,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: widget.onNext,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.chevron_right, size: 28,
-                              color: Colors.white.withOpacity(0.9)),
-                            if (widget.nextId != null)
-                              Text('#${widget.nextId.toString().padLeft(3,'0')}',
-                                style: TextStyle(fontSize: 8,
-                                  color: Colors.white.withOpacity(0.75),
-                                  fontWeight: FontWeight.w500)),
-                            if (widget.nextName != null)
-                              SizedBox(
-                                width: 52,
-                                child: Text(widget.nextName!,
+                  right: 0,
+                  bottom: 12,
+                  child: GestureDetector(
+                    onTap: widget.onNext,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 72),
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (widget.nextId != null)
+                                Text('#${widget.nextId.toString().padLeft(3,'0')}',
+                                  style: TextStyle(fontSize: 8,
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontWeight: FontWeight.w500)),
+                              if (widget.nextName != null)
+                                Text(widget.nextName!,
                                   style: TextStyle(fontSize: 9,
                                     color: Colors.white.withOpacity(0.9),
                                     fontWeight: FontWeight.w600),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2, overflow: TextOverflow.ellipsis),
-                              ),
-                          ],
-                        ),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                            ],
+                          )),
+                          const SizedBox(width: 1),
+                          Icon(Icons.chevron_right, size: 20,
+                            color: Colors.white.withOpacity(0.9)),
+                        ],
                       ),
                     ),
                   ),
