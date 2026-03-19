@@ -75,14 +75,58 @@ class _HomeScreenState extends State<HomeScreen> {
         cardColor1: 0xFF4285F4, cardColor2: 0xFF0D47A1); // azul GO
 
   static const List<_PokedexEntry> _gameEntries = [
+    // ── Geração I ────────────────────────────────────────────────
+    _PokedexEntry(name: 'Red / Blue', year: '1996', totalBase: 151,
+      cardColor1: 0xFFE53935, cardColor2: 0xFF1565C0), // vermelho Charizard / azul Blastoise
+    _PokedexEntry(name: 'Yellow', year: '1998', totalBase: 151,
+      cardColor1: 0xFFFDD835, cardColor2: 0xFFFF8F00), // amarelo / laranja Pikachu
+
+    // ── Geração II ───────────────────────────────────────────────
+    _PokedexEntry(name: 'Gold / Silver', year: '1999', totalBase: 251,
+      cardColor1: 0xFFFFCA28, cardColor2: 0xFFB0BEC5), // dourado Ho-Oh / prateado Lugia
+    _PokedexEntry(name: 'Crystal', year: '2000', totalBase: 251,
+      cardColor1: 0xFF29B6F6, cardColor2: 0xFFE1F5FE), // azul cristal Suicune
+
+    // ── Geração III ──────────────────────────────────────────────
+    _PokedexEntry(name: 'Ruby / Sapphire', year: '2002', totalBase: 386,
+      cardColor1: 0xFFE53935, cardColor2: 0xFF1E88E5), // vermelho Groudon / azul Kyogre
+    _PokedexEntry(name: 'FireRed / LeafGreen (GBA)', year: '2004', totalBase: 386,
+      cardColor1: 0xFFEF5350, cardColor2: 0xFF43A047), // vermelho / verde
+    _PokedexEntry(name: 'Emerald', year: '2004', totalBase: 386,
+      cardColor1: 0xFF43A047, cardColor2: 0xFF00BCD4), // verde esmeralda Rayquaza
+
+    // ── Geração IV ───────────────────────────────────────────────
+    _PokedexEntry(name: 'Diamond / Pearl', year: '2006', totalBase: 493,
+      cardColor1: 0xFF90CAF9, cardColor2: 0xFFF48FB1), // azul Dialga / rosa Palkia
+    _PokedexEntry(name: 'Platinum', year: '2008', totalBase: 493,
+      cardColor1: 0xFF78909C, cardColor2: 0xFFCFD8DC), // cinza prateado Giratina
+    _PokedexEntry(name: 'HeartGold / SoulSilver', year: '2009', totalBase: 493,
+      cardColor1: 0xFFFFCA28, cardColor2: 0xFFB0BEC5), // dourado Ho-Oh / prateado Lugia
+
+    // ── Geração V ────────────────────────────────────────────────
+    _PokedexEntry(name: 'Black / White', year: '2010', totalBase: 649,
+      cardColor1: 0xFF424242, cardColor2: 0xFFBDBDBD), // preto Reshiram / branco Zekrom
+    _PokedexEntry(name: 'Black 2 / White 2', year: '2012', totalBase: 649,
+      cardColor1: 0xFF1A237E, cardColor2: 0xFFE0E0E0), // azul escuro / branco Kyurem
+
+    // ── Geração VI ───────────────────────────────────────────────
+    _PokedexEntry(name: 'X / Y', year: '2013', totalBase: 721,
+      cardColor1: 0xFF1565C0, cardColor2: 0xFFE53935), // azul Xerneas / vermelho Yveltal
+    _PokedexEntry(name: 'Omega Ruby / Alpha Sapphire', year: '2014', totalBase: 721,
+      cardColor1: 0xFFE53935, cardColor2: 0xFF1E88E5), // vermelho Groudon / azul Kyogre
+
+    // ── Geração VII ──────────────────────────────────────────────
+    _PokedexEntry(name: 'Sun / Moon', year: '2016', totalBase: 807,
+      cardColor1: 0xFFFF8F00, cardColor2: 0xFF7B1FA2), // laranja Solgaleo / roxo Lunala
+    _PokedexEntry(name: 'Ultra Sun / Ultra Moon', year: '2017', totalBase: 807,
+      cardColor1: 0xFFFF6F00, cardColor2: 0xFF4A148C), // laranja / roxo escuro Necrozma
+
+    // ── Mobile ───────────────────────────────────────────────────
+    // (GO é tratado separadamente como _goEntry)
+
+    // ── Geração VIII (Switch) ─────────────────────────────────────
     _PokedexEntry(name: "Let's Go Pikachu / Eevee", year: '2018', totalBase: 153,
       cardColor1: 0xFFFDD835, cardColor2: 0xFF8D6E63), // amarelo Pikachu / marrom Eevee
-    _PokedexEntry(name: 'Brilliant Diamond / Shining Pearl', year: '2021', totalBase: 493,
-      cardColor1: 0xFF42A5F5, cardColor2: 0xFFEC407A), // azul Dialga / rosa Palkia
-    _PokedexEntry(name: 'Legends: Arceus', year: '2022', totalBase: 242,
-      cardColor1: 0xFFFFCA28, cardColor2: 0xFF6D4C41), // dourado Arceus / marrom antigo
-    _PokedexEntry(name: 'FireRed / LeafGreen', year: '2026', totalBase: 386,
-      cardColor1: 0xFFEF5350, cardColor2: 0xFF43A047), // vermelho fogo / verde folha
     _PokedexEntry(
       name: 'Sword / Shield', year: '2019', totalBase: 400,
       cardColor1: 0xFF42A5F5, cardColor2: 0xFFEF5350, // azul Zacian / vermelho Zamazenta
@@ -91,6 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _DlcInfo(name: 'Crown Tundra',   total: 210, sectionApiName: 'crown-tundra'),
       ],
     ),
+    _PokedexEntry(name: 'Brilliant Diamond / Shining Pearl', year: '2021', totalBase: 493,
+      cardColor1: 0xFF42A5F5, cardColor2: 0xFFEC407A), // azul Dialga / rosa Palkia
+    _PokedexEntry(name: 'Legends: Arceus', year: '2022', totalBase: 242,
+      cardColor1: 0xFFFFCA28, cardColor2: 0xFFFFFDE7), // dourado / branco pérola Arceus
     _PokedexEntry(
       name: 'Scarlet / Violet', year: '2022', totalBase: 400,
       cardColor1: 0xFFEF6C00, cardColor2: 0xFF7B1FA2, // laranja Koraidon / roxo Miraidon
@@ -99,11 +147,15 @@ class _HomeScreenState extends State<HomeScreen> {
         _DlcInfo(name: 'Indigo Disk', total: 243, sectionApiName: 'blueberry'),
       ],
     ),
+
+    // ── Switch futuros ────────────────────────────────────────────
     _PokedexEntry(
       name: 'Legends: Z-A', year: '2025', totalBase: 132,
       cardColor1: 0xFF546E7A, cardColor2: 0xFFFFD54F, // cinza Lumiose / dourado Mega
       dlcs: [_DlcInfo(name: 'Mega Dimension', total: 132, sectionApiName: 'mega-dimension')],
     ),
+    _PokedexEntry(name: 'FireRed / LeafGreen', year: '2026', totalBase: 386,
+      cardColor1: 0xFFEF5350, cardColor2: 0xFF43A047), // vermelho fogo / verde folha
     _PokedexEntry(
       name: 'Pokopia', year: '2026', totalBase: 311,
       cardColor1: 0xFF9C27B0, cardColor2: 0xFF7986CB, // roxo Ditto / lilás
@@ -549,13 +601,29 @@ class _HomeScreenState extends State<HomeScreen> {
   // ── Região por jogo (para linha principal do DLC card) ────────
   String _regionFor(String gameName) {
     switch (gameName) {
+      case 'Red / Blue':                          return 'Kanto';
+      case 'Yellow':                              return 'Kanto';
+      case 'Gold / Silver':                       return 'Johto';
+      case 'Crystal':                             return 'Johto';
+      case 'Ruby / Sapphire':                     return 'Hoenn';
+      case 'FireRed / LeafGreen (GBA)':           return 'Kanto';
+      case 'Emerald':                             return 'Hoenn';
+      case 'Diamond / Pearl':                     return 'Sinnoh';
+      case 'Platinum':                            return 'Sinnoh';
+      case 'HeartGold / SoulSilver':              return 'Johto';
+      case 'Black / White':                       return 'Unova';
+      case 'Black 2 / White 2':                   return 'Unova';
+      case 'X / Y':                               return 'Kalos';
+      case 'Omega Ruby / Alpha Sapphire':         return 'Hoenn';
+      case 'Sun / Moon':                          return 'Alola';
+      case 'Ultra Sun / Ultra Moon':              return 'Alola';
       case "Let's Go Pikachu / Eevee":            return 'Kanto';
+      case 'Sword / Shield':                      return 'Galar';
       case 'Brilliant Diamond / Shining Pearl':   return 'Sinnoh';
       case 'Legends: Arceus':                     return 'Hisui';
-      case 'FireRed / LeafGreen':                 return 'Kanto';
-      case 'Sword / Shield':                      return 'Galar';
       case 'Scarlet / Violet':                    return 'Paldea';
       case 'Legends: Z-A':                        return 'Lumiose';
+      case 'FireRed / LeafGreen':                 return 'Kanto';
       default:                                    return gameName;
     }
   }
