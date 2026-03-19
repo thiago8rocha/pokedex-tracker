@@ -14,6 +14,19 @@ class StorageService {
   Future<void> setCaught(String pokedexId, int speciesId, bool caught) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('${_caughtPrefix}${pokedexId}_$speciesId', caught);
+
+    // Propagação automática para a Pokédex Nacional:
+    // - Só ao CAPTURAR (true), nunca ao descapturar
+    // - Só de dexes de jogos / GO, não da própria Nacional nem da Pokopia
+    // - Não sobrescreve se o Pokémon já estiver marcado na Nacional
+    final _excludeFromSync = {'nacional', 'pokopia'};
+    if (caught && !_excludeFromSync.any((id) => pokedexId.startsWith(id))) {
+      final nacKey = '${_caughtPrefix}nacional_$speciesId';
+      final alreadyInNac = prefs.getBool(nacKey) ?? false;
+      if (!alreadyInNac) {
+        await prefs.setBool(nacKey, true);
+      }
+    }
   }
 
   Future<Set<int>> getCaught(String pokedexId) async {
