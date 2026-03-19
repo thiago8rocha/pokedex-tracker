@@ -39,6 +39,17 @@ class StorageService {
     return caught.length;
   }
 
+  /// Conta capturados dentro de uma seção/DLC específica.
+  /// Cruza os speciesIds da seção com os capturados da Pokedex.
+  Future<int> getCaughtCountForSection(
+      String pokedexId, String sectionApiName) async {
+    final entries = await getSectionEntries(pokedexId, sectionApiName);
+    if (entries == null || entries.isEmpty) return 0;
+    final caughtSet = await getCaught(pokedexId);
+    final sectionIds = entries.map((e) => e['speciesId']!).toSet();
+    return caughtSet.intersection(sectionIds).length;
+  }
+
   Future<Map<int, bool>> getCaughtMap(String pokedexId, List<int> ids) async {
     final prefs = await SharedPreferences.getInstance();
     final map = <int, bool>{};
