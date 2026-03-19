@@ -151,4 +151,20 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_defaultSpriteKey, sprite);
   }
+
+  // ─── TERMOS BILÍNGUES ────────────────────────────────────────────
+  // Chave: 'bilingual_mode' → 'pt' | 'en' | 'both'
+  // Padrão: 'both' (PT + EN)
+
+  static const String _bilingualKey = 'bilingual_mode';
+
+  Future<String> getBilingualMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_bilingualKey) ?? 'both';
+  }
+
+  Future<void> setBilingualMode(String mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_bilingualKey, mode);
+  }
 }

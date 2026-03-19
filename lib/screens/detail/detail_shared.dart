@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/models/pokemon.dart';
+import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
 
 // ─── UTILITÁRIOS GLOBAIS ─────────────────────────────────────────
@@ -100,6 +101,67 @@ String ptType(String en) {
 Color typeTextColor(Color bg) =>
     bg.computeLuminance() > 0.35 ? Colors.black87 : Colors.white;
 
+// ─── HELPER BILÍNGUE ────────────────────────────────────────────
+// Constrói o Widget de exibição de um termo (move ou ability) conforme
+// a preferência salva. Formato 'both': "Nome PT  nome-en" com cor diferente.
+
+class BilingualTerm extends StatelessWidget {
+  final String namePt;  // nome em português (pode ser vazio)
+  final String nameEn;  // nome em inglês (sempre presente)
+  final TextStyle? baseStyle;
+  final TextStyle? secondaryStyle;
+
+  const BilingualTerm({
+    super.key,
+    required this.namePt,
+    required this.nameEn,
+    this.baseStyle,
+    this.secondaryStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: StorageService().getBilingualMode(),
+      initialData: 'both',
+      builder: (ctx, snap) {
+        final mode = snap.data ?? 'both';
+        final enFormatted = nameEn.isEmpty ? '' :
+            nameEn[0].toUpperCase() + nameEn.substring(1).replaceAll('-', ' ');
+        final ptFormatted = namePt.isNotEmpty ? namePt : enFormatted;
+        final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
+
+        if (mode == 'en') {
+          return Text(enFormatted,
+            style: baseStyle ?? const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            overflow: TextOverflow.ellipsis, maxLines: 1);
+        }
+        if (mode == 'pt' || namePt.isEmpty) {
+          return Text(ptFormatted,
+            style: baseStyle ?? const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            overflow: TextOverflow.ellipsis, maxLines: 1);
+        }
+        // both: PT à esquerda, EN à direita com cor secundária
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Flexible(child: Text(ptFormatted,
+              style: baseStyle ?? const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis, maxLines: 1)),
+            const SizedBox(width: 6),
+            Flexible(child: Text(enFormatted,
+              style: (secondaryStyle ?? const TextStyle(fontSize: 11))
+                  .copyWith(color: secondary),
+              overflow: TextOverflow.ellipsis, maxLines: 1)),
+          ],
+        );
+      },
+    );
+  }
+}
+
 Widget secTitle(BuildContext context, String title) => Padding(
   padding: const EdgeInsets.only(bottom: 8),
   child: Text(title, style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -156,6 +218,21 @@ class _DetailHeaderState extends State<DetailHeader> {
   bool _isShiny  = false;
   bool _isFemale = false;
   bool _isPixel  = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyDefaultSprite();
+  }
+
+  Future<void> _applyDefaultSprite() async {
+    final sprite = await StorageService().getDefaultSprite();
+    if (!mounted) return;
+    setState(() {
+      _isPixel = sprite == 'pixel';
+      _isHome  = sprite == 'home';
+    });
+  }
 
   /// URL do sprite atual baseado nos estados ativos
   String get _spriteUrl {
@@ -993,17 +1070,9 @@ class _MoveRowState extends State<MoveRow> {
             child: CustomPaint(painter: CatIconPainter(catName)),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(displayName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                overflow: TextOverflow.ellipsis, maxLines: 1),
-              if (showEn)
-                Text(enLabel, style: TextStyle(fontSize: 9,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  overflow: TextOverflow.ellipsis, maxLines: 1),
-            ],
+          Expanded(child: BilingualTerm(
+            namePt: namePt,
+            nameEn: nameEn,
           )),
           SizedBox(width: 36, child: Text(
             power != null ? '$power' : '—',
@@ -1197,7 +1266,6 @@ class AbilityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bg = neutralBg(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Cor neutra que combina com o fundo da tela — cinza discreto
     final hiddenBg   = isDark ? const Color(0xFF3A3A3A) : const Color(0xFFDDDDDD);
     final hiddenText = isDark ? const Color(0xFFAAAAAA) : const Color(0xFF666666);
 
@@ -1211,8 +1279,11 @@ class AbilityCard extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: 6,
             children: [
-              Text(_displayName,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              BilingualTerm(
+                namePt: namePt,
+                nameEn: nameEn,
+                baseStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
               if (isHidden) Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
@@ -1223,9 +1294,6 @@ class AbilityCard extends StatelessWidget {
             ],
           )),
         ]),
-        if (namePt.isNotEmpty && namePt != _enLabel)
-          Text(_enLabel, style: TextStyle(fontSize: 10,
-            color: Theme.of(context).colorScheme.onSurfaceVariant)),
         if (description.isNotEmpty) ...[
           const SizedBox(height: 5),
           Text(description, style: TextStyle(fontSize: 11,
