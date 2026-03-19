@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/screens/pokemon_detail_screen.dart';
+import 'package:pokedex_tracker/screens/detail/nacional_detail_screen.dart';
+import 'package:pokedex_tracker/screens/detail/switch_detail_screen.dart';
+import 'package:pokedex_tracker/screens/detail/go_detail_screen.dart';
+import 'package:pokedex_tracker/screens/detail/pokopia_detail_screen.dart';
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
 
@@ -294,19 +297,33 @@ class _PokedexScreenState extends State<PokedexScreen> {
       spriteUrl: _api.extractSprite(data) ?? '',
     );
 
+    final isNacional = widget.pokedexId == 'nacional';
+    final isGo = widget.pokedexId.contains('pokémon_go') || widget.pokedexId.contains('pokemon_go');
+    final isPokopia = widget.pokedexId.contains('pokopia');
+
+    final onToggle = () async {
+      isCaught = !isCaught;
+      await _storage.setCaught(widget.pokedexId, entry.speciesId, isCaught);
+      if (mounted) setState(() => _caughtMap[entry.speciesId] = isCaught);
+    };
+
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => PokemonDetailScreen(
-          pokemon: pokemon,
-          caught: isCaught,
-          onToggleCaught: () async {
-            isCaught = !isCaught;
-            await _storage.setCaught(widget.pokedexId, entry.speciesId, isCaught);
-            if (mounted) setState(() => _caughtMap[entry.speciesId] = isCaught);
-          },
-        ),
-      ),
+      MaterialPageRoute(builder: (_) {
+        if (isNacional) {
+          return NacionalDetailScreen(
+            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
+        } else if (isGo) {
+          return GoDetailScreen(
+            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
+        } else if (isPokopia) {
+          return PokopiaDetailScreen(
+            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
+        } else {
+          return SwitchDetailScreen(
+            pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
+        }
+      }),
     );
 
     if (mounted) {
