@@ -4,6 +4,49 @@ import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
 
+// ─── POKÉMON REGIONAIS NO GO ──────────────────────────────────────
+// Chave: ID nacional. Valor: região exclusiva.
+// null = disponível globalmente.
+const Map<int, String> _goRegionals = {
+  // Geração I
+  83:  'Ásia',
+  115: 'Austrália / NZ',
+  122: 'Europa',
+  128: 'América do Norte',
+  // Geração II
+  214: 'América do Sul / Sul dos EUA',
+  222: 'Regiões Tropicais',
+  313: 'Europa / Ásia / Austrália',
+  314: 'Américas / África',
+  // Geração III
+  324: 'Ásia do Sul',
+  335: 'América do Norte / Ásia',
+  336: 'América do Sul / Europa',
+  337: 'Américas',
+  338: 'Europa / Ásia / Austrália',
+  357: 'África / Mediterrâneo',
+  369: 'Austrália / NZ',
+  // Geração IV
+  417: 'América do Norte / Rússia',
+  422: 'Oceano Atlântico',
+  423: 'Oceano Pacífico',
+  441: 'Hemisfério Sul',
+  455: 'América do Norte',
+  480: 'Ásia-Pacífico',
+  481: 'Europa',
+  482: 'Américas',
+  // Geração V
+  511: 'Ásia-Pacífico',
+  513: 'Américas',
+  515: 'Europa / África',
+  538: 'América do Norte',
+  539: 'Ásia / Austrália',
+  556: 'América do Sul / América Central',
+  561: 'Egito / Grécia',
+};
+
+String? _getRegional(int pokemonId) => _goRegionals[pokemonId];
+
 class GoDetailScreen extends StatefulWidget {
   final Pokemon pokemon;
   final bool caught;
@@ -290,15 +333,15 @@ class _GoInfoTabState extends State<_GoInfoTab> {
         secTitle(context, 'DISPONIBILIDADE'),
         Column(children: [
           Row(children: [
-            Expanded(child: _availCell(context, 'Shiny',    'Disponível',   const Color(0xFF34C759))),
+            Expanded(child: _availCell(context, 'Shiny',  'Disponível', const Color(0xFF34C759))),
             const SizedBox(width: 8),
-            Expanded(child: _availCell(context, 'Shadow',   'Disponível',   rocketColor)),
+            Expanded(child: _availCell(context, 'Shadow', 'Disponível', rocketColor)),
           ]),
           const SizedBox(height: 8),
           Row(children: [
-            Expanded(child: _availCell(context, 'Regional', 'Indisponível', Colors.red)),
+            Expanded(child: _buildRegionalCell(context, pokemon.id)),
             const SizedBox(width: 8),
-            Expanded(child: _availCell(context, 'Lucky',    'Via troca',    const Color(0xFFFFCC00))),
+            Expanded(child: _availCell(context, 'Lucky', 'Via troca', const Color(0xFFFFCC00))),
           ]),
         ]),
         const SizedBox(height: 16),
@@ -336,6 +379,31 @@ class _GoInfoTabState extends State<_GoInfoTab> {
         Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
       ]),
     );
+
+  Widget _buildRegionalCell(BuildContext ctx, int pokemonId) {
+    final region = _getRegional(pokemonId);
+    final isRegional = region != null;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(color: neutralBg(ctx), borderRadius: BorderRadius.circular(8)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text('Regional', style: TextStyle(fontSize: 10,
+          color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 2),
+        Text(
+          isRegional ? region! : 'Global',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: isRegional ? 11 : 12,
+            fontWeight: FontWeight.w600,
+            color: isRegional ? const Color(0xFFE65100) : const Color(0xFF34C759),
+          ),
+        ),
+      ]),
+    );
+  }
 
   Widget _obtainCard(BuildContext ctx, IconData icon, Color iconColor, String title, String sub) =>
     Container(

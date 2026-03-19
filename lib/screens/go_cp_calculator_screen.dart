@@ -292,7 +292,7 @@ class _GoCpCalculatorScreenState extends State<GoCpCalculatorScreen>
           child: TextField(
             controller: _searchCtrl,
             decoration: InputDecoration(
-              hintText: 'Buscar Pokémon... (ex: pika)',
+              hintText: 'Buscar Pokémon... (ex: Pikachu)',
               prefixIcon: const Icon(Icons.search, size: 20),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
