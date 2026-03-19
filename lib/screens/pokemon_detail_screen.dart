@@ -2029,11 +2029,11 @@ class _AbilityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final neutralBg = context.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
-    // Tag "Oculta": cinza neutro, sem depender do colorScheme
-    const hiddenBg = Color(0xFFE8E8E8);
-    const hiddenText = Color(0xFF555555);
-    const hiddenBgDark = Color(0xFF3A3A3A);
-    const hiddenTextDark = Color(0xFFAAAAAA);
+    // Tag "Oculta": âmbar discreto — se encaixa melhor que cinza e não conflita com o tema
+    const hiddenBg     = Color(0xFFFFF3CD); // amarelo mel claro
+    const hiddenText   = Color(0xFF7A5000); // marrom dourado
+    const hiddenBgDark = Color(0xFF3D2E00); // versão escura
+    const hiddenTextDark = Color(0xFFFFCC55); // dourado claro no dark
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
