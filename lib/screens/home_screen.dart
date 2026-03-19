@@ -431,7 +431,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Column(
-          mainAxisSize: MainAxisSize.max, // ocupa toda a altura do IntrinsicHeight
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center, // centraliza verticalmente
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(entry.name,
@@ -440,10 +441,8 @@ class _HomeScreenState extends State<HomeScreen> {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w600, fontSize: 12, height: 1.3)),
-            // Spacer empurra as linhas de contagem para o rodapé
-            const Spacer(),
+            const SizedBox(height: 8),
             _buildCountRow(context, scheme, _regionFor(entry.name), caught, total),
-            const SizedBox(height: 2),
           ],
         ),
       ),
