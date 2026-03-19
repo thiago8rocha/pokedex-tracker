@@ -296,8 +296,7 @@ class _DetailHeaderState extends State<DetailHeader> {
                   child: GestureDetector(
                     onTap: widget.onPrev,
                     behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 72),
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -305,8 +304,8 @@ class _DetailHeaderState extends State<DetailHeader> {
                         children: [
                           Icon(Icons.chevron_left, size: 20,
                             color: Colors.white.withOpacity(0.9)),
-                          const SizedBox(width: 1),
-                          Flexible(child: Column(
+                          const SizedBox(width: 2),
+                          Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -319,10 +318,9 @@ class _DetailHeaderState extends State<DetailHeader> {
                                 Text(widget.prevName!,
                                   style: TextStyle(fontSize: 9,
                                     color: Colors.white.withOpacity(0.9),
-                                    fontWeight: FontWeight.w600),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    fontWeight: FontWeight.w600)),
                             ],
-                          )),
+                          ),
                         ],
                       ),
                     ),
@@ -337,14 +335,13 @@ class _DetailHeaderState extends State<DetailHeader> {
                   child: GestureDetector(
                     onTap: widget.onNext,
                     behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 72),
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Flexible(child: Column(
+                          Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -357,11 +354,10 @@ class _DetailHeaderState extends State<DetailHeader> {
                                 Text(widget.nextName!,
                                   style: TextStyle(fontSize: 9,
                                     color: Colors.white.withOpacity(0.9),
-                                    fontWeight: FontWeight.w600),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    fontWeight: FontWeight.w600)),
                             ],
-                          )),
-                          const SizedBox(width: 1),
+                          ),
+                          const SizedBox(width: 2),
                           Icon(Icons.chevron_right, size: 20,
                             color: Colors.white.withOpacity(0.9)),
                         ],
