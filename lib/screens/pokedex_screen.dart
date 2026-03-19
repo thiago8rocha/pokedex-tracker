@@ -103,6 +103,7 @@ class _PokedexScreenState extends State<PokedexScreen> {
     }
 
     _initPokedex();
+  }
 
   // ─── INICIALIZAÇÃO ────────────────────────────────────────────────
 
