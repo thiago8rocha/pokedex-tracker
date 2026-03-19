@@ -322,20 +322,64 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
 
   String get _category {
     if (_speciesData == null) return '—';
-    // Tenta o campo "genera" em pt-BR primeiro
     final genera = _speciesData!['genera'] as List<dynamic>? ?? [];
+
+    // Tenta pt-BR nativo da API
     for (final g in genera) {
       if ((g['language']['name'] as String) == 'pt-BR') {
-        return (g['genus'] as String).replaceAll(' Pokémon', '').replaceAll(' pokémon', '');
+        final raw = g['genus'] as String;
+        return raw.replaceAll(' Pokémon', '').replaceAll(' pokémon', '').trim();
       }
     }
-    // Fallback para en
+
+    // Fallback EN → traduz manualmente as categorias mais comuns
+    String enGenus = '—';
     for (final g in genera) {
       if ((g['language']['name'] as String) == 'en') {
-        return (g['genus'] as String).replaceAll(' Pokémon', '');
+        enGenus = (g['genus'] as String).replaceAll(' Pokémon', '').trim();
+        break;
       }
     }
-    return '—';
+
+    // Dicionário de tradução das categorias mais comuns
+    const translations = {
+      'Seed': 'Semente', 'Lizard': 'Lagarto', 'Flame': 'Chama',
+      'Tiny Turtle': 'Tartaruga Pequena', 'Turtle': 'Tartaruga',
+      'Shellfish': 'Crustáceo', 'Worm': 'Verme', 'Cocoon': 'Casulo',
+      'Butterfly': 'Borboleta', 'Hairy Bug': 'Inseto Peludo',
+      'Poison Bee': 'Abelha Venenosa', 'Tiny Bird': 'Pássaro Pequeno',
+      'Bird': 'Pássaro', 'Mouse': 'Camundongo', 'Pika': 'Pika',
+      'Fox': 'Raposa', 'Rabbit': 'Coelho', 'Poison Pin': 'Espinho Venenoso',
+      'Drill': 'Broca', 'Fairy': 'Fada', 'Pincer': 'Pinça',
+      'Rock Snake': 'Cobra de Pedra', 'Drowsing': 'Sonolento',
+      'Hypnosis': 'Hipnose', 'Punch': 'Soco', 'Licking': 'Lambedura',
+      'Poison Gas': 'Gás Venenoso', 'Spikes': 'Espinhos',
+      'Ball': 'Bola', 'Egg': 'Ovo', 'Coconut': 'Coco',
+      'Lonely': 'Solitário', 'Bone Keeper': 'Guardador de Ossos',
+      'Kicking': 'Chute', 'Punching': 'Soco', 'Lure': 'Isca',
+      'Bone': 'Osso', 'Starmie': 'Starmie', 'Mysterious': 'Misterioso',
+      'Barrier': 'Barreira', 'Jellyfish': 'Medusa', 'Star Shape': 'Estrela',
+      'Starshape': 'Estrela', 'Scallop': 'Vieira', 'Clamp': 'Garra',
+      'Water': 'Aquático', 'Sea Lion': 'Leão-Marinho', 'Dopey': 'Bobalhão',
+      'Hermit Crab': 'Caranguejo Eremita', 'Dragon': 'Dragão',
+      'Dragon Snake': 'Cobra-Dragão', 'Transport': 'Transporte',
+      'Fossil': 'Fóssil', 'Wild Bull': 'Touro Selvagem',
+      'Electric': 'Elétrico', 'Fire Horse': 'Cavalo de Fogo',
+      'Fateful': 'Fatídico', 'Fog': 'Névoa', 'Genetic': 'Genético',
+      'New Species': 'Nova Espécie', 'Spiral': 'Espiral',
+      'Bubble Jet': 'Jato de Bolhas', 'Lightning': 'Relâmpago',
+      'Virtual': 'Virtual', 'Telekinesis': 'Telecinese',
+      'Amphibian': 'Anfíbio', 'Spiny Nut': 'Noz Espinhosa',
+      'Verdant': 'Verdejante', 'Continent': 'Continente',
+      'Season': 'Estação', 'Formidable': 'Formidável',
+      'Iron Will': 'Força de Vontade', 'Colt': 'Potro',
+      'Grassland': 'Pradaria', 'Herb': 'Erva', 'Coral': 'Coral',
+      'Flowering': 'Florescendo', 'Synthesis': 'Síntese',
+    };
+
+    if (translations.containsKey(enGenus)) return translations[enGenus]!;
+    // Retorna EN se não tem tradução
+    return enGenus;
   }
 
   void _toggleCaught() { setState(() => _caught = !_caught); widget.onToggleCaught(); }
@@ -375,7 +419,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
                         ? [
                             _GoInfoTab(pokemon: widget.pokemon, pokemonData: _pokemonData, loading: _loadingExtra),
                             _StatusTab(pokemon: widget.pokemon),
-                            _FormsTab(forms: _forms, currentId: widget.pokemon.id, loading: _loadingExtra),
+                            _FormsTab(forms: _forms, loading: _loadingExtra),
                             _CpCalcTab(pokemon: widget.pokemon),
                           ]
                         : [
@@ -386,7 +430,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
                               isNacional: widget.pokedexContext == 'nacional',
                             ),
                             _StatusTab(pokemon: widget.pokemon),
-                            _FormsTab(forms: _forms, currentId: widget.pokemon.id, loading: _loadingExtra),
+                            _FormsTab(forms: _forms, loading: _loadingExtra),
                             _MovesTab(
                               level: _movesLevel, mt: _movesMT,
                               tutor: _movesTutor, egg: _movesEgg,
@@ -936,9 +980,8 @@ class _TypeChipRow extends StatelessWidget {
 
 class _FormsTab extends StatelessWidget {
   final List<Map<String, dynamic>> forms;
-  final int currentId;
   final bool loading;
-  const _FormsTab({required this.forms, required this.currentId, required this.loading});
+  const _FormsTab({required this.forms, required this.loading});
 
   @override
   Widget build(BuildContext context) {
@@ -1132,7 +1175,7 @@ class _MovesTabState extends State<_MovesTab> {
             const SizedBox(width: 8),
             const Expanded(child: Text('MOVE', style: TextStyle(fontSize: 9,
               color: Color(0xFF888888), letterSpacing: 0.06, fontWeight: FontWeight.w500))),
-            const SizedBox(width: 28,
+            const SizedBox(width: 36,
               child: Text('PODER', style: TextStyle(fontSize: 9, color: Color(0xFF888888),
                 letterSpacing: 0.06, fontWeight: FontWeight.w500), textAlign: TextAlign.right)),
             const SizedBox(width: 18), // seta
@@ -2210,29 +2253,101 @@ class _CatLegendItem extends StatelessWidget {
 
 // ─── ONDE ENCONTRAR (jogos switch) ───────────────────────────────
 
-class _WhereToFind extends StatelessWidget {
+class _WhereToFind extends StatefulWidget {
   final int pokemonId;
   const _WhereToFind({required this.pokemonId});
+
+  @override
+  State<_WhereToFind> createState() => _WhereToFindState();
+}
+
+class _WhereToFindState extends State<_WhereToFind> {
+  List<Map<String, dynamic>> _locations = [];
+  bool _loading = true;
+
+  // Traduz método de encontro para PT
+  String _ptMethod(String method) {
+    const map = {
+      'walk': 'Caminhada',
+      'grass-tiles': 'Grama alta',
+      'surf': 'Surf',
+      'old-rod': 'Vara velha',
+      'good-rod': 'Boa vara',
+      'super-rod': 'Super vara',
+      'gift': 'Presente',
+      'gift-egg': 'Ovo presente',
+      'only-one': 'Único',
+      'pokeradar': 'PokéRadar',
+      'cave': 'Caverna',
+      'headbutt': 'Headbutt',
+      'rock-smash': 'Smash Pedra',
+      'trade': 'Troca',
+    };
+    return map[method] ?? method.replaceAll('-', ' ');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final r = await http.get(Uri.parse(
+          'https://pokeapi.co/api/v2/pokemon/${widget.pokemonId}/encounters'));
+      if (r.statusCode == 200 && mounted) {
+        final data = json.decode(r.body) as List<dynamic>;
+        final locs = <Map<String, dynamic>>[];
+        for (final e in data.take(6)) { // limita a 6 locais
+          final locName = (e['location_area']['name'] as String)
+              .replaceAll('-', ' ')
+              .split(' ')
+              .map((w) => w.isEmpty ? '' : w[0].toUpperCase() + w.substring(1))
+              .join(' ');
+          final versionDetails = e['version_details'] as List<dynamic>;
+          if (versionDetails.isEmpty) continue;
+          final detail = versionDetails.last;
+          final chance = detail['max_chance'] as int? ?? 0;
+          final methodRaw = (detail['encounter_details'] as List<dynamic>?)
+              ?.firstOrNull?['method']?['name'] as String? ?? 'walk';
+          locs.add({
+            'name': locName,
+            'method': _ptMethod(methodRaw),
+            'chance': '$chance%',
+          });
+        }
+        if (mounted) setState(() { _locations = locs; _loading = false; });
+      } else {
+        if (mounted) setState(() => _loading = false);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final neutralBg = context.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
     final borderColor = context.isDark ? const Color(0xFF3A3A3A) : const Color(0xFFE0E0E0);
 
-    // Dados de localização simplificados — em produção viriam da PokéAPI
-    // endpoint /pokemon/{id}/encounters ou do JSON local por jogo
-    final locations = <Map<String, dynamic>>[
-      {'name': 'Route 1', 'method': 'Caminhada', 'chance': '25%'},
-      {'name': 'Paldea Grasslands', 'method': 'Encontro selvagem', 'chance': '10%'},
-    ];
+    if (_loading) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: neutralBg, borderRadius: BorderRadius.circular(10)),
+        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
 
-    if (locations.isEmpty) {
+    if (_locations.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: neutralBg, borderRadius: BorderRadius.circular(10)),
-        child: Text('Localização não disponível para este jogo.',
+        child: Text(
+          'Localização não disponível neste jogo.',
           style: TextStyle(fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
       );
     }
 
@@ -2241,8 +2356,8 @@ class _WhereToFind extends StatelessWidget {
         border: Border.all(color: borderColor, width: 0.5),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(children: locations.asMap().entries.map((entry) {
-        final isLast = entry.key == locations.length - 1;
+      child: Column(children: _locations.asMap().entries.map((entry) {
+        final isLast = entry.key == _locations.length - 1;
         final loc = entry.value;
         return Container(
           decoration: isLast ? null : BoxDecoration(
