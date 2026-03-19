@@ -348,6 +348,40 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
     return '${_speciesData!['capture_rate'] ?? '—'}';
   }
 
+  // Jogos disponíveis calculados a partir da geração — sem fetch adicional
+  List<String> get _availableGames {
+    if (_speciesData == null) return [];
+    final genName = _speciesData!['generation']?['name'] as String? ?? '';
+    const genToGames = {
+      'generation-i': [
+        "Let's Go P/E", 'FireRed / LeafGreen', 'Sword / Shield',
+        'BD / Shining Pearl', 'Scarlet / Violet', 'Legends: Arceus',
+        'Pokémon GO', 'Pokopia',
+      ],
+      'generation-ii': [
+        'Sword / Shield', 'BD / Shining Pearl', 'Scarlet / Violet',
+        'Pokémon GO',
+      ],
+      'generation-iii': [
+        'FireRed / LeafGreen', 'Sword / Shield',
+        'BD / Shining Pearl', 'Scarlet / Violet', 'Pokémon GO',
+      ],
+      'generation-iv': [
+        'Sword / Shield', 'BD / Shining Pearl',
+        'Scarlet / Violet', 'Legends: Arceus', 'Pokémon GO',
+      ],
+      'generation-v': ['Sword / Shield', 'Scarlet / Violet', 'Pokémon GO'],
+      'generation-vi': ['Sword / Shield', 'Scarlet / Violet', 'Pokémon GO'],
+      'generation-vii': ['Sword / Shield', 'Scarlet / Violet', 'Pokémon GO'],
+      'generation-viii': [
+        'Sword / Shield', 'BD / Shining Pearl',
+        'Legends: Arceus', 'Pokémon GO',
+      ],
+      'generation-ix': ['Scarlet / Violet'],
+    };
+    return List<String>.from(genToGames[genName] ?? []);
+  }
+
   String get _category {
     if (_speciesData == null) return '—';
     final genera = _speciesData!['genera'] as List<dynamic>? ?? [];
@@ -456,6 +490,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
                               category: _category, height: _heightStr, weight: _weightStr,
                               captureRate: _captureRate, loading: _loadingExtra,
                               isNacional: widget.pokedexContext == 'nacional',
+                              availableGames: _availableGames,
                             ),
                             _StatusTab(pokemon: widget.pokemon),
                             _FormsTab(forms: _forms, loading: _loadingExtra),
@@ -603,11 +638,13 @@ class _InfoTab extends StatelessWidget {
   final String category, height, weight, captureRate;
   final bool loading;
   final bool isNacional;
+  final List<String> availableGames;
 
   const _InfoTab({
     required this.pokemon, required this.abilities, required this.evoChain,
     required this.category, required this.height, required this.weight,
-    required this.captureRate, required this.loading, this.isNacional = false,
+    required this.captureRate, required this.loading,
+    this.isNacional = false, this.availableGames = const [],
   });
 
   @override
@@ -650,7 +687,27 @@ class _InfoTab extends StatelessWidget {
         if (isNacional) ...[
           const SizedBox(height: 16),
           _secTitle(context, 'DISPONÍVEL EM'),
-          _AvailableIn(pokemonId: pokemon.id),
+          if (availableGames.isEmpty)
+            Text(loading ? 'Carregando...' : 'Dados não disponíveis.',
+              style: TextStyle(fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant))
+          else
+            Wrap(
+              spacing: 8, runSpacing: 8,
+              children: availableGames.map((g) {
+                final neutralBg = Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: neutralBg, borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(g, style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 11, fontWeight: FontWeight.w500,
+                  )),
+                );
+              }).toList(),
+            ),
         ],
       ]),
     );
