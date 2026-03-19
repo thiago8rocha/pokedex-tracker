@@ -214,10 +214,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
     if (_speciesData == null) return;
     final varieties = _speciesData!['varieties'] as List<dynamic>? ?? [];
     if (varieties.length <= 1) {
-      // Sem formas alternativas
       if (mounted) setState(() {});
       return;
     }
+
+    // Mapa de version_group slug → nome do jogo coberto pelo app
+    const vgToGame = {
+      'lets-go-pikachu-lets-go-eevee': "Let's Go P/E",
+      'sword-shield': 'Sword / Shield',
+      'brilliant-diamond-and-shining-pearl': 'BD / Shining Pearl',
+      'legends-arceus': 'Legends: Arceus',
+      'scarlet-violet': 'Scarlet / Violet',
+    };
 
     final forms = <Map<String, dynamic>>[];
     for (final v in varieties) {
@@ -225,19 +233,39 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen>
       final name = v['pokemon']['name'] as String;
       try {
         final r = await http.get(Uri.parse(url));
-        if (r.statusCode == 200) {
-          final fd = json.decode(r.body) as Map<String, dynamic>;
-          final fid = fd['id'] as int;
-          final typesRaw = fd['types'] as List<dynamic>;
-          final types = typesRaw
-              .map((t) => t['type']['name'] as String)
-              .toList();
-          forms.add({'name': name, 'id': fid, 'types': types, 'isDefault': v['is_default'] as bool});
+        if (r.statusCode != 200) continue;
+        final fd = json.decode(r.body) as Map<String, dynamic>;
+        final fid = fd['id'] as int;
+        final typesRaw = fd['types'] as List<dynamic>;
+        final types = typesRaw.map((t) => t['type']['name'] as String).toList();
+
+        // Busca /pokemon-form/{id} para pegar version_group
+        String? gameLabel;
+        final formsRaw = fd['forms'] as List<dynamic>? ?? [];
+        if (formsRaw.isNotEmpty) {
+          final formUrl = formsRaw[0]['url'] as String;
+          try {
+            final rf = await http.get(Uri.parse(formUrl));
+            if (rf.statusCode == 200) {
+              final formData = json.decode(rf.body) as Map<String, dynamic>;
+              final vgName = formData['version_group']?['name'] as String?;
+              if (vgName != null) {
+                gameLabel = vgToGame[vgName];
+              }
+            }
+          } catch (_) {}
         }
+
+        forms.add({
+          'name': name,
+          'id': fid,
+          'types': types,
+          'isDefault': v['is_default'] as bool,
+          'game': gameLabel, // null = disponível em múltiplos jogos
+        });
       } catch (_) {}
     }
 
-    // Ordena: default primeiro
     forms.sort((a, b) {
       final aD = a['isDefault'] as bool;
       final bD = b['isDefault'] as bool;
@@ -1056,6 +1084,26 @@ class _FormsTab extends StatelessWidget {
                 )),
               );
             }).toList()),
+            // Jogo onde esta forma está disponível
+            if (f['game'] != null) ...[
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  f['game'] as String,
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ]),
         );
       },
@@ -1153,9 +1201,20 @@ class _MovesTabState extends State<_MovesTab> {
               ),
           ],
         )),
-        // Cabeçalho de colunas — alinhado exatamente com as linhas
+        // Legenda dos ícones — antes do cabeçalho de colunas
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 2, 12, 4),
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
+          child: Row(children: [
+            _CatLegendItem(category: 'physical', label: 'Físico'),
+            const SizedBox(width: 12),
+            _CatLegendItem(category: 'special', label: 'Especial'),
+            const SizedBox(width: 12),
+            _CatLegendItem(category: 'status', label: 'Status'),
+          ]),
+        ),
+        // Cabeçalho de colunas
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
           child: Row(children: [
             SizedBox(
               width: _method == 'level' ? 32 : 40,
@@ -1179,18 +1238,6 @@ class _MovesTabState extends State<_MovesTab> {
               child: Text('PODER', style: TextStyle(fontSize: 9, color: Color(0xFF888888),
                 letterSpacing: 0.06, fontWeight: FontWeight.w500), textAlign: TextAlign.right)),
             const SizedBox(width: 18), // seta
-          ]),
-        ),
-        Divider(height: 0.5, color: Theme.of(context).colorScheme.outlineVariant),
-        // Legenda dos ícones de categoria
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Row(children: [
-            _CatLegendItem(category: 'physical', label: 'Físico'),
-            const SizedBox(width: 12),
-            _CatLegendItem(category: 'special', label: 'Especial'),
-            const SizedBox(width: 12),
-            _CatLegendItem(category: 'status', label: 'Status'),
           ]),
         ),
         Divider(height: 0.5, color: Theme.of(context).colorScheme.outlineVariant),
@@ -2029,11 +2076,9 @@ class _AbilityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final neutralBg = context.isDark ? const Color(0xFF2A2A2A) : const Color(0xFFF5F5F5);
-    // Tag "Oculta": âmbar discreto — se encaixa melhor que cinza e não conflita com o tema
-    const hiddenBg     = Color(0xFFFFF3CD); // amarelo mel claro
-    const hiddenText   = Color(0xFF7A5000); // marrom dourado
-    const hiddenBgDark = Color(0xFF3D2E00); // versão escura
-    const hiddenTextDark = Color(0xFFFFCC55); // dourado claro no dark
+    // Tag "Oculta": usa secondaryContainer do tema — padrão do projeto
+    final hiddenBg   = Theme.of(context).colorScheme.secondaryContainer;
+    final hiddenText = Theme.of(context).colorScheme.onSecondaryContainer;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -2052,11 +2097,11 @@ class _AbilityCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                   decoration: BoxDecoration(
-                    color: context.isDark ? hiddenBgDark : hiddenBg,
+                    color: hiddenBg,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text('Oculta', style: TextStyle(
-                    color: context.isDark ? hiddenTextDark : hiddenText,
+                    color: hiddenText,
                     fontSize: 10, fontWeight: FontWeight.w500,
                   )),
                 ),
@@ -2135,7 +2180,9 @@ class _EvoChainWidget extends StatelessWidget {
   }
 }
 
-// "DISPONÍVEL EM" — busca game_indices da PokéAPI (só exibido na Nacional)
+// "DISPONÍVEL EM" — só na Nacional
+// Mapeia em quais jogos *cobertos pelo app* o Pokémon está disponível,
+// usando game_indices (jogos até gen 7) + lógica por geração para jogos modernos
 class _AvailableIn extends StatefulWidget {
   final int pokemonId;
   const _AvailableIn({required this.pokemonId});
@@ -2148,30 +2195,43 @@ class _AvailableInState extends State<_AvailableIn> {
   List<String> _games = [];
   bool _loading = true;
 
-  // Traduz slugs de versão para nomes legíveis em PT
-  static const Map<String, String> _gameNames = {
-    'red': 'Red / Blue', 'blue': 'Red / Blue',
-    'yellow': 'Yellow',
-    'gold': 'Gold / Silver', 'silver': 'Gold / Silver',
-    'crystal': 'Crystal',
-    'ruby': 'Ruby / Sapphire', 'sapphire': 'Ruby / Sapphire',
-    'emerald': 'Emerald',
-    'firered': 'FireRed / LeafGreen', 'leafgreen': 'FireRed / LeafGreen',
-    'diamond': 'Diamond / Pearl', 'pearl': 'Diamond / Pearl',
-    'platinum': 'Platinum',
-    'heartgold': 'HeartGold / SoulSilver', 'soulsilver': 'HeartGold / SoulSilver',
-    'black': 'Black / White', 'white': 'Black / White',
-    'black-2': 'Black 2 / White 2', 'white-2': 'Black 2 / White 2',
-    'x': 'X / Y', 'y': 'X / Y',
-    'omega-ruby': 'Omega Ruby / Alpha Sapphire', 'alpha-sapphire': 'Omega Ruby / Alpha Sapphire',
-    'sun': 'Sun / Moon', 'moon': 'Sun / Moon',
-    'ultra-sun': 'Ultra Sun / Ultra Moon', 'ultra-moon': 'Ultra Sun / Ultra Moon',
+  // Slugs de versão → nome do jogo coberto pelo app
+  static const Map<String, String> _versionToGame = {
+    'firered': "FireRed / LeafGreen", 'leafgreen': "FireRed / LeafGreen",
     'lets-go-pikachu': "Let's Go Pikachu / Eevee", 'lets-go-eevee': "Let's Go Pikachu / Eevee",
     'sword': 'Sword / Shield', 'shield': 'Sword / Shield',
     'brilliant-diamond': 'Brilliant Diamond / Shining Pearl',
     'shining-pearl': 'Brilliant Diamond / Shining Pearl',
     'legends-arceus': 'Legends: Arceus',
     'scarlet': 'Scarlet / Violet', 'violet': 'Scarlet / Violet',
+  };
+
+  // Para jogos modernos (Sword+), a PokéAPI não inclui em game_indices.
+  // Usamos a geração do Pokémon para inferir disponibilidade.
+  static const Map<String, List<String>> _genToModernGames = {
+    'generation-i': [
+      "Let's Go Pikachu / Eevee", 'Sword / Shield',
+      'Brilliant Diamond / Shining Pearl', 'Scarlet / Violet',
+      'Legends: Arceus', "FireRed / LeafGreen",
+    ],
+    'generation-ii': [
+      'Sword / Shield', 'Brilliant Diamond / Shining Pearl',
+      'Scarlet / Violet',
+    ],
+    'generation-iii': [
+      'Sword / Shield', 'Brilliant Diamond / Shining Pearl',
+      'Scarlet / Violet', "FireRed / LeafGreen",
+    ],
+    'generation-iv': [
+      'Sword / Shield', 'Brilliant Diamond / Shining Pearl',
+      'Scarlet / Violet', 'Legends: Arceus',
+    ],
+    'generation-v': ['Sword / Shield', 'Scarlet / Violet'],
+    'generation-vi': ['Sword / Shield', 'Scarlet / Violet'],
+    'generation-vii': ['Sword / Shield', 'Scarlet / Violet'],
+    'generation-viii': ['Sword / Shield', 'Brilliant Diamond / Shining Pearl',
+      'Legends: Arceus'],
+    'generation-ix': ['Scarlet / Violet'],
   };
 
   @override
@@ -2182,24 +2242,26 @@ class _AvailableInState extends State<_AvailableIn> {
 
   Future<void> _load() async {
     try {
+      // Busca species para pegar a geração
       final r = await http.get(
-          Uri.parse('https://pokeapi.co/api/v2/pokemon/${widget.pokemonId}'));
-      if (r.statusCode == 200 && mounted) {
-        final d = json.decode(r.body) as Map<String, dynamic>;
-        final indices = d['game_indices'] as List<dynamic>? ?? [];
-        final seen = <String>{};
-        final games = <String>[];
-        for (final gi in indices) {
-          final version = gi['version']['name'] as String;
-          final display = _gameNames[version];
-          if (display != null && seen.add(display)) {
-            games.add(display);
-          }
-        }
-        if (mounted) setState(() { _games = games; _loading = false; });
-      } else {
-        if (mounted) setState(() => _loading = false);
+          Uri.parse('https://pokeapi.co/api/v2/pokemon-species/${widget.pokemonId}'));
+      if (r.statusCode != 200 || !mounted) {
+        setState(() => _loading = false);
+        return;
       }
+      final species = json.decode(r.body) as Map<String, dynamic>;
+      final genName = species['generation']?['name'] as String? ?? '';
+
+      final seen = <String>{};
+      final games = <String>[];
+
+      // Jogos modernos por geração
+      final modern = _genToModernGames[genName] ?? [];
+      for (final g in modern) {
+        if (seen.add(g)) games.add(g);
+      }
+
+      if (mounted) setState(() { _games = games; _loading = false; });
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
