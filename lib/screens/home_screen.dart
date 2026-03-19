@@ -432,17 +432,21 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Column(
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center, // centraliza verticalmente
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Nome sempre no topo
             Text(entry.name,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w600, fontSize: 12, height: 1.3)),
-            const SizedBox(height: 8),
-            _buildCountRow(context, scheme, _regionFor(entry.name), caught, total),
+            // Contador centralizado no espaço restante
+            Expanded(
+              child: Center(
+                child: _buildCountRow(context, scheme, _regionFor(entry.name), caught, total),
+              ),
+            ),
           ],
         ),
       ),
