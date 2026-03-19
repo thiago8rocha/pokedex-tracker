@@ -23,6 +23,9 @@ class _PokedexEntry {
   final List<_DlcInfo> dlcs;
   final bool isPokopiaDex;
   final int? pokopiaHabitatTotal;
+  // Duas cores para gradiente diagonal (tema claro)
+  final int cardColor1;
+  final int cardColor2;
 
   const _PokedexEntry({
     required this.name,
@@ -31,6 +34,8 @@ class _PokedexEntry {
     this.dlcs = const [],
     this.isPokopiaDex = false,
     this.pokopiaHabitatTotal,
+    this.cardColor1 = 0xFFE8E8F0,
+    this.cardColor2 = 0xFFE8E8F0,
   });
 
   String get pokedexId =>
@@ -63,17 +68,24 @@ class _HomeScreenState extends State<HomeScreen> {
   // ── Catálogo ─────────────────────────────────────────────────
 
   static const _PokedexEntry _nacEntry =
-      _PokedexEntry(name: 'Nacional', year: '', totalBase: 1025);
+      _PokedexEntry(name: 'Nacional',   year: '',     totalBase: 1025,
+        cardColor1: 0xFFE8524A, cardColor2: 0xFFB71C1C); // vermelho Pokédex
   static const _PokedexEntry _goEntry =
-      _PokedexEntry(name: 'Pokémon GO', year: '2016', totalBase: 941);
+      _PokedexEntry(name: 'Pokémon GO', year: '2016', totalBase: 941,
+        cardColor1: 0xFF4285F4, cardColor2: 0xFF0D47A1); // azul GO
 
   static const List<_PokedexEntry> _gameEntries = [
-    _PokedexEntry(name: "Let's Go Pikachu / Eevee",          year: '2018', totalBase: 153),
-    _PokedexEntry(name: 'Brilliant Diamond / Shining Pearl', year: '2021', totalBase: 493),
-    _PokedexEntry(name: 'Legends: Arceus',                   year: '2022', totalBase: 242),
-    _PokedexEntry(name: 'FireRed / LeafGreen',               year: '2026', totalBase: 386),
+    _PokedexEntry(name: "Let's Go Pikachu / Eevee", year: '2018', totalBase: 153,
+      cardColor1: 0xFFFDD835, cardColor2: 0xFF8D6E63), // amarelo Pikachu / marrom Eevee
+    _PokedexEntry(name: 'Brilliant Diamond / Shining Pearl', year: '2021', totalBase: 493,
+      cardColor1: 0xFF42A5F5, cardColor2: 0xFFEC407A), // azul Dialga / rosa Palkia
+    _PokedexEntry(name: 'Legends: Arceus', year: '2022', totalBase: 242,
+      cardColor1: 0xFFFFCA28, cardColor2: 0xFF6D4C41), // dourado Arceus / marrom antigo
+    _PokedexEntry(name: 'FireRed / LeafGreen', year: '2026', totalBase: 386,
+      cardColor1: 0xFFEF5350, cardColor2: 0xFF43A047), // vermelho fogo / verde folha
     _PokedexEntry(
       name: 'Sword / Shield', year: '2019', totalBase: 400,
+      cardColor1: 0xFF42A5F5, cardColor2: 0xFFEF5350, // azul Zacian / vermelho Zamazenta
       dlcs: [
         _DlcInfo(name: 'Isle of Armor',  total: 210, sectionApiName: 'isle-of-armor'),
         _DlcInfo(name: 'Crown Tundra',   total: 210, sectionApiName: 'crown-tundra'),
@@ -81,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
     _PokedexEntry(
       name: 'Scarlet / Violet', year: '2022', totalBase: 400,
+      cardColor1: 0xFFEF6C00, cardColor2: 0xFF7B1FA2, // laranja Koraidon / roxo Miraidon
       dlcs: [
         _DlcInfo(name: 'Teal Mask',   total: 200, sectionApiName: 'kitakami'),
         _DlcInfo(name: 'Indigo Disk', total: 243, sectionApiName: 'blueberry'),
@@ -88,10 +101,12 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
     _PokedexEntry(
       name: 'Legends: Z-A', year: '2025', totalBase: 132,
+      cardColor1: 0xFF546E7A, cardColor2: 0xFFFFD54F, // cinza Lumiose / dourado Mega
       dlcs: [_DlcInfo(name: 'Mega Dimension', total: 132, sectionApiName: 'mega-dimension')],
     ),
     _PokedexEntry(
       name: 'Pokopia', year: '2026', totalBase: 311,
+      cardColor1: 0xFF9C27B0, cardColor2: 0xFF7986CB, // roxo Ditto / lilás
       isPokopiaDex: true,
       pokopiaHabitatTotal: 200,
     ),
@@ -217,28 +232,46 @@ class _HomeScreenState extends State<HomeScreen> {
           if (activeEntries.isEmpty)
             _buildEmptyState(context)
           else
-            LayoutBuilder(builder: (ctx, constraints) {
-              final w = (constraints.maxWidth - 10) / 2;
-              return Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: activeEntries.map((e) {
-                  Widget card;
-                  if (e.isPokopiaDex) {
-                    card = _buildPokopiaCard(context, e);
-                  } else if (e.dlcs.isNotEmpty) {
-                    card = _buildDlcCard(context, e);
-                  } else {
-                    card = _buildSimpleCard(context, e);
-                  }
-                  return SizedBox(width: w, child: card);
-                }).toList(),
-              );
-            }),
+            _buildGrid(context, activeEntries),
           const SizedBox(height: 8),
         ],
       ),
     );
+  }
+
+  // ── Grid 2 colunas com alturas iguais por linha ──────────────
+  // IntrinsicHeight força os dois cards de cada linha a terem a
+  // mesma altura (a do maior), eliminando espaços vazios.
+  Widget _buildGrid(BuildContext context, List<_PokedexEntry> entries) {
+    final rows = <Widget>[];
+    for (int i = 0; i < entries.length; i += 2) {
+      final left  = entries[i];
+      final right = i + 1 < entries.length ? entries[i + 1] : null;
+      rows.add(
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: _buildCard(context, left)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: right != null
+                    ? _buildCard(context, right)
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (i + 2 < entries.length) rows.add(const SizedBox(height: 10));
+    }
+    return Column(mainAxisSize: MainAxisSize.min, children: rows);
+  }
+
+  Widget _buildCard(BuildContext context, _PokedexEntry e) {
+    if (e.isPokopiaDex)    return _buildPokopiaCard(context, e);
+    if (e.dlcs.isNotEmpty) return _buildDlcCard(context, e);
+    return _buildSimpleCard(context, e);
   }
 
   // ════════════════════════════════════════════════════════════
@@ -251,17 +284,28 @@ class _HomeScreenState extends State<HomeScreen> {
     final caught = _caughtCounts[_nacEntry.pokedexId] ?? 0;
     const total  = 1025;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? scheme.surfaceContainerLow : const Color(0xFFF5EDEC);
+    final decoration = isDark
+        ? BoxDecoration(
+            color: scheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: scheme.outlineVariant, width: 1))
+        : BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(_nacEntry.cardColor1).withOpacity(0.35),
+                Color(_nacEntry.cardColor2).withOpacity(0.35),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: scheme.outlineVariant, width: 1));
 
     return GestureDetector(
       onTap: () => _openPokedex(_nacEntry),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: scheme.outlineVariant, width: 1),
-        ),
+        decoration: decoration,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -287,17 +331,28 @@ class _HomeScreenState extends State<HomeScreen> {
     final caught = _caughtCounts[_goEntry.pokedexId] ?? 0;
     final total  = _goEntry.totalBase;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? scheme.surfaceContainerLow : const Color(0xFFF5EDEC);
+    final decoration = isDark
+        ? BoxDecoration(
+            color: scheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: scheme.outlineVariant, width: 1))
+        : BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(_goEntry.cardColor1).withOpacity(0.35),
+                Color(_goEntry.cardColor2).withOpacity(0.35),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: scheme.outlineVariant, width: 1));
 
     return GestureDetector(
       onTap: () => _openPokedex(_goEntry),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: scheme.outlineVariant, width: 1),
-        ),
+        decoration: decoration,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -327,6 +382,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return _CardShell(
       complete: complete,
       onTap: () => _openPokedex(entry),
+      cardColor1: Color(entry.cardColor1),
+      cardColor2: Color(entry.cardColor2),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Column(
@@ -341,6 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontWeight: FontWeight.w600, fontSize: 12, height: 1.3)),
             const SizedBox(height: 6),
             _buildCountRow(context, scheme, _regionFor(entry.name), caught, total),
+            const SizedBox(height: 2),
           ],
         ),
       ),
@@ -367,6 +425,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return _CardShell(
       complete: complete,
       onTap: () => _openPokedex(entry),
+      cardColor1: Color(entry.cardColor1),
+      cardColor2: Color(entry.cardColor2),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Column(
@@ -414,6 +474,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return _CardShell(
       complete: false,
       onTap: () => _openPokedex(entry),
+      cardColor1: Color(entry.cardColor1),
+      cardColor2: Color(entry.cardColor2),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         child: Column(
@@ -579,39 +641,55 @@ class _CardShell extends StatelessWidget {
   final bool complete;
   final VoidCallback onTap;
   final Widget child;
-  final double? height;
+  final Color cardColor1;
+  final Color cardColor2;
 
   const _CardShell({
     required this.complete,
     required this.onTap,
     required this.child,
-    this.height,
+    required this.cardColor1,
+    required this.cardColor2,
   });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    // Tema claro: rosado muito suave, quase idêntico ao fundo mas perceptível
-    // Tema escuro: surfaceContainer (elevação padrão do Material)
-    final cardColor = isDark ? scheme.surfaceContainer : const Color(0xFFF5EDEC);
+
+    final decoration = isDark
+        ? BoxDecoration(
+            color: scheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: complete
+                  ? const Color(0xFF34C759).withOpacity(0.5)
+                  : scheme.outlineVariant,
+              width: 1,
+            ))
+        : BoxDecoration(
+            // Gradiente diagonal: cor1 canto superior-esquerdo → cor2 canto inferior-direito
+            // Opacidade 0.30 mantém o fundo legível mas a cor é claramente visível
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                cardColor1.withOpacity(0.30),
+                cardColor2.withOpacity(0.30),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: complete
+                  ? const Color(0xFF34C759).withOpacity(0.5)
+                  : scheme.outlineVariant,
+              width: 1,
+            ));
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: height,
-        padding: height != null
-            ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-            : EdgeInsets.zero,
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: complete
-                ? const Color(0xFF34C759).withOpacity(0.5)
-                : scheme.outlineVariant,
-            width: 1,
-          ),
-        ),
+        decoration: decoration,
         child: child,
       ),
     );
