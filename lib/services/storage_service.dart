@@ -120,4 +120,35 @@ class StorageService {
     if (active == null) return true; // todas ativas por padrão
     return active.contains(pokedexId);
   }
+
+  // ─── TEMA ────────────────────────────────────────────────────────
+  // Chave: 'app_theme_id' → string (id do tema, ex: 'system', 'light', 'dark', 'pokeball', ...)
+
+  static const String _themeKey = 'app_theme_id';
+
+  Future<String> getThemeId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_themeKey) ?? 'system';
+  }
+
+  Future<void> setThemeId(String themeId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeKey, themeId);
+  }
+
+  // ─── SPRITE PADRÃO ───────────────────────────────────────────────
+  // Chave: 'default_sprite' → 'artwork' | 'pixel' | 'home'
+  // Padrão: 'artwork' (artwork oficial 2D)
+
+  static const String _defaultSpriteKey = 'default_sprite';
+
+  Future<String> getDefaultSprite() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_defaultSpriteKey) ?? 'artwork';
+  }
+
+  Future<void> setDefaultSprite(String sprite) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_defaultSpriteKey, sprite);
+  }
 }
