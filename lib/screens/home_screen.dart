@@ -284,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final caught = _caughtCounts[_nacEntry.pokedexId] ?? 0;
     const total  = 1025;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final opacity = isDark ? 0.22 : 0.35;
+    final opacity = isDark ? 0.40 : 0.35;
     final decoration = BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
@@ -327,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final caught = _caughtCounts[_goEntry.pokedexId] ?? 0;
     final total  = _goEntry.totalBase;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final opacity = isDark ? 0.22 : 0.35;
+    final opacity = isDark ? 0.40 : 0.35;
     final decoration = BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
@@ -658,7 +658,7 @@ class _CardShell extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Claro: opacidade 0.28 — suave sobre fundo branco
     // Escuro: opacidade 0.22 — mais sutil sobre fundo escuro, evita cores muito saturadas
-    final opacity = isDark ? 0.22 : 0.28;
+    final opacity = isDark ? 0.40 : 0.28;
 
     return GestureDetector(
       onTap: onTap,
