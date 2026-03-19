@@ -398,8 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: scheme.outlineVariant, width: 1));
 
     return GestureDetector(
-      onTap: () => Navigator.push(context,
-        MaterialPageRoute(builder: (_) => const GoHubScreen())),
+      onTap: () => _openPokedex(_goEntry),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: decoration,
