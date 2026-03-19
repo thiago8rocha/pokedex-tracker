@@ -546,7 +546,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSeparator(ColorScheme scheme) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 3),
-    child: Divider(height: 1, thickness: 0.5, color: scheme.outlineVariant),
+    child: Divider(
+      height: 1,
+      thickness: 0.8,
+      // onSurface com opacidade garante contraste sobre qualquer cor de fundo
+      color: scheme.onSurface.withOpacity(0.18),
+    ),
   );
 
   // ── Região por jogo (para linha principal do DLC card) ────────
