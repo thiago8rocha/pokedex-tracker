@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/screens/pokedex_screen.dart';
 import 'package:pokedex_tracker/screens/settings_screen.dart';
-import 'package:pokedex_tracker/screens/go_hub_screen.dart';
+import 'package:pokedex_tracker/screens/pokopia/pokopia_hub_screen.dart';
+import 'package:pokedex_tracker/screens/go/go_hub_screen.dart';
 
 // ─── MODELOS ─────────────────────────────────────────────────────
 
@@ -236,7 +237,12 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(builder: (_) => const GoHubScreen()));
       return;
     }
-    if (tab == _NavTab.pokopia)  { _openPokedex(_pokopiaEntry);  return; }
+    if (tab == _NavTab.pokopia) {
+      Navigator.push(context, MaterialPageRoute(
+        builder: (_) => const PokopiaHubScreen(),
+      )).then((_) => _loadCounts());
+      return;
+    }
     if (tab == _NavTab.times) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Times — em breve')),

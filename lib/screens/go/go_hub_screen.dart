@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/screens/pokedex_screen.dart';
-import 'package:pokedex_tracker/screens/go_cp_calculator_screen.dart';
+import 'package:pokedex_tracker/screens/go/go_cp_calculator_screen.dart';
 
 class GoHubScreen extends StatelessWidget {
   const GoHubScreen({super.key});
