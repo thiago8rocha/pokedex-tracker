@@ -180,4 +180,18 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_bilingualKey, mode);
   }
+
+  // ─── DISCLAIMER ──────────────────────────────────────────────────
+
+  static const String _disclaimerKey = 'disclaimer_seen';
+
+  Future<bool> isDisclaimerSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_disclaimerKey) ?? false;
+  }
+
+  Future<void> setDisclaimerSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_disclaimerKey, true);
+  }
 }

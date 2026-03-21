@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/theme/app_theme.dart';
 import 'package:pokedex_tracker/screens/home_screen.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/pokemon_prefetch_service.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
+import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
     show initBilingualMode, initDefaultSprite;
 
@@ -14,21 +13,15 @@ void main() async {
   final savedThemeId = await StorageService().getThemeId();
   appThemeController.setTheme(savedThemeId, _themeModeFromId(savedThemeId));
 
-  // Carregar modo bilíngue salvo — popula o ValueNotifier global
+  // Carregar modo bilíngue e sprite padrão
   await initBilingualMode();
   await initDefaultSprite();
 
-  runApp(const PokedexTrackerApp());
+  // Carregar dados locais dos pokémon (assets/data/pokedex_data.json)
+  // Feito antes do runApp para que esteja disponível imediatamente
+  await PokedexDataService.instance.load();
 
-  // Iniciar pré-carregamento em background após o app subir.
-  // Não bloqueia a UI — roda silenciosamente em paralelo.
-  // Prioriza os Pokémon da Pokopia (lista curada), depois carrega o resto.
-  PokemonPrefetchService.instance.start(
-    priorityIds: pokopiaSpeciesIds,
-    fullRangeEnd: 1025,
-    batchSize: 5,
-    pauseBetweenBatches: const Duration(milliseconds: 400),
-  );
+  runApp(const PokedexTrackerApp());
 }
 
 ThemeMode _themeModeFromId(String id) {

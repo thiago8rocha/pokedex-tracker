@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
+import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/services/pokemon_cache_service.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
@@ -83,16 +84,42 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
   }
 
   Future<void> _loadAll() async {
-    final cache = PokemonCacheService.instance;
-    final id = widget.pokemon.id;
+    final id  = widget.pokemon.id;
+    final svc = PokedexDataService.instance;
 
-    // Carrega Pokedex ativas (local, rápido)
-    final storage = StorageService();
-    final active = await storage.getActivePokedexIds();
+    // Pokedex ativas (local, instantâneo)
+    final active = await StorageService().getActivePokedexIds();
     if (mounted) setState(() => _activePokedexIds = active);
 
+    // ── Dados locais (sem rede) ────────────────────────────────────
+    if (svc.isLoaded && svc.get(id) != null) {
+      _abilities = svc.getAbilities(id).map((a) => {
+        'nameEn'     : a['nameEn'] as String,
+        'namePt'     : translateAbility(a['nameEn'] as String),
+        'description': a['description'] as String? ?? '',
+        'isHidden'   : a['isHidden'] as bool,
+      }).toList();
+
+      _evoChain = svc.getEvoChain(id);
+
+      // Flavor text: tradução cacheada ou fallback EN
+      final flavorEn = svc.getFlavorEn(id);
+      String translated = await PokemonCacheService.instance.getTranslation(flavorEn) ?? '';
+      if (translated.isEmpty && flavorEn.isNotEmpty) {
+        translated = await translateFlavorText(flavorEn);
+        if (translated.isNotEmpty) {
+          await PokemonCacheService.instance.setTranslation(flavorEn, translated);
+        }
+      }
+      _flavorTextPt = translated.isNotEmpty ? translated : flavorEn;
+
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+
+    // ── Fallback: chamada de rede (só se asset não disponível) ────
+    final cache = PokemonCacheService.instance;
     try {
-      // ── /pokemon/{id} ─────────────────────────────────────────
       var pokemonData = await cache.getPokemon(id);
       if (pokemonData == null) {
         final r = await http.get(Uri.parse('$kApiBase/pokemon/$id'));
@@ -108,7 +135,6 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
         await _parseAbilities(pokemonData);
       }
 
-      // ── /pokemon-species/{id} ──────────────────────────────────
       var speciesData = await cache.getSpecies(id);
       if (speciesData == null) {
         final r = await http.get(Uri.parse('$kApiBase/pokemon-species/$id'));
@@ -121,7 +147,6 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
         _speciesData = speciesData;
         await _parseEvoChain(speciesData);
         await _loadAlternateForms();
-        // Tradução do flavor text (também cacheada)
         final rawFlavor = extractFlavorText(
           speciesData['flavor_text_entries'] as List<dynamic>? ?? [],
           'nacional',
@@ -129,13 +154,10 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
         String translated = await cache.getTranslation(rawFlavor) ?? '';
         if (translated.isEmpty) {
           translated = await translateFlavorText(rawFlavor);
-          if (translated.isNotEmpty) {
-            await cache.setTranslation(rawFlavor, translated);
-          }
+          if (translated.isNotEmpty) await cache.setTranslation(rawFlavor, translated);
         }
         if (mounted) setState(() => _flavorTextPt = translated);
       }
-
       if (mounted) setState(() => _loading = false);
     } catch (_) {
       if (mounted) setState(() => _loading = false);

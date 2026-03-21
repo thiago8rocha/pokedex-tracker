@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
+import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/services/pokemon_cache_service.dart';
 import 'package:pokedex_tracker/translations.dart';
 
@@ -82,10 +83,37 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   }
 
   Future<void> _loadAll() async {
+    final id  = widget.pokemon.id;
+    final svc = PokedexDataService.instance;
+
+    // ── Dados locais (sem rede) ────────────────────────────────────
+    if (svc.isLoaded && svc.get(id) != null) {
+      _abilities = svc.getAbilities(id).map((a) => {
+        'nameEn'     : a['nameEn'] as String,
+        'namePt'     : translateAbility(a['nameEn'] as String),
+        'description': a['description'] as String? ?? '',
+        'isHidden'   : a['isHidden'] as bool,
+      }).toList();
+
+      _evoChain = svc.getEvoChain(id);
+
+      final flavorEn = svc.getFlavorEn(id);
+      String translated = await PokemonCacheService.instance.getTranslation(flavorEn) ?? '';
+      if (translated.isEmpty && flavorEn.isNotEmpty) {
+        translated = await translateFlavorText(flavorEn);
+        if (translated.isNotEmpty) {
+          await PokemonCacheService.instance.setTranslation(flavorEn, translated);
+        }
+      }
+      _flavorTextPt = translated.isNotEmpty ? translated : flavorEn;
+
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
+
+    // ── Fallback: chamada de rede ──────────────────────────────────
     final cache = PokemonCacheService.instance;
-    final id = widget.pokemon.id;
     try {
-      // ── /pokemon/{id} ──────────────────────────────────────────
       var pokemonData = await cache.getPokemon(id);
       if (pokemonData == null) {
         final r = await http.get(Uri.parse('$kApiBase/pokemon/$id'));
@@ -101,7 +129,6 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
         await _parseAbilities(pokemonData);
       }
 
-      // ── /pokemon-species/{id} ───────────────────────────────────
       var speciesData = await cache.getSpecies(id);
       if (speciesData == null) {
         final r = await http.get(Uri.parse('$kApiBase/pokemon-species/$id'));
