@@ -742,12 +742,12 @@ class _DetailHeaderState extends State<DetailHeader> {
                                           children: [
                                             if (widget.prevId != null)
                                               Text('#${widget.prevId.toString().padLeft(3,'0')}',
-                                                style: TextStyle(fontSize: 10,
+                                                style: TextStyle(fontSize: 11,
                                                   color: Colors.white.withOpacity(0.65),
                                                   fontWeight: FontWeight.w500)),
                                             if (widget.prevName != null)
                                               Text(widget.prevName!,
-                                                style: TextStyle(fontSize: 11,
+                                                style: TextStyle(fontSize: 13,
                                                   color: Colors.white.withOpacity(0.85),
                                                   fontWeight: FontWeight.w600)),
                                           ]),
@@ -773,12 +773,12 @@ class _DetailHeaderState extends State<DetailHeader> {
                                           children: [
                                             if (widget.nextId != null)
                                               Text('#${widget.nextId.toString().padLeft(3,'0')}',
-                                                style: TextStyle(fontSize: 10,
+                                                style: TextStyle(fontSize: 11,
                                                   color: Colors.white.withOpacity(0.65),
                                                   fontWeight: FontWeight.w500)),
                                             if (widget.nextName != null)
                                               Text(widget.nextName!,
-                                                style: TextStyle(fontSize: 11,
+                                                style: TextStyle(fontSize: 13,
                                                   color: Colors.white.withOpacity(0.85),
                                                   fontWeight: FontWeight.w600)),
                                           ]),
@@ -806,7 +806,7 @@ class _DetailHeaderState extends State<DetailHeader> {
                                       fontWeight: FontWeight.w500,
                                       letterSpacing: 1.0,
                                     )),
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 0),
                                   Text(p.name,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
