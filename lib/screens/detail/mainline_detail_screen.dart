@@ -338,7 +338,7 @@ class _SwitchInfoTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         // ── Species + flavor text + altura/tipo/peso ──
         AboutHeader(
           category: category,
@@ -349,33 +349,48 @@ class _SwitchInfoTab extends StatelessWidget {
           loading: loading,
         ),
 
-        const Divider(height: 24),
+        const SizedBox(height: 20),
 
         // ── Onde encontrar ──
-        secTitle(context, 'ONDE ENCONTRAR'),
-        _whereToFindPlaceholder(context),
+        SectionCard(
+          title: 'ONDE ENCONTRAR',
+          pokemonTypes: pokemon.types,
+          child: _whereToFindPlaceholder(context),
+        ),
 
         const SizedBox(height: 16),
 
         // ── Habilidades ──
-        secTitle(context, 'HABILIDADES'),
-        if (loading)
-          const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2)))
-        else
-          ...abilities.map((a) => AbilityCard(
-            nameEn: a['nameEn'] as String, namePt: a['namePt'] as String? ?? '',
-            description: a['description'] as String, isHidden: a['isHidden'] as bool,
-          )),
+        SectionCard(
+          title: 'HABILIDADES',
+          pokemonTypes: pokemon.types,
+          loading: loading,
+          child: abilities.isEmpty
+              ? Text('Sem dados',
+                  style: TextStyle(fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant))
+              : Column(children: abilities.map((a) => AbilityCard(
+                  nameEn: a['nameEn'] as String,
+                  namePt: a['namePt'] as String? ?? '',
+                  description: a['description'] as String,
+                  isHidden: a['isHidden'] as bool,
+                )).toList()),
+        ),
 
         const SizedBox(height: 16),
 
         // ── Evoluções ──
-        secTitle(context, 'EVOLUÇÕES'),
-        if (evoChain.isEmpty)
-          Text(loading ? 'Carregando...' : 'Sem dados',
-            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant))
-        else
-          EvoChainWidget(chain: evoChain),
+        SectionCard(
+          title: 'EVOLUÇÕES',
+          pokemonTypes: pokemon.types,
+          child: evoChain.isEmpty
+              ? Text(loading ? 'Carregando...' : 'Sem dados',
+                  style: TextStyle(fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant))
+              : EvoChainWidget(chain: evoChain),
+        ),
+
+        const SizedBox(height: 16),
       ]),
     );
   }

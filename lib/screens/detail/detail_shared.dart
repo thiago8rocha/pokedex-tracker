@@ -546,6 +546,83 @@ Widget secTitle(BuildContext context, String title) => Padding(
   )),
 );
 
+// ─── WIDGET: SEÇÃO COM CARD ───────────────────────────────────────
+// Título centralizado com borda da cor do tipo primário do Pokémon.
+// Conteúdo dentro de um container com fundo levemente diferente do fundo.
+
+class SectionCard extends StatelessWidget {
+  final String title;
+  final List<String> pokemonTypes;
+  final Widget child;
+  final bool loading;
+
+  const SectionCard({
+    super.key,
+    required this.title,
+    required this.pokemonTypes,
+    required this.child,
+    this.loading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Cor do primeiro tipo (ou cinza neutro se sem tipo)
+    final primaryTypePt = pokemonTypes.isNotEmpty
+        ? ptType(pokemonTypes[0])
+        : 'Normal';
+    final typeColor = TypeColors.fromType(primaryTypePt);
+
+    // Fundo do card: levemente diferente do fundo da tela
+    final cardBg = isDark
+        ? const Color(0xFF1E1E1E)
+        : const Color(0xFFF2F2F2);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // ── Título centralizado com borda da cor do tipo ──
+        Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            decoration: BoxDecoration(
+              border: Border.all(color: typeColor, width: 1.5),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: typeColor,
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // ── Container do conteúdo ──
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: loading
+              ? const Center(child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: CircularProgressIndicator(strokeWidth: 2)))
+              : child,
+        ),
+      ],
+    );
+  }
+}
+
 Color neutralBg(BuildContext context) =>
     Theme.of(context).brightness == Brightness.dark
         ? const Color(0xFF2A2A2A)
