@@ -10,6 +10,125 @@ import 'package:pokedex_tracker/translations.dart';
 
 const String kApiBase = 'https://pokeapi.co/api/v2';
 
+// ─── ÍCONES DE TIPO ───────────────────────────────────────────────
+// SVGs em assets/types/<type>.svg (MIT — duiker101/pokemon-type-svg-icons)
+String typeIconAsset(String type) => 'assets/types/${type.toLowerCase()}.svg';
+
+// Nomes traduzidos dos tipos
+const Map<String, String> typeNamePt = {
+  'normal':   'Normal',
+  'fire':     'Fogo',
+  'water':    'Água',
+  'grass':    'Planta',
+  'electric': 'Elétrico',
+  'ice':      'Gelo',
+  'fighting': 'Lutador',
+  'poison':   'Veneno',
+  'ground':   'Terra',
+  'flying':   'Voador',
+  'psychic':  'Psíquico',
+  'bug':      'Inseto',
+  'rock':     'Pedra',
+  'ghost':    'Fantasma',
+  'dragon':   'Dragão',
+  'dark':     'Sombrio',
+  'steel':    'Aço',
+  'fairy':    'Fada',
+};
+
+// ─── MAPEAMENTO pokedexId → version-groups da PokeAPI ─────────────
+// Usado para buscar o flavor text do jogo correto em pokemon-species.
+// Ordem: prioridade decrescente (primeiros = preferidos para esse jogo).
+const Map<String, List<String>> pokedexVersionGroups = {
+  'let_s_go_pikachu___eevee':           ['lets-go-pikachu-lets-go-eevee'],
+  'firered___leafgreen':                 ['firered-leafgreen'],
+  'sword___shield':                      ['sword-shield'],
+  'brilliant_diamond___shining_pearl':   ['brilliant-diamond-and-shining-pearl'],
+  'legends_arceus':                      ['legends-arceus'],
+  'scarlet___violet':                    ['scarlet-violet'],
+  'legends_z-a':                         ['legends-za'],
+  // Fallback para nacional: prioridade da geração mais recente
+  'nacional': [
+    'scarlet-violet', 'legends-za', 'legends-arceus',
+    'brilliant-diamond-and-shining-pearl', 'sword-shield',
+    'lets-go-pikachu-lets-go-eevee', 'firered-leafgreen',
+    'ultra-sun-ultra-moon', 'sun-moon', 'omega-ruby-alpha-sapphire',
+    'x-y', 'black-2-white-2', 'black-white', 'heartgold-soulsilver',
+    'platinum', 'diamond-pearl', 'emerald', 'firered-leafgreen',
+    'ruby-sapphire', 'crystal', 'gold-silver', 'red-blue',
+  ],
+};
+
+/// Extrai o melhor flavor text de [flavorEntries] para o [pokedexId] dado.
+/// Prioriza pt-BR; cai para en; prioriza a versão do jogo correto.
+String extractFlavorText(
+  List<dynamic> flavorEntries,
+  String pokedexId,
+) {
+  final preferredGroups = pokedexVersionGroups[pokedexId] ??
+      pokedexVersionGroups['nacional']!;
+
+  // Tentar cada version-group preferido, priorizando pt-BR
+  for (final vg in preferredGroups) {
+    String ptText = '', enText = '';
+    for (final e in flavorEntries) {
+      final evg = e['version']?['name'] as String? ??
+                  e['version_group']?['name'] as String? ?? '';
+      // A PokeAPI usa version name (ex: 'sword'), não version-group
+      // Verificar se a versão pertence ao group
+      if (!_versionBelongsToGroup(evg, vg)) continue;
+      final lang = e['language']['name'] as String;
+      final text = (e['flavor_text'] as String? ?? '')
+          .replaceAll('\n', ' ').replaceAll('\f', ' ').trim();
+      if (lang == 'pt-BR' && ptText.isEmpty) ptText = text;
+      if (lang == 'en' && enText.isEmpty) enText = text;
+    }
+    if (ptText.isNotEmpty) return ptText;
+    if (enText.isNotEmpty) return enText;
+  }
+
+  // Fallback: qualquer entrada em pt-BR ou en
+  String anyPt = '', anyEn = '';
+  for (final e in flavorEntries) {
+    final lang = e['language']['name'] as String;
+    final text = (e['flavor_text'] as String? ?? '')
+        .replaceAll('\n', ' ').replaceAll('\f', ' ').trim();
+    if (lang == 'pt-BR' && anyPt.isEmpty) anyPt = text;
+    if (lang == 'en' && anyEn.isEmpty) anyEn = text;
+  }
+  return anyPt.isNotEmpty ? anyPt : anyEn;
+}
+
+// Mapeia version name → version-group name da PokeAPI
+bool _versionBelongsToGroup(String version, String group) {
+  const versionToGroup = {
+    'sword':   'sword-shield',         'shield':  'sword-shield',
+    'scarlet': 'scarlet-violet',       'violet':  'scarlet-violet',
+    'lets-go-pikachu': 'lets-go-pikachu-lets-go-eevee',
+    'lets-go-eevee':   'lets-go-pikachu-lets-go-eevee',
+    'brilliant-diamond': 'brilliant-diamond-and-shining-pearl',
+    'shining-pearl':     'brilliant-diamond-and-shining-pearl',
+    'legends-arceus':    'legends-arceus',
+    'legends-za':        'legends-za',
+    'firered': 'firered-leafgreen', 'leafgreen': 'firered-leafgreen',
+    'ultra-sun':   'ultra-sun-ultra-moon', 'ultra-moon': 'ultra-sun-ultra-moon',
+    'sun':  'sun-moon', 'moon': 'sun-moon',
+    'omega-ruby': 'omega-ruby-alpha-sapphire', 'alpha-sapphire': 'omega-ruby-alpha-sapphire',
+    'x': 'x-y', 'y': 'x-y',
+    'black-2': 'black-2-white-2', 'white-2': 'black-2-white-2',
+    'black': 'black-white', 'white': 'black-white',
+    'heartgold': 'heartgold-soulsilver', 'soulsilver': 'heartgold-soulsilver',
+    'platinum': 'platinum',
+    'diamond': 'diamond-pearl', 'pearl': 'diamond-pearl',
+    'emerald': 'emerald',
+    'ruby': 'ruby-sapphire', 'sapphire': 'ruby-sapphire',
+    'crystal': 'crystal',
+    'gold': 'gold-silver', 'silver': 'gold-silver',
+    'red': 'red-blue', 'blue': 'red-blue',
+  };
+  return (versionToGroup[version] ?? version) == group;
+}
+
 // ─── MAPEAMENTO FORMAS → JOGO ─────────────────────────────────────
 // Megas Kanto: Let's Go P/E. Megas não-Kanto: Legends: Z-A.
 // Sword/Shield NÃO tem Megas. Gigamax é exclusivo de Sword/Shield.
@@ -180,6 +299,120 @@ class BilingualTerm extends StatelessWidget {
     );
   }
 }
+
+// ─── WIDGET: BADGE DE TIPO COM ÍCONE ─────────────────────────────
+
+class TypeBadge extends StatelessWidget {
+  final String type;
+  const TypeBadge({super.key, required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = typeNamePt[type.toLowerCase()] ?? type;
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Image.asset(typeIconAsset(type), width: 18, height: 18,
+        errorBuilder: (_, __, ___) => const SizedBox(width: 18, height: 18)),
+      const SizedBox(width: 4),
+      Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+    ]);
+  }
+}
+
+// ─── WIDGET: CABEÇALHO DA ABA ABOUT ──────────────────────────────
+// Exibe: categoria centralizada → flavor text → linha altura/tipos/peso
+
+class AboutHeader extends StatelessWidget {
+  final String category;
+  final String flavorText;
+  final String height;
+  final String weight;
+  final List<String> types;
+  final bool loading;
+
+  const AboutHeader({
+    super.key,
+    required this.category,
+    required this.flavorText,
+    required this.height,
+    required this.weight,
+    required this.types,
+    required this.loading,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
+
+    return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      // Categoria centralizada
+      if (loading)
+        const SizedBox(height: 20,
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)))
+      else
+        Text(
+          category.isEmpty ? '—' : '${category} Pokémon',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            color: secondary,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+
+      const SizedBox(height: 12),
+
+      // Flavor text
+      if (loading)
+        const SizedBox(height: 40,
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)))
+      else
+        Text(
+          flavorText.isEmpty ? '—' : flavorText,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 13.5, height: 1.5),
+        ),
+
+      const SizedBox(height: 20),
+
+      // Linha: Altura — Tipos — Peso
+      IntrinsicHeight(
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          _statColumn(context, 'Altura', Text(loading ? '—' : height,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600))),
+          VerticalDivider(width: 1, color: Theme.of(context).dividerColor),
+          _statColumn(context, 'Tipo',
+            loading
+              ? const SizedBox(height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2))
+              : Column(mainAxisSize: MainAxisSize.min,
+                  children: types.map((t) =>
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: TypeBadge(type: t),
+                    )).toList())),
+          VerticalDivider(width: 1, color: Theme.of(context).dividerColor),
+          _statColumn(context, 'Peso', Text(loading ? '—' : weight,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600))),
+        ]),
+      ),
+
+      const SizedBox(height: 8),
+    ]);
+  }
+
+  Widget _statColumn(BuildContext context, String label, Widget value) {
+    return Expanded(child: Column(mainAxisSize: MainAxisSize.min, children: [
+      value,
+      const SizedBox(height: 4),
+      Text(label, style: TextStyle(
+        fontSize: 11,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      )),
+    ]));
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
 
 Widget secTitle(BuildContext context, String title) => Padding(
   padding: const EdgeInsets.only(bottom: 8),

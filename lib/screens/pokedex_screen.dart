@@ -503,6 +503,7 @@ class _PokedexScreenState extends State<PokedexScreen>
           } else {
             return SwitchDetailScreen(
               pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
+              pokedexId: _effectivePokedexId,
               prevName: _prevName, prevId: _prevId,
               nextName: _nextName, nextId: _nextId,
               onPrev: prevEntry != null ? onPrevCallback : null,
@@ -592,6 +593,7 @@ class _PokedexScreenState extends State<PokedexScreen>
         } else {
           return SwitchDetailScreen(
             pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
+            pokedexId: _effectivePokedexId,
             prevName: prevName, prevId: prevId, nextName: nextName, nextId: nextId,
             onPrev: prevEntry != null ? onP : null, onNext: nextEntry != null ? onN : null,
           );

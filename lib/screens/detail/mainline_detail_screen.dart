@@ -15,12 +15,14 @@ class SwitchDetailScreen extends StatefulWidget {
   final int?    nextId;
   final VoidCallback? onPrev;
   final VoidCallback? onNext;
+  final String pokedexId;
 
   const SwitchDetailScreen({
     super.key,
     required this.pokemon,
     required this.caught,
     required this.onToggleCaught,
+    required this.pokedexId,
     this.prevName, this.prevId,
     this.nextName, this.nextId,
     this.onPrev, this.onNext,
@@ -50,8 +52,8 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   bool get _hasMultipleForms => !_loading && _forms.length > 1;
 
   List<String> get _tabs => _hasMultipleForms
-      ? ['Informações', 'Status', 'Formas', 'Moves']
-      : ['Informações', 'Status', 'Moves'];
+      ? ['About', 'Status', 'Formas', 'Moves']
+      : ['About', 'Status', 'Moves'];
 
   @override
   void initState() {
@@ -234,6 +236,12 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
       : '${((_pokemonData!['weight'] as int) / 10).toStringAsFixed(1)} kg';
   String get _captureRate => _speciesData == null ? '—'
       : '${_speciesData!['capture_rate'] ?? '—'}';
+
+  String get _flavorText {
+    if (_speciesData == null) return '';
+    final entries = _speciesData!['flavor_text_entries'] as List<dynamic>? ?? [];
+    return extractFlavorText(entries, widget.pokedexId);
+  }
   String get _category {
     if (_speciesData == null) return '—';
     final genera = _speciesData!['genera'] as List<dynamic>? ?? [];
@@ -291,9 +299,9 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
                 abilities: _abilities,
                 evoChain: _evoChain,
                 category: _category,
+                flavorText: _flavorText,
                 height: _height,
                 weight: _weight,
-                captureRate: _captureRate,
                 loading: _loading,
               ),
               StatusTab(pokemon: widget.pokemon),
@@ -307,34 +315,45 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   }
 }
 
-// ─── ABA INFO SWITCH ─────────────────────────────────────────────
+// ─── ABA ABOUT MAINLINE ───────────────────────────────────────────
 
 class _SwitchInfoTab extends StatelessWidget {
   final Pokemon pokemon;
   final List<Map<String, dynamic>> abilities, evoChain;
-  final String category, height, weight, captureRate;
+  final String category, flavorText, height, weight;
   final bool loading;
 
   const _SwitchInfoTab({
     required this.pokemon, required this.abilities, required this.evoChain,
-    required this.category, required this.height, required this.weight,
-    required this.captureRate, required this.loading,
+    required this.category, required this.flavorText,
+    required this.height, required this.weight,
+    required this.loading,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bg = neutralBg(context);
-    final border = neutralBorder(context);
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        secTitle(context, 'INFORMAÇÕES'),
-        _infoTable(context, bg, border),
-        const SizedBox(height: 16),
+        // ── Species + flavor text + altura/tipo/peso ──
+        AboutHeader(
+          category: category,
+          flavorText: flavorText,
+          height: height,
+          weight: weight,
+          types: pokemon.types,
+          loading: loading,
+        ),
+
+        const Divider(height: 24),
+
+        // ── Onde encontrar ──
         secTitle(context, 'ONDE ENCONTRAR'),
-        _WhereToFindPlaceholder(context),
+        _whereToFindPlaceholder(context),
+
         const SizedBox(height: 16),
+
+        // ── Habilidades ──
         secTitle(context, 'HABILIDADES'),
         if (loading)
           const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2)))
@@ -343,7 +362,10 @@ class _SwitchInfoTab extends StatelessWidget {
             nameEn: a['nameEn'] as String, namePt: a['namePt'] as String? ?? '',
             description: a['description'] as String, isHidden: a['isHidden'] as bool,
           )),
+
         const SizedBox(height: 16),
+
+        // ── Evoluções ──
         secTitle(context, 'EVOLUÇÕES'),
         if (evoChain.isEmpty)
           Text(loading ? 'Carregando...' : 'Sem dados',
@@ -354,7 +376,7 @@ class _SwitchInfoTab extends StatelessWidget {
     );
   }
 
-  Widget _WhereToFindPlaceholder(BuildContext context) {
+  Widget _whereToFindPlaceholder(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -372,29 +394,6 @@ class _SwitchInfoTab extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
         )),
       ]),
-    );
-  }
-
-  Widget _infoTable(BuildContext ctx, Color bg, Color border) {
-    final rows = [
-      ['Categoria', category], ['Altura', height],
-      ['Peso', weight], ['Taxa de captura', captureRate],
-    ];
-    return Container(
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
-      child: Column(children: rows.asMap().entries.map((e) {
-        final isLast = e.key == rows.length - 1;
-        return Container(
-          decoration: isLast ? null : BoxDecoration(
-            border: Border(bottom: BorderSide(color: border, width: 0.5))),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(e.value[0], style: TextStyle(fontSize: 13,
-              color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
-            Text(e.value[1], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-          ]),
-        );
-      }).toList()),
     );
   }
 }

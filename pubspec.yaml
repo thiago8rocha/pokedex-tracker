@@ -60,6 +60,7 @@ flutter:
     - assets/pokopia/specialties/
     - assets/pokopia/habitats/
     - assets/pokopia/habitats/event/
+    - assets/types/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

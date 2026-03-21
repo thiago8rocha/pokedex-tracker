@@ -52,8 +52,8 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
   bool get _hasMultipleForms => !_loading && _forms.length > 1;
 
   List<String> get _tabs => _hasMultipleForms
-      ? ['Informações', 'Status', 'Formas', 'Moves']
-      : ['Informações', 'Status', 'Moves'];
+      ? ['About', 'Status', 'Formas', 'Moves']
+      : ['About', 'Status', 'Moves'];
 
   @override
   void initState() {
@@ -247,6 +247,12 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
   String get _captureRate => _speciesData == null ? '—'
       : '${_speciesData!['capture_rate'] ?? '—'}';
 
+  String get _flavorText {
+    if (_speciesData == null) return '';
+    final entries = _speciesData!['flavor_text_entries'] as List<dynamic>? ?? [];
+    return extractFlavorText(entries, 'nacional');
+  }
+
   String get _category {
     if (_speciesData == null) return '—';
     final genera = _speciesData!['genera'] as List<dynamic>? ?? [];
@@ -360,9 +366,9 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
                 abilities: _abilities,
                 evoChain: _evoChain,
                 category: _category,
+                flavorText: _flavorText,
                 height: _height,
                 weight: _weight,
-                captureRate: _captureRate,
                 availableGames: _availableGames,
                 loading: _loading,
               ),
@@ -377,32 +383,42 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
   }
 }
 
-// ─── ABA INFO NACIONAL ───────────────────────────────────────────
+// ─── ABA ABOUT NACIONAL ──────────────────────────────────────────
 
 class _NacionalInfoTab extends StatelessWidget {
   final Pokemon pokemon;
   final List<Map<String, dynamic>> abilities, evoChain;
-  final String category, height, weight, captureRate;
+  final String category, flavorText, height, weight;
   final List<String> availableGames;
   final bool loading;
 
   const _NacionalInfoTab({
     required this.pokemon, required this.abilities, required this.evoChain,
-    required this.category, required this.height, required this.weight,
-    required this.captureRate, required this.availableGames, required this.loading,
+    required this.category, required this.flavorText,
+    required this.height, required this.weight,
+    required this.availableGames, required this.loading,
   });
 
   @override
   Widget build(BuildContext context) {
     final bg = neutralBg(context);
-    final border = neutralBorder(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        secTitle(context, 'INFORMAÇÕES'),
-        _infoTable(context, bg, border),
-        const SizedBox(height: 16),
+        // ── Species + flavor text + altura/tipo/peso ──
+        AboutHeader(
+          category: category,
+          flavorText: flavorText,
+          height: height,
+          weight: weight,
+          types: pokemon.types,
+          loading: loading,
+        ),
+
+        const Divider(height: 24),
+
+        // ── Habilidades ──
         secTitle(context, 'HABILIDADES'),
         if (loading)
           const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2)))
@@ -411,14 +427,20 @@ class _NacionalInfoTab extends StatelessWidget {
             nameEn: a['nameEn'] as String, namePt: a['namePt'] as String? ?? '',
             description: a['description'] as String, isHidden: a['isHidden'] as bool,
           )),
+
         const SizedBox(height: 16),
+
+        // ── Evoluções ──
         secTitle(context, 'EVOLUÇÕES'),
         if (evoChain.isEmpty)
           Text(loading ? 'Carregando...' : 'Sem dados',
             style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant))
         else
           EvoChainWidget(chain: evoChain),
+
         const SizedBox(height: 16),
+
+        // ── Disponível em ──
         secTitle(context, 'DISPONÍVEL EM'),
         if (availableGames.isEmpty)
           Text(loading ? 'Carregando...' : 'Dados não disponíveis.',
@@ -432,29 +454,6 @@ class _NacionalInfoTab extends StatelessWidget {
                 fontSize: 11, fontWeight: FontWeight.w500)),
             )).toList()),
       ]),
-    );
-  }
-
-  Widget _infoTable(BuildContext ctx, Color bg, Color border) {
-    final rows = [
-      ['Categoria', category], ['Altura', height],
-      ['Peso', weight], ['Taxa de captura', captureRate],
-    ];
-    return Container(
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
-      child: Column(children: rows.asMap().entries.map((e) {
-        final isLast = e.key == rows.length - 1;
-        return Container(
-          decoration: isLast ? null : BoxDecoration(
-            border: Border(bottom: BorderSide(color: border, width: 0.5))),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(e.value[0], style: TextStyle(fontSize: 13,
-              color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
-            Text(e.value[1], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-          ]),
-        );
-      }).toList()),
     );
   }
 }
