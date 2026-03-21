@@ -347,29 +347,29 @@ class BilingualTerm extends StatelessWidget {
 // ─── CORES DOS TIPOS ─────────────────────────────────────────────
 // Extraídas dos ícones oficiais do Bulbapedia
 const Map<String, Color> typeIconColors = {
-  'normal':   Color.fromRGBO(164, 165, 163, 1),
-  'fire':     Color.fromRGBO(231,  53,  53, 1),
-  'water':    Color.fromRGBO( 54, 136, 239, 1),
-  'grass':    Color.fromRGBO( 77, 168,  58, 1),
-  'electric': Color.fromRGBO(250, 195,  14, 1),
-  'ice':      Color.fromRGBO( 80, 211, 244, 1),
-  'fighting': Color.fromRGBO(253, 139,  24, 1),
-  'poison':   Color.fromRGBO(151,  75, 206, 1),
-  'ground':   Color.fromRGBO(154,  95,  51, 1),
-  'flying':   Color.fromRGBO(135, 187, 239, 1),
-  'psychic':  Color.fromRGBO(222,  78, 124, 1),
-  'bug':      Color.fromRGBO(156, 170,  49, 1),
-  'rock':     Color.fromRGBO(180, 175, 138, 1),
-  'ghost':    Color.fromRGBO(121,  76, 121, 1),
-  'dragon':   Color.fromRGBO( 97, 110, 227, 1),
-  'dark':     Color.fromRGBO(106,  87,  88, 1),
-  'steel':    Color.fromRGBO(109, 168, 189, 1),
-  'fairy':    Color.fromRGBO(234, 119, 234, 1),
+  'normal':   Color.fromRGBO(131, 140, 150, 1),
+  'fire':     Color.fromRGBO(253, 149,  76, 1),
+  'water':    Color.fromRGBO( 64, 135, 210, 1),
+  'grass':    Color.fromRGBO( 75, 172,  68, 1),
+  'electric': Color.fromRGBO(251, 205,  44, 1),
+  'ice':      Color.fromRGBO(103, 195, 180, 1),
+  'fighting': Color.fromRGBO(208,  40,  89, 1),
+  'poison':   Color.fromRGBO(164,  82, 194, 1),
+  'ground':   Color.fromRGBO(216, 118,  74, 1),
+  'flying':   Color.fromRGBO(136, 162, 218, 1),
+  'psychic':  Color.fromRGBO(252, 114, 121, 1),
+  'bug':      Color.fromRGBO(144, 188,  42, 1),
+  'rock':     Color.fromRGBO(192, 172, 128, 1),
+  'ghost':    Color.fromRGBO( 85, 104, 167, 1),
+  'dragon':   Color.fromRGBO(  2,  96, 181, 1),
+  'dark':     Color.fromRGBO( 83,  77,  94, 1),
+  'steel':    Color.fromRGBO( 77, 125, 144, 1),
+  'fairy':    Color.fromRGBO(232, 112, 217, 1),
 };
 
 // ─── WIDGET: BADGE DE TIPO ────────────────────────────────────────
-// Retângulo único com cor sólida do tipo.
-// ShaderMask garante que o ícone renderize branco sem layer isolado.
+// Ícone (círculo recortado, 32x32) + fundo colorido + texto branco.
+// O ícone já contém a cor de fundo correta — sem blendMode necessário.
 
 class TypeBadge extends StatelessWidget {
   final String type;
@@ -381,41 +381,40 @@ class TypeBadge extends StatelessWidget {
     final label = typeNamePt[key] ?? ptType(type);
     final color = typeIconColors[key] ?? const Color(0xFF888888);
 
-    return Container(
+    return SizedBox(
       height: 32,
       width: 130,
-      decoration: BoxDecoration(
-        color: color,
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [Colors.white, Colors.white],
-            ).createShader(bounds),
-            child: Image.asset(
+        child: Row(
+          children: [
+            // Ícone: quadrado com o círculo colorido recortado
+            Image.asset(
               typeIconAsset(type),
-              width: 20,
-              height: 20,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const SizedBox(width: 20),
+              width: 32,
+              height: 32,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+                  Container(width: 32, height: 32, color: color),
             ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
+            // Fundo colorido + texto
+            Expanded(
+              child: Container(
+                color: color,
+                alignment: Alignment.center,
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
