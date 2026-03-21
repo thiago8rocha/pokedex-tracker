@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
+import 'package:pokedex_tracker/theme/type_colors.dart';
 import 'package:pokedex_tracker/translations.dart';
 
 class NacionalDetailScreen extends StatefulWidget {
@@ -408,17 +409,21 @@ class _NacionalInfoTab extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        // ── Species + flavor text + altura/tipo/peso ──
-        AboutHeader(
-          category: category,
-          flavorText: flavorText,
-          height: height,
-          weight: weight,
-          types: pokemon.types,
-          loading: loading,
+        // ── Espécies + descrição + altura/tipo/peso ──
+        SectionCard(
+          title: 'ESPÉCIES',
+          pokemonTypes: pokemon.types,
+          child: AboutHeader(
+            category: category,
+            flavorText: flavorText,
+            height: height,
+            weight: weight,
+            types: pokemon.types,
+            loading: loading,
+          ),
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
         // ── Habilidades ──
         SectionCard(
@@ -461,14 +466,18 @@ class _NacionalInfoTab extends StatelessWidget {
                   style: TextStyle(fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant))
               : Wrap(spacing: 8, runSpacing: 8,
-                  children: availableGames.map((g) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(6)),
-                    child: Text(g, style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontSize: 11, fontWeight: FontWeight.w500)),
-                  )).toList()),
+                  children: availableGames.map((g) {
+                    final typeColor = TypeColors.fromType(
+                        ptType(pokemon.types.isNotEmpty ? pokemon.types[0] : 'normal'));
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: typeColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(6)),
+                      child: Text(g, style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontSize: 11, fontWeight: FontWeight.w500)),
+                    );
+                  }).toList()),
         ),
 
         const SizedBox(height: 16),

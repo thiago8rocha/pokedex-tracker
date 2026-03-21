@@ -339,17 +339,21 @@ class _SwitchInfoTab extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        // ── Species + flavor text + altura/tipo/peso ──
-        AboutHeader(
-          category: category,
-          flavorText: flavorText,
-          height: height,
-          weight: weight,
-          types: pokemon.types,
-          loading: loading,
+        // ── Espécies + descrição + altura/tipo/peso ──
+        SectionCard(
+          title: 'ESPÉCIES',
+          pokemonTypes: pokemon.types,
+          child: AboutHeader(
+            category: category,
+            flavorText: flavorText,
+            height: height,
+            weight: weight,
+            types: pokemon.types,
+            loading: loading,
+          ),
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
         // ── Onde encontrar ──
         SectionCard(
