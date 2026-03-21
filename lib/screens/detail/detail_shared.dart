@@ -575,55 +575,66 @@ class SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Cor do primeiro tipo (ou cinza neutro se sem tipo)
     final primaryTypePt = pokemonTypes.isNotEmpty
         ? ptType(pokemonTypes[0])
         : 'Normal';
     final typeColor = TypeColors.fromType(primaryTypePt);
 
-    // Fundo do card: cor do tipo com opacidade muito baixa
     final cardBg = isDark
         ? typeColor.withOpacity(0.08)
         : typeColor.withOpacity(0.06);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    // Altura do badge do título — para calcular o quanto sobrepõe o card
+    const double badgeHeight = 28.0;
+    const double overlap = badgeHeight / 2; // metade dentro, metade fora
+
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
-        // ── Título centralizado com borda da cor do tipo ──
-        Center(
+        // ── Card do conteúdo — com paddingTop para dar espaço ao título ──
+        Padding(
+          padding: const EdgeInsets.only(top: overlap),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(12, overlap + 8, 12, 12),
             decoration: BoxDecoration(
-              border: Border.all(color: typeColor, width: 1.5),
-              borderRadius: BorderRadius.circular(4),
+              color: cardBg,
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-                color: typeColor,
-              ),
-            ),
+            child: loading
+                ? const Center(child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: CircularProgressIndicator(strokeWidth: 2)))
+                : child,
           ),
         ),
 
-        const SizedBox(height: 8),
-
-        // ── Container do conteúdo ──
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(8),
+        // ── Título sobreposto na borda superior ──
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              height: badgeHeight,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                border: Border.all(color: typeColor, width: 1.5),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: typeColor,
+                ),
+              ),
+            ),
           ),
-          child: loading
-              ? const Center(child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: CircularProgressIndicator(strokeWidth: 2)))
-              : child,
         ),
       ],
     );
