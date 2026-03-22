@@ -1061,6 +1061,296 @@ class _PokedexScreenState extends State<PokedexScreen>
       ),
     );
   }
+  // ── Dados de jogos (para filtro) ────────────────────────────
+  static const _gameGenerations = {
+    'Red / Blue': [1], 'Yellow': [1],
+    'Gold / Silver': [1,2], 'Crystal': [1,2],
+    'Ruby / Sapphire': [1,2,3], 'FireRed / LeafGreen (GBA)': [1], 'Emerald': [1,2,3],
+    'Diamond / Pearl': [1,2,3,4], 'Platinum': [1,2,3,4], 'HeartGold / SoulSilver': [1,2,3,4],
+    'Black / White': [1,2,3,4,5], 'Black 2 / White 2': [1,2,3,4,5],
+    'X / Y': [1,2,3,4,5,6], 'Omega Ruby / Alpha Sapphire': [1,2,3,4,5,6],
+    'Sun / Moon': [1,2,3,4,5,6,7], 'Ultra Sun / Ultra Moon': [1,2,3,4,5,6,7],
+    "Let\'s Go Pikachu / Eevee": [1],
+    'Sword / Shield': [1,2,3,4,5,6,7,8],
+    'Brilliant Diamond / Shining Pearl': [1,2,3,4],
+    'Legends: Arceus': [1,2,3,4,8],
+    'Scarlet / Violet': [1,2,3,4,5,6,7,8,9],
+    'Legends: Z-A': [1,2,3,4,5,6,7,8,9],
+    'FireRed / LeafGreen': [1],
+    'Nacional': [1,2,3,4,5,6,7,8,9],
+    'Pokémon GO': [1,2,3,4,5,6,7,8,9],
+  };
+
+  static const _gameColors = {
+    'Nacional':                             [0xFFE8524A, 0xFFB71C1C],
+    'Pokémon GO':                           [0xFF4285F4, 0xFF0D47A1],
+    'Red / Blue':                           [0xFFE53935, 0xFF1565C0],
+    'Yellow':                               [0xFFFDD835, 0xFFFF8F00],
+    'Gold / Silver':                        [0xFFFFCA28, 0xFFB0BEC5],
+    'Crystal':                              [0xFF29B6F6, 0xFFE1F5FE],
+    'Ruby / Sapphire':                      [0xFFE53935, 0xFF1E88E5],
+    'FireRed / LeafGreen (GBA)':            [0xFFEF5350, 0xFF43A047],
+    'Emerald':                              [0xFF43A047, 0xFF00BCD4],
+    'Diamond / Pearl':                      [0xFF90CAF9, 0xFFF48FB1],
+    'Platinum':                             [0xFF78909C, 0xFFCFD8DC],
+    'HeartGold / SoulSilver':               [0xFFFFCA28, 0xFFB0BEC5],
+    'Black / White':                        [0xFF424242, 0xFFBDBDBD],
+    'Black 2 / White 2':                    [0xFF1A237E, 0xFFE0E0E0],
+    'X / Y':                                [0xFF1565C0, 0xFFE53935],
+    'Omega Ruby / Alpha Sapphire':          [0xFFE53935, 0xFF1E88E5],
+    'Sun / Moon':                           [0xFFFF8F00, 0xFF7B1FA2],
+    'Ultra Sun / Ultra Moon':               [0xFFFF6F00, 0xFF4A148C],
+    "Let\'s Go Pikachu / Eevee":           [0xFFFDD835, 0xFF8D6E63],
+    'Sword / Shield':                       [0xFF42A5F5, 0xFFEF5350],
+    'Brilliant Diamond / Shining Pearl':    [0xFF42A5F5, 0xFFEC407A],
+    'Legends: Arceus':                      [0xFFFFCA28, 0xFFFFFDE7],
+    'Scarlet / Violet':                     [0xFFEF6C00, 0xFF7B1FA2],
+    'Legends: Z-A':                         [0xFF546E7A, 0xFFFFD54F],
+    'FireRed / LeafGreen':                  [0xFFEF5350, 0xFF43A047],
+  };
+
+  // Filtro de jogo — estado
+  String? _selectedGameName; // null = jogo atual do widget
+
+  String get _activeGameName => _selectedGameName ?? widget.pokedexName;
+
+  static final List<String> _allGameNames = [
+    'Nacional', 'Pokémon GO',
+    'Red / Blue', 'Yellow',
+    'Gold / Silver', 'Crystal',
+    'Ruby / Sapphire', 'FireRed / LeafGreen (GBA)', 'Emerald',
+    'Diamond / Pearl', 'Platinum', 'HeartGold / SoulSilver',
+    'Black / White', 'Black 2 / White 2',
+    'X / Y', 'Omega Ruby / Alpha Sapphire',
+    'Sun / Moon', 'Ultra Sun / Ultra Moon',
+    "Let's Go Pikachu / Eevee",
+    'Sword / Shield', 'Brilliant Diamond / Shining Pearl',
+    'Legends: Arceus', 'Scarlet / Violet', 'Legends: Z-A',
+    'FireRed / LeafGreen',
+  ];
+
+  static final Map<String, String> _gameToPokedexId = {
+    'Nacional':                           'nacional',
+    'Pokémon GO':                         'pokémon_go',
+    'Red / Blue':                         'red___blue',
+    'Yellow':                             'yellow',
+    'Gold / Silver':                      'gold___silver',
+    'Crystal':                            'crystal',
+    'Ruby / Sapphire':                    'ruby___sapphire',
+    'FireRed / LeafGreen (GBA)':          'firered___leafgreen_(gba)',
+    'Emerald':                            'emerald',
+    'Diamond / Pearl':                    'diamond___pearl',
+    'Platinum':                           'platinum',
+    'HeartGold / SoulSilver':             'heartgold___soulsilver',
+    'Black / White':                      'black___white',
+    'Black 2 / White 2':                  'black_2___white_2',
+    'X / Y':                              'x___y',
+    'Omega Ruby / Alpha Sapphire':        'omega_ruby___alpha_sapphire',
+    'Sun / Moon':                         'sun___moon',
+    'Ultra Sun / Ultra Moon':             'ultra_sun___ultra_moon',
+    "Let's Go Pikachu / Eevee":          "let's_go_pikachu___eevee",
+    'Sword / Shield':                     'sword___shield',
+    'Brilliant Diamond / Shining Pearl':  'brilliant_diamond___shining_pearl',
+    'Legends: Arceus':                    'legends:_arceus',
+    'Scarlet / Violet':                   'scarlet___violet',
+    'Legends: Z-A':                       'legends:_z-a',
+    'FireRed / LeafGreen':                'firered___leafgreen',
+  };
+
+  static final Map<String, int> _gameTotal = {
+    'Nacional': 1025, 'Pokémon GO': 941,
+    'Red / Blue': 151, 'Yellow': 151,
+    'Gold / Silver': 251, 'Crystal': 251,
+    'Ruby / Sapphire': 386, 'FireRed / LeafGreen (GBA)': 386, 'Emerald': 386,
+    'Diamond / Pearl': 493, 'Platinum': 493, 'HeartGold / SoulSilver': 493,
+    'Black / White': 649, 'Black 2 / White 2': 649,
+    'X / Y': 721, 'Omega Ruby / Alpha Sapphire': 721,
+    'Sun / Moon': 807, 'Ultra Sun / Ultra Moon': 807,
+    "Let's Go Pikachu / Eevee": 153,
+    'Sword / Shield': 400, 'Brilliant Diamond / Shining Pearl': 493,
+    'Legends: Arceus': 242, 'Scarlet / Violet': 400,
+    'Legends: Z-A': 132, 'FireRed / LeafGreen': 386,
+  };
+
+  // ── Filtro de jogo ────────────────────────────────────────────
+
+  Widget _buildGameFilterBar() {
+    final scheme = Theme.of(context).colorScheme;
+    final gameName = _activeGameName;
+    final colors = _gameColors[gameName];
+    final c1 = colors != null ? Color(colors[0]) : scheme.primary;
+    final c2 = colors != null ? Color(colors[1]) : scheme.primary;
+    final gens = _gameGenerations[gameName];
+    final genLabel = gens != null ? 'Gen ${gens.first}${gens.length > 1 ? "–${gens.last}" : ""}' : '';
+
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(
+          color: scheme.outlineVariant, width: 0.5))),
+      child: GestureDetector(
+        onTap: _showGamePicker,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [c1.withOpacity(0.15), c2.withOpacity(0.15)]),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: c1.withOpacity(0.4), width: 1),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 10, height: 10,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [c1, c2]),
+                shape: BoxShape.circle)),
+            const SizedBox(width: 8),
+            Text(gameName,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis),
+            if (genLabel.isNotEmpty) ...[
+              const SizedBox(width: 6),
+              Text(genLabel,
+                style: TextStyle(fontSize: 10,
+                  color: scheme.onSurfaceVariant)),
+            ],
+            const SizedBox(width: 6),
+            Icon(Icons.keyboard_arrow_down, size: 16,
+              color: scheme.onSurfaceVariant),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  void _showGamePicker() async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (_) => _GamePickerSheet(
+        games: _allGameNames,
+        gameColors: _gameColors,
+        gameGenerations: _gameGenerations,
+        selected: _activeGameName,
+      ),
+    );
+    if (result == null || !mounted) return;
+    if (result == _activeGameName) return;
+
+    final newPokedexId = _gameToPokedexId[result] ?? result
+        .toLowerCase().replaceAll(' ', '_').replaceAll('/', '_').replaceAll("'", '');
+    final newTotal = _gameTotal[result] ?? 0;
+
+    await StorageService().setLastPokedexId(newPokedexId);
+
+    if (!mounted) return;
+    Navigator.pushReplacement(context, MaterialPageRoute(
+      builder: (_) => PokedexScreen(
+        pokedexId: newPokedexId,
+        pokedexName: result,
+        totalPokemon: newTotal,
+      ),
+    ));
+  }
+
+  // ── Bottom Nav ────────────────────────────────────────────────
+
+  Widget _buildBottomNav() {
+    const items = [
+      (0, Icons.home_outlined,         'Início'),
+      (1, Icons.style_outlined,        'Pocket'),
+      (2, Icons.public_outlined,       'GO'),
+      (3, Icons.nature_people_outlined,'Pokopia'),
+    ];
+    return SafeArea(child: Container(
+      height: 62,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(top: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant, width: 0.5))),
+      child: Row(children: items.map((item) {
+        final isActive = _navIndex == item.$1;
+        final color = isActive
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurfaceVariant;
+        return Expanded(child: InkWell(
+          onTap: () {
+            if (item.$1 == 0) { setState(() => _navIndex = 0); return; }
+            if (item.$1 == 1) {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PocketHubScreen()));
+              return;
+            }
+            if (item.$1 == 2) {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const GoHubScreen()));
+              return;
+            }
+            if (item.$1 == 3) {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PokopiaHubScreen()));
+              return;
+            }
+          },
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(item.$2, size: 22, color: color),
+            const SizedBox(height: 2),
+            Text(item.$3, style: TextStyle(fontSize: 10,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              color: color)),
+          ]),
+        ));
+      }).toList()),
+    ));
+  }
+
+  // ── Drawer ────────────────────────────────────────────────────
+
+  Widget _buildDrawer() {
+    final scheme = Theme.of(context).colorScheme;
+    return Drawer(child: SafeArea(child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+          child: Text('Menu', style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w700, fontSize: 18))),
+        Divider(color: scheme.outlineVariant),
+        ListTile(leading: const Icon(Icons.sports_martial_arts_outlined, size: 22),
+          title: const Text('Golpes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+          onTap: () { Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const MovesListScreen())); }),
+        ListTile(leading: const Icon(Icons.auto_awesome_outlined, size: 22),
+          title: const Text('Habilidades', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+          onTap: () { Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const AbilitiesListScreen())); }),
+        ListTile(leading: const Icon(Icons.psychology_outlined, size: 22),
+          title: const Text('Naturezas', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+          onTap: () { Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const NaturesListScreen())); }),
+        Divider(color: scheme.outlineVariant),
+        ListTile(leading: const Icon(Icons.groups_2_outlined, size: 22),
+          title: const Text('Times', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+          onTap: () { Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const TeamsScreen())); }),
+        ListTile(leading: const Icon(Icons.inventory_2_outlined, size: 22),
+          title: const Text('Itens', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+          onTap: () { Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemsListScreen())); }),
+        const Spacer(),
+        Divider(color: scheme.outlineVariant),
+        ListTile(leading: const Icon(Icons.settings_outlined, size: 22),
+          title: const Text('Configurações', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+          onTap: () async { Navigator.pop(context);
+            await Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
+        const SizedBox(height: 8),
+      ],
+    )));
+  }
+
 }
 
 // ─── CARD DE POKÉMON ─────────────────────────────────────────────
@@ -1504,295 +1794,7 @@ class _FilterSheetState extends State<_FilterSheet> {
       ),
     );
   }
-  // ── Dados de jogos (para filtro) ────────────────────────────
-  static const _gameGenerations = {
-    'Red / Blue': [1], 'Yellow': [1],
-    'Gold / Silver': [1,2], 'Crystal': [1,2],
-    'Ruby / Sapphire': [1,2,3], 'FireRed / LeafGreen (GBA)': [1], 'Emerald': [1,2,3],
-    'Diamond / Pearl': [1,2,3,4], 'Platinum': [1,2,3,4], 'HeartGold / SoulSilver': [1,2,3,4],
-    'Black / White': [1,2,3,4,5], 'Black 2 / White 2': [1,2,3,4,5],
-    'X / Y': [1,2,3,4,5,6], 'Omega Ruby / Alpha Sapphire': [1,2,3,4,5,6],
-    'Sun / Moon': [1,2,3,4,5,6,7], 'Ultra Sun / Ultra Moon': [1,2,3,4,5,6,7],
-    "Let\'s Go Pikachu / Eevee": [1],
-    'Sword / Shield': [1,2,3,4,5,6,7,8],
-    'Brilliant Diamond / Shining Pearl': [1,2,3,4],
-    'Legends: Arceus': [1,2,3,4,8],
-    'Scarlet / Violet': [1,2,3,4,5,6,7,8,9],
-    'Legends: Z-A': [1,2,3,4,5,6,7,8,9],
-    'FireRed / LeafGreen': [1],
-    'Nacional': [1,2,3,4,5,6,7,8,9],
-    'Pokémon GO': [1,2,3,4,5,6,7,8,9],
-  };
-
-  static const _gameColors = {
-    'Nacional':                             [0xFFE8524A, 0xFFB71C1C],
-    'Pokémon GO':                           [0xFF4285F4, 0xFF0D47A1],
-    'Red / Blue':                           [0xFFE53935, 0xFF1565C0],
-    'Yellow':                               [0xFFFDD835, 0xFFFF8F00],
-    'Gold / Silver':                        [0xFFFFCA28, 0xFFB0BEC5],
-    'Crystal':                              [0xFF29B6F6, 0xFFE1F5FE],
-    'Ruby / Sapphire':                      [0xFFE53935, 0xFF1E88E5],
-    'FireRed / LeafGreen (GBA)':            [0xFFEF5350, 0xFF43A047],
-    'Emerald':                              [0xFF43A047, 0xFF00BCD4],
-    'Diamond / Pearl':                      [0xFF90CAF9, 0xFFF48FB1],
-    'Platinum':                             [0xFF78909C, 0xFFCFD8DC],
-    'HeartGold / SoulSilver':               [0xFFFFCA28, 0xFFB0BEC5],
-    'Black / White':                        [0xFF424242, 0xFFBDBDBD],
-    'Black 2 / White 2':                    [0xFF1A237E, 0xFFE0E0E0],
-    'X / Y':                                [0xFF1565C0, 0xFFE53935],
-    'Omega Ruby / Alpha Sapphire':          [0xFFE53935, 0xFF1E88E5],
-    'Sun / Moon':                           [0xFFFF8F00, 0xFF7B1FA2],
-    'Ultra Sun / Ultra Moon':               [0xFFFF6F00, 0xFF4A148C],
-    "Let\'s Go Pikachu / Eevee":           [0xFFFDD835, 0xFF8D6E63],
-    'Sword / Shield':                       [0xFF42A5F5, 0xFFEF5350],
-    'Brilliant Diamond / Shining Pearl':    [0xFF42A5F5, 0xFFEC407A],
-    'Legends: Arceus':                      [0xFFFFCA28, 0xFFFFFDE7],
-    'Scarlet / Violet':                     [0xFFEF6C00, 0xFF7B1FA2],
-    'Legends: Z-A':                         [0xFF546E7A, 0xFFFFD54F],
-    'FireRed / LeafGreen':                  [0xFFEF5350, 0xFF43A047],
-  };
-
-  // Filtro de jogo — estado
-  String? _selectedGameName; // null = jogo atual do widget
-
-  String get _activeGameName => _selectedGameName ?? widget.pokedexName;
-
-  static final List<String> _allGameNames = [
-    'Nacional', 'Pokémon GO',
-    'Red / Blue', 'Yellow',
-    'Gold / Silver', 'Crystal',
-    'Ruby / Sapphire', 'FireRed / LeafGreen (GBA)', 'Emerald',
-    'Diamond / Pearl', 'Platinum', 'HeartGold / SoulSilver',
-    'Black / White', 'Black 2 / White 2',
-    'X / Y', 'Omega Ruby / Alpha Sapphire',
-    'Sun / Moon', 'Ultra Sun / Ultra Moon',
-    "Let's Go Pikachu / Eevee",
-    'Sword / Shield', 'Brilliant Diamond / Shining Pearl',
-    'Legends: Arceus', 'Scarlet / Violet', 'Legends: Z-A',
-    'FireRed / LeafGreen',
-  ];
-
-  static final Map<String, String> _gameToPokedexId = {
-    'Nacional':                           'nacional',
-    'Pokémon GO':                         'pokémon_go',
-    'Red / Blue':                         'red___blue',
-    'Yellow':                             'yellow',
-    'Gold / Silver':                      'gold___silver',
-    'Crystal':                            'crystal',
-    'Ruby / Sapphire':                    'ruby___sapphire',
-    'FireRed / LeafGreen (GBA)':          'firered___leafgreen_(gba)',
-    'Emerald':                            'emerald',
-    'Diamond / Pearl':                    'diamond___pearl',
-    'Platinum':                           'platinum',
-    'HeartGold / SoulSilver':             'heartgold___soulsilver',
-    'Black / White':                      'black___white',
-    'Black 2 / White 2':                  'black_2___white_2',
-    'X / Y':                              'x___y',
-    'Omega Ruby / Alpha Sapphire':        'omega_ruby___alpha_sapphire',
-    'Sun / Moon':                         'sun___moon',
-    'Ultra Sun / Ultra Moon':             'ultra_sun___ultra_moon',
-    "Let's Go Pikachu / Eevee":          "let's_go_pikachu___eevee",
-    'Sword / Shield':                     'sword___shield',
-    'Brilliant Diamond / Shining Pearl':  'brilliant_diamond___shining_pearl',
-    'Legends: Arceus':                    'legends:_arceus',
-    'Scarlet / Violet':                   'scarlet___violet',
-    'Legends: Z-A':                       'legends:_z-a',
-    'FireRed / LeafGreen':                'firered___leafgreen',
-  };
-
-  static final Map<String, int> _gameTotal = {
-    'Nacional': 1025, 'Pokémon GO': 941,
-    'Red / Blue': 151, 'Yellow': 151,
-    'Gold / Silver': 251, 'Crystal': 251,
-    'Ruby / Sapphire': 386, 'FireRed / LeafGreen (GBA)': 386, 'Emerald': 386,
-    'Diamond / Pearl': 493, 'Platinum': 493, 'HeartGold / SoulSilver': 493,
-    'Black / White': 649, 'Black 2 / White 2': 649,
-    'X / Y': 721, 'Omega Ruby / Alpha Sapphire': 721,
-    'Sun / Moon': 807, 'Ultra Sun / Ultra Moon': 807,
-    "Let's Go Pikachu / Eevee": 153,
-    'Sword / Shield': 400, 'Brilliant Diamond / Shining Pearl': 493,
-    'Legends: Arceus': 242, 'Scarlet / Violet': 400,
-    'Legends: Z-A': 132, 'FireRed / LeafGreen': 386,
-  };
-
-  // ── Filtro de jogo ────────────────────────────────────────────
-
-  Widget _buildGameFilterBar() {
-    final scheme = Theme.of(context).colorScheme;
-    final gameName = _activeGameName;
-    final colors = _gameColors[gameName];
-    final c1 = colors != null ? Color(colors[0]) : scheme.primary;
-    final c2 = colors != null ? Color(colors[1]) : scheme.primary;
-    final gens = _gameGenerations[gameName];
-    final genLabel = gens != null ? 'Gen ${gens.first}${gens.length > 1 ? "–${gens.last}" : ""}' : '';
-
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(
-          color: scheme.outlineVariant, width: 0.5))),
-      child: GestureDetector(
-        onTap: _showGamePicker,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [c1.withOpacity(0.15), c2.withOpacity(0.15)]),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: c1.withOpacity(0.4), width: 1),
-          ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Container(width: 10, height: 10,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [c1, c2]),
-                shape: BoxShape.circle)),
-            const SizedBox(width: 8),
-            Text(gameName,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-              overflow: TextOverflow.ellipsis),
-            if (genLabel.isNotEmpty) ...[
-              const SizedBox(width: 6),
-              Text(genLabel,
-                style: TextStyle(fontSize: 10,
-                  color: scheme.onSurfaceVariant)),
-            ],
-            const SizedBox(width: 6),
-            Icon(Icons.keyboard_arrow_down, size: 16,
-              color: scheme.onSurfaceVariant),
-          ]),
-        ),
-      ),
-    );
-  }
-
-  void _showGamePicker() async {
-    final result = await showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-      builder: (_) => _GamePickerSheet(
-        games: _allGameNames,
-        gameColors: _gameColors,
-        gameGenerations: _gameGenerations,
-        selected: _activeGameName,
-      ),
-    );
-    if (result == null || !mounted) return;
-    if (result == _activeGameName) return;
-
-    final newPokedexId = _gameToPokedexId[result] ?? result
-        .toLowerCase().replaceAll(' ', '_').replaceAll('/', '_').replaceAll("'", '');
-    final newTotal = _gameTotal[result] ?? 0;
-
-    await StorageService().setLastPokedexId(newPokedexId);
-
-    if (!mounted) return;
-    Navigator.pushReplacement(context, MaterialPageRoute(
-      builder: (_) => PokedexScreen(
-        pokedexId: newPokedexId,
-        pokedexName: result,
-        totalPokemon: newTotal,
-      ),
-    ));
-  }
-
-  // ── Bottom Nav ────────────────────────────────────────────────
-
-  Widget _buildBottomNav() {
-    const items = [
-      (0, Icons.home_outlined,         'Início'),
-      (1, Icons.style_outlined,        'Pocket'),
-      (2, Icons.public_outlined,       'GO'),
-      (3, Icons.nature_people_outlined,'Pokopia'),
-    ];
-    return SafeArea(child: Container(
-      height: 62,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(top: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant, width: 0.5))),
-      child: Row(children: items.map((item) {
-        final isActive = _navIndex == item.$1;
-        final color = isActive
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.onSurfaceVariant;
-        return Expanded(child: InkWell(
-          onTap: () {
-            if (item.$1 == 0) { setState(() => _navIndex = 0); return; }
-            if (item.$1 == 1) {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const PocketHubScreen()));
-              return;
-            }
-            if (item.$1 == 2) {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const GoHubScreen()));
-              return;
-            }
-            if (item.$1 == 3) {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const PokopiaHubScreen()));
-              return;
-            }
-          },
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(item.$2, size: 22, color: color),
-            const SizedBox(height: 2),
-            Text(item.$3, style: TextStyle(fontSize: 10,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              color: color)),
-          ]),
-        ));
-      }).toList()),
-    ));
-  }
-
-  // ── Drawer ────────────────────────────────────────────────────
-
-  Widget _buildDrawer() {
-    final scheme = Theme.of(context).colorScheme;
-    return Drawer(child: SafeArea(child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-          child: Text('Menu', style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.w700, fontSize: 18))),
-        Divider(color: scheme.outlineVariant),
-        ListTile(leading: const Icon(Icons.sports_martial_arts_outlined, size: 22),
-          title: const Text('Golpes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
-          onTap: () { Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const MovesListScreen())); }),
-        ListTile(leading: const Icon(Icons.auto_awesome_outlined, size: 22),
-          title: const Text('Habilidades', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
-          onTap: () { Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const AbilitiesListScreen())); }),
-        ListTile(leading: const Icon(Icons.psychology_outlined, size: 22),
-          title: const Text('Naturezas', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
-          onTap: () { Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const NaturesListScreen())); }),
-        Divider(color: scheme.outlineVariant),
-        ListTile(leading: const Icon(Icons.groups_2_outlined, size: 22),
-          title: const Text('Times', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
-          onTap: () { Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const TeamsScreen())); }),
-        ListTile(leading: const Icon(Icons.inventory_2_outlined, size: 22),
-          title: const Text('Itens', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
-          onTap: () { Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemsListScreen())); }),
-        const Spacer(),
-        Divider(color: scheme.outlineVariant),
-        ListTile(leading: const Icon(Icons.settings_outlined, size: 22),
-          title: const Text('Configurações', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
-          onTap: () async { Navigator.pop(context);
-            await Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
-        const SizedBox(height: 8),
-      ],
-    )));
-  }
+}
 
 
 // Lista de todas as especialidades para o filtro Pokopia
