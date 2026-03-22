@@ -2105,7 +2105,6 @@ class StatBar extends StatelessWidget {
             minHeight: 10,
             backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             valueColor: AlwaysStoppedAnimation<Color>(color),
-            minHeight: 5,
           ),
         )),
       ]),
