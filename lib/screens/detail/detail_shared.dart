@@ -1135,9 +1135,9 @@ class _StatusTabState extends State<StatusTab>
                     isScrollable: true,
                     padding: const EdgeInsets.all(3),
                     tabs: const [
-                      Tab(text: 'Base', height: 28),
-                      Tab(text: 'Mín',  height: 28),
-                      Tab(text: 'Máx',  height: 28),
+                      Tab(text: 'Base',    height: 28),
+                      Tab(text: 'Mínimo', height: 28),
+                      Tab(text: 'Máximo', height: 28),
                     ],
                   ),
                 ),
@@ -1170,11 +1170,12 @@ class _StatusTabState extends State<StatusTab>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (quad.isNotEmpty)   _DamageGroup(label: 'Fraqueza ×4',    entries: quad,  opacity: 1.0),
-              if (fraq.isNotEmpty)   _DamageGroup(label: 'Fraqueza ×2',    entries: fraq,  opacity: 0.9),
-              if (half.isNotEmpty)   _DamageGroup(label: 'Resistência ×½', entries: half,  opacity: 0.75),
-              if (quart.isNotEmpty)  _DamageGroup(label: 'Resistência ×¼', entries: quart, opacity: 0.6),
-              if (imun.isNotEmpty)   _DamageGroup(label: 'Imunidade ×0',   entries: imun,  opacity: 0.45),
+              if (quad.isNotEmpty)   _DamageGroup(title: 'Fraco contra',         subtitle: '4× de dano',      entries: quad),
+              if (fraq.isNotEmpty)   _DamageGroup(title: 'Fraco contra',         subtitle: '2× de dano',      entries: fraq),
+              if (normal.isNotEmpty) _DamageGroup(title: 'Dano normal',          subtitle: '1× de dano',      entries: normal),
+              if (half.isNotEmpty)   _DamageGroup(title: 'Resistente a',         subtitle: '1/2× de dano',    entries: half),
+              if (quart.isNotEmpty)  _DamageGroup(title: 'Muito resistente a',   subtitle: '1/4× de dano',    entries: quart),
+              if (imun.isNotEmpty)   _DamageGroup(title: 'Imune a',              subtitle: '0× de dano',      entries: imun),
             ],
           ),
         ),
@@ -1227,69 +1228,48 @@ class _StatBarRow extends StatelessWidget {
   }
 }
 
-// Grupo de tipos por relação de dano (estilo do exemplo)
+// Grupo de tipos por relação de dano
 class _DamageGroup extends StatelessWidget {
-  final String label;
+  final String title;     // ex: "Fraco contra"
+  final String subtitle;  // ex: "2× de dano"
   final List<MapEntry<String, double>> entries;
-  final double opacity;
 
   const _DamageGroup({
     super.key,
-    required this.label,
+    required this.title,
+    required this.subtitle,
     required this.entries,
-    required this.opacity,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (entries.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(label,
+          Text(title,
             style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 1),
+          Text(subtitle,
+            style: TextStyle(
+              fontSize: 10,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             alignment: WrapAlignment.center,
-            children: entries.map((e) {
-              final tc = TypeColors.fromType(ptType(e.key));
-              final bg = tc.withOpacity(opacity);
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: bg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(
-                      typeIconAsset(e.key),
-                      width: 14,
-                      height: 14,
-                      color: typeTextColor(bg),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      ptType(e.key),
-                      style: TextStyle(
-                        color: typeTextColor(bg),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+            // TypeBadge usa o tipo em inglês internamente — mesmo padrão da aba Sobre
+            children: entries.map((e) => TypeBadge(type: e.key)).toList(),
           ),
         ],
       ),
@@ -2099,7 +2079,7 @@ class StatBar extends StatelessWidget {
           textAlign: TextAlign.right)),
         const SizedBox(width: 8),
         Expanded(child: ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.zero,
           child: LinearProgressIndicator(
             value: value / 255,
             minHeight: 10,
@@ -2186,11 +2166,13 @@ Map<String, double> calculateWeaknesses(List<String> types) {
     'steel':    {'fire': 2.0, 'fighting': 2.0, 'ground': 2.0, 'normal': 0.5, 'grass': 0.5, 'ice': 0.5, 'flying': 0.5, 'psychic': 0.5, 'bug': 0.5, 'rock': 0.5, 'dragon': 0.5, 'steel': 0.5, 'fairy': 0.5, 'poison': 0.0},
     'fairy':    {'poison': 2.0, 'steel': 2.0, 'fighting': 0.5, 'bug': 0.5, 'dark': 0.5, 'dragon': 0.0},
   };
-  final mults = <String, double>{};
+  // Inicializa todos os 18 tipos com ×1 (dano normal)
+  const allTypes = ['normal','fire','water','electric','grass','ice','fighting',
+    'poison','ground','flying','psychic','bug','rock','ghost','dragon','dark','steel','fairy'];
+  final mults = <String, double>{for (final t in allTypes) t: 1.0};
   for (final type in types) {
     for (final entry in (tc[type.toLowerCase()] ?? {}).entries) {
-      final k = entry.key; // mantém em EN — ptType() aplicado na UI
-      mults[k] = (mults[k] ?? 1.0) * entry.value;
+      mults[entry.key] = (mults[entry.key] ?? 1.0) * entry.value;
     }
   }
   return mults;
