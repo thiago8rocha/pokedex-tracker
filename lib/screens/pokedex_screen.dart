@@ -516,18 +516,16 @@ class _PokedexScreenState extends State<PokedexScreen>
       _pokemonData[entry.speciesId] = _localPokemonData(entry.speciesId);
     }
 
-    // Busca stats em background — não bloqueia a abertura da tela
+    // Busca stats se ainda não temos — aguarda com timeout para não bloquear
     if (_pokemonData[entry.speciesId]!['stats'] == null) {
-      _api.fetchPokemon(entry.speciesId).then((apiData) {
-        if (apiData != null && mounted) {
-          setState(() {
-            _pokemonData[entry.speciesId] = {
-              ..._pokemonData[entry.speciesId]!,
-              'stats': apiData['stats'],
-            };
-          });
-        }
-      });
+      final apiData = await _api.fetchPokemon(entry.speciesId)
+          .timeout(const Duration(seconds: 4), onTimeout: () => null);
+      if (apiData != null && mounted) {
+        _pokemonData[entry.speciesId] = {
+          ..._pokemonData[entry.speciesId]!,
+          'stats': apiData['stats'],
+        };
+      }
     }
 
     final pokemon = _buildPokemon(entry.speciesId);
@@ -544,6 +542,20 @@ class _PokedexScreenState extends State<PokedexScreen>
     }
     if (nextEntry != null && !_pokemonData.containsKey(nextEntry.speciesId)) {
       _pokemonData[nextEntry.speciesId] = _localPokemonData(nextEntry.speciesId);
+    }
+
+    // Pré-carrega stats dos vizinhos em background (sem await)
+    for (final neighbor in [prevEntry, nextEntry]) {
+      if (neighbor != null && _pokemonData[neighbor.speciesId]?['stats'] == null) {
+        _api.fetchPokemon(neighbor.speciesId).then((apiData) {
+          if (apiData != null && mounted) {
+            _pokemonData[neighbor.speciesId] = {
+              ..._pokemonData[neighbor.speciesId]!,
+              'stats': apiData['stats'],
+            };
+          }
+        });
+      }
     }
 
     String? _prevName, _nextName;
