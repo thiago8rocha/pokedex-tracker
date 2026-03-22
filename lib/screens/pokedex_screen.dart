@@ -1010,6 +1010,15 @@ class _PokedexScreenState extends State<PokedexScreen>
 
 // ─── CARD DE POKÉMON ─────────────────────────────────────────────
 
+String pokemonSpriteAsset(int id, String type) {
+  switch (type) {
+    case 'pixel':   return 'assets/sprites/pixel/$id.webp';
+    case 'home':    return 'assets/sprites/home/$id.webp';
+    case 'artwork':
+    default:        return 'assets/sprites/artwork/$id.webp';
+  }
+}
+
 class _PokemonCard extends StatelessWidget {
   final _Entry entry;
   final Map<String, dynamic>? data;
