@@ -1463,10 +1463,12 @@ class FormsTab extends StatelessWidget {
 
 class MovesTab extends StatefulWidget {
   final List<Map<String, dynamic>> level, mt, tutor, egg;
+  final List<String> pokemonTypes;
   const MovesTab({
     super.key,
     required this.level, required this.mt,
     required this.tutor, required this.egg,
+    required this.pokemonTypes,
   });
 
   @override
@@ -1502,95 +1504,132 @@ class _MovesTabState extends State<MovesTab> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryTypePt = widget.pokemonTypes.isNotEmpty
+        ? ptType(widget.pokemonTypes[0]) : 'Normal';
+    final typeColor = TypeColors.fromType(primaryTypePt);
+
     return Stack(children: [
-      Column(children: [
-        // Chips de método
-        SizedBox(height: 44, child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-          children: [
-            for (final e in [('level','Nível'),('mt','MT'),('tutor','Tutor'),('egg','Ovo')])
-              Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: GestureDetector(
-                  onTap: () => setState(() => _method = e.$1),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: _method == e.$1
-                          ? Theme.of(context).colorScheme.onSurface
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
+        child: SectionCard(
+          title: 'GOLPES',
+          pokemonTypes: widget.pokemonTypes,
+          child: Column(children: [
+            const SizedBox(height: 4),
+
+            // ── Filtros centralizados em retângulos ──
+            Center(
+              child: Wrap(
+                spacing: 6,
+                children: [
+                  for (final e in [('level','Nível'),('mt','MT'),('tutor','Tutor'),('egg','Ovo')])
+                    GestureDetector(
+                      onTap: () => setState(() => _method = e.$1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _method == e.$1
+                              ? typeColor
+                              : typeColor.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: _method == e.$1
+                                ? typeColor
+                                : typeColor.withOpacity(0.35),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(e.$2, style: TextStyle(
+                          fontSize: 11, fontWeight: FontWeight.w600,
+                          color: _method == e.$1
+                              ? typeTextColor(typeColor)
+                              : typeColor,
+                        )),
+                      ),
                     ),
-                    child: Text(e.$2, style: TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.w500,
-                      color: _method == e.$1
-                          ? Theme.of(context).colorScheme.surface
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    )),
-                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ── Legenda de categoria ──
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _CatLegend(category: 'physical', label: 'Físico'),
+                  const SizedBox(width: 16),
+                  _CatLegend(category: 'special',  label: 'Especial'),
+                  const SizedBox(width: 16),
+                  _CatLegend(category: 'status',   label: 'Status'),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+            Divider(height: 1, color: typeColor.withOpacity(0.2)),
+            const SizedBox(height: 4),
+
+            // ── Cabeçalho de colunas ──
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Row(children: [
+                SizedBox(
+                  width: _method == 'level' ? 28 : 36,
+                  child: Text(
+                    _method == 'level' ? 'NV' : _method == 'mt' ? 'MT' : '',
+                    style: const TextStyle(fontSize: 9, color: Color(0xFF888888),
+                      letterSpacing: 0.6, fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.right),
+                ),
+                const SizedBox(width: 6),
+                const SizedBox(width: 32,
+                  child: Text('TIPO', style: TextStyle(fontSize: 9,
+                    color: Color(0xFF888888), letterSpacing: 0.6,
+                    fontWeight: FontWeight.w600), textAlign: TextAlign.center)),
+                const SizedBox(width: 6),
+                const SizedBox(width: 18),
+                const SizedBox(width: 6),
+                const Expanded(child: Text('GOLPE', style: TextStyle(fontSize: 9,
+                  color: Color(0xFF888888), letterSpacing: 0.6, fontWeight: FontWeight.w600))),
+                const SizedBox(width: 32,
+                  child: Text('POW', style: TextStyle(fontSize: 9,
+                    color: Color(0xFF888888), letterSpacing: 0.6,
+                    fontWeight: FontWeight.w600), textAlign: TextAlign.right)),
+              ]),
+            ),
+
+            Divider(height: 1, color: typeColor.withOpacity(0.2)),
+
+            // ── Lista de moves ──
+            if (_currentMoves.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: Text(
+                  widget.level.isEmpty ? 'Carregando...' : 'Nenhum golpe',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 13),
+                )),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: _currentMoves.length,
+                separatorBuilder: (_, __) => Divider(
+                  height: 0.5, color: typeColor.withOpacity(0.15)),
+                itemBuilder: (ctx, i) => MoveRow(
+                  move: _currentMoves[i],
+                  method: _method,
+                  onTap: () => _openMove(_currentMoves[i]),
                 ),
               ),
-          ],
-        )),
-        // Legenda ANTES do cabeçalho
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-          child: Row(children: [
-            CatLegendItem(category: 'physical', label: 'Físico'),
-            const SizedBox(width: 12),
-            CatLegendItem(category: 'special', label: 'Especial'),
-            const SizedBox(width: 12),
-            CatLegendItem(category: 'status', label: 'Status'),
           ]),
         ),
-        Divider(height: 0.5, color: Theme.of(context).colorScheme.outlineVariant),
-        // Cabeçalho de colunas
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-          child: Row(children: [
-            SizedBox(
-              width: _method == 'level' ? 32 : 40,
-              child: Text(_method == 'level' ? 'NV' : _method == 'mt' ? 'MT' : '',
-                style: const TextStyle(fontSize: 9, color: Color(0xFF888888),
-                  letterSpacing: 0.06, fontWeight: FontWeight.w500),
-                textAlign: TextAlign.right),
-            ),
-            const SizedBox(width: 8),
-            const SizedBox(width: 42,
-              child: Text('TIPO', style: TextStyle(fontSize: 9, color: Color(0xFF888888),
-                letterSpacing: 0.06, fontWeight: FontWeight.w500), textAlign: TextAlign.center)),
-            const SizedBox(width: 8),
-            const SizedBox(width: 16),
-            const SizedBox(width: 8),
-            const Expanded(child: Text('MOVE', style: TextStyle(fontSize: 9,
-              color: Color(0xFF888888), letterSpacing: 0.06, fontWeight: FontWeight.w500))),
-            const SizedBox(width: 36,
-              child: Text('PODER', style: TextStyle(fontSize: 9, color: Color(0xFF888888),
-                letterSpacing: 0.06, fontWeight: FontWeight.w500), textAlign: TextAlign.right)),
-            const SizedBox(width: 18),
-          ]),
-        ),
-        Divider(height: 0.5, color: Theme.of(context).colorScheme.outlineVariant),
-        if (_currentMoves.isEmpty)
-          Expanded(child: Center(child: Text(
-            widget.level.isEmpty ? 'Carregando...' : 'Nenhum move',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-          )))
-        else
-          Expanded(child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: _currentMoves.length,
-            separatorBuilder: (_, __) => Divider(
-              height: 0.5, color: Theme.of(context).colorScheme.outlineVariant),
-            itemBuilder: (ctx, i) => MoveRow(
-              move: _currentMoves[i],
-              method: _method,
-              onTap: () => _openMove(_currentMoves[i]),
-            ),
-          )),
-      ]),
+      ),
       if (_selectedMove != null)
         MoveModal(
           move: _selectedMove!,
@@ -1598,6 +1637,37 @@ class _MovesTabState extends State<MovesTab> {
           loading: _loadingMove,
           onClose: () => setState(() { _selectedMove = null; _moveDetail = null; }),
         ),
+    ]);
+  }
+}
+
+// ─── LEGENDA DE CATEGORIA ─────────────────────────────────────────
+
+class _CatLegend extends StatelessWidget {
+  final String category, label;
+  const _CatLegend({required this.category, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Image.asset(
+        'assets/categories/$category.png',
+        width: 16, height: 16,
+        errorBuilder: (_, __, ___) => Container(
+          width: 16, height: 16,
+          decoration: BoxDecoration(
+            color: category == 'physical'
+                ? const Color(0xFFE24B4A).withOpacity(0.15)
+                : category == 'special'
+                    ? const Color(0xFF9C27B0).withOpacity(0.15)
+                    : const Color(0xFF888888).withOpacity(0.15),
+            borderRadius: BorderRadius.circular(3)),
+          child: CustomPaint(painter: CatIconPainter(category)),
+        ),
+      ),
+      const SizedBox(width: 4),
+      Text(label, style: TextStyle(fontSize: 9,
+        color: Theme.of(context).colorScheme.onSurfaceVariant)),
     ]);
   }
 }
@@ -1651,7 +1721,7 @@ class _MoveRowState extends State<MoveRow> {
         padding: const EdgeInsets.symmetric(vertical: 9),
         child: Row(children: [
           SizedBox(
-            width: widget.method == 'level' ? 32 : 40,
+            width: widget.method == 'level' ? 28 : 36,
             child: Text(
               widget.method == 'level' ? (level > 0 ? '$level' : '1')
                   : widget.method == 'mt' ? level.toString().padLeft(3, '0') : '',
@@ -1662,28 +1732,40 @@ class _MoveRowState extends State<MoveRow> {
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            width: 42,
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            decoration: BoxDecoration(
-              color: typeEn.isEmpty ? Colors.grey.withOpacity(0.2) : typeColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(typeEn.isEmpty ? '···' : typePt,
-              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600,
-                color: typeEn.isEmpty ? Colors.grey : typeTextColor(typeColor)),
-              textAlign: TextAlign.center),
+          // Ícone de tipo — mesmo padrão da aba Sobre/Status
+          SizedBox(
+            width: 32,
+            child: typeEn.isEmpty
+                ? Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16)),
+                  )
+                : Image.asset(
+                    typeIconAsset(typeEn),
+                    width: 32, height: 32,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const SizedBox(width: 32),
+                  ),
           ),
-          const SizedBox(width: 8),
-          Container(
-            width: 16, height: 16,
-            decoration: BoxDecoration(
-              color: catName == 'physical' ? const Color(0xFFE24B4A).withOpacity(0.15)
-                  : catName == 'special' ? const Color(0xFF9C27B0).withOpacity(0.15)
-                  : const Color(0xFF888888).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(3),
+          const SizedBox(width: 6),
+          // Ícone de categoria
+          Image.asset(
+            catName.isEmpty ? 'assets/categories/status.png'
+                : 'assets/categories/$catName.png',
+            width: 18, height: 18,
+            errorBuilder: (_, __, ___) => Container(
+              width: 18, height: 18,
+              decoration: BoxDecoration(
+                color: catName == 'physical'
+                    ? const Color(0xFFE24B4A).withOpacity(0.15)
+                    : catName == 'special'
+                        ? const Color(0xFF9C27B0).withOpacity(0.15)
+                        : const Color(0xFF888888).withOpacity(0.15),
+                borderRadius: BorderRadius.circular(3)),
+              child: CustomPaint(painter: CatIconPainter(catName)),
             ),
-            child: CustomPaint(painter: CatIconPainter(catName)),
           ),
           const SizedBox(width: 8),
           Expanded(child: BilingualTerm(

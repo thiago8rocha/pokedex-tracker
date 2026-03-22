@@ -184,7 +184,7 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
               ),
               StatusTab(pokemon: widget.pokemon),
               if (_hasMultipleForms) FormsTab(forms: _forms, loading: _loading),
-              MovesTab(level: _movesLevel, mt: _movesMT, tutor: _movesTutor, egg: _movesEgg),
+              MovesTab(level: _movesLevel, mt: _movesMT, tutor: _movesTutor, egg: _movesEgg, pokemonTypes: widget.pokemon.types),
             ],
           )),
         ]),
