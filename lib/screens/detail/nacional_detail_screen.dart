@@ -141,27 +141,8 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
 
   String get _flavorText => _flavorTextPt;
 
-  String get _category {
-    final raw = PokedexDataService.instance.getCategory(widget.pokemon.id);
-    if (raw.isEmpty || raw == '—') return '—';
-    // Remove " Pokémon" do final se vier da API em EN
-    final cleaned = raw.replaceAll(' Pokémon', '').replaceAll(' pokémon', '').trim();
-    const tr = {
-      'Seed': 'Semente', 'Lizard': 'Lagarto', 'Flame': 'Chama',
-      'Tiny Turtle': 'Tartaruga Pequena', 'Turtle': 'Tartaruga',
-      'Shellfish': 'Crustáceo', 'Worm': 'Verme', 'Cocoon': 'Casulo',
-      'Butterfly': 'Borboleta', 'Mouse': 'Camundongo',
-      'Fox': 'Raposa', 'Bird': 'Pássaro', 'Tiny Bird': 'Pássaro Pequeno',
-      'Poison Bee': 'Abelha Venenosa', 'Drowsing': 'Sonolento',
-      'Electric': 'Elétrico', 'Fire Horse': 'Cavalo de Fogo',
-      'Amphibian': 'Anfíbio', 'Dragon': 'Dragão', 'Coral': 'Coral',
-      'Genetic': 'Genético', 'New Species': 'Nova Espécie',
-      'Fossil': 'Fóssil', 'Spiral': 'Espiral', 'Formidable': 'Formidável',
-    };
-    // Se vier PT-BR da API já está traduzido — retorna direto
-    // Se vier EN, tenta traduzir via mapa estático
-    return tr[cleaned] ?? cleaned;
-  }
+  // Categoria já vem traduzida do JSON
+  String get _category => PokedexDataService.instance.getCategory(widget.pokemon.id);
 
   // Mapeamento: nome do jogo no JSON → pokedexId no storage
   // Usado para filtrar apenas as pokedexes que o usuário tem ativas

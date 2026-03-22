@@ -133,18 +133,8 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   }
 
   String get _flavorText => _flavorTextPt;
-  String get _category {
-    final raw = PokedexDataService.instance.getCategory(widget.pokemon.id);
-    if (raw.isEmpty || raw == '—') return '—';
-    final cleaned = raw.replaceAll(' Pokémon', '').replaceAll(' pokémon', '').trim();
-    const tr = {
-      'Seed': 'Semente', 'Lizard': 'Lagarto', 'Flame': 'Chama',
-      'Tiny Turtle': 'Tartaruga Pequena', 'Turtle': 'Tartaruga',
-      'Shellfish': 'Crustáceo', 'Mouse': 'Camundongo', 'Bird': 'Pássaro',
-      'Amphibian': 'Anfíbio', 'Dragon': 'Dragão', 'Fossil': 'Fóssil',
-    };
-    return tr[cleaned] ?? cleaned;
-  }
+  // Categoria já vem traduzida do JSON
+  String get _category => PokedexDataService.instance.getCategory(widget.pokemon.id);
 
   @override
   Widget build(BuildContext context) {

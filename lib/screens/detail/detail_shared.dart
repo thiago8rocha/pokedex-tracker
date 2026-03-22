@@ -455,7 +455,7 @@ class AboutHeader extends StatelessWidget {
     final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
     final categoryLabel = loading
         ? ''
-        : category.isEmpty ? '—' : 'Pokémon $category';
+        : category.isEmpty || category == '—' ? '—' : category;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       // Categoria centralizada
