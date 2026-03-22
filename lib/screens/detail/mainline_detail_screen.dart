@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
 import 'package:pokedex_tracker/services/pokedex_data_service.dart';
+import 'package:pokedex_tracker/services/pokeapi_service.dart';
 import 'package:pokedex_tracker/translations.dart';
 
 class SwitchDetailScreen extends StatefulWidget {
@@ -40,6 +41,7 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   List<Map<String, dynamic>> _abilities = [];
   List<Map<String, dynamic>> _evoChain = [];
   List<Map<String, dynamic>> _forms = [];
+  final PokeApiService _api = PokeApiService();
   List<Map<String, dynamic>> _movesLevel = [];
   List<Map<String, dynamic>> _movesMT = [];
   List<Map<String, dynamic>> _movesTutor = [];
@@ -50,8 +52,8 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   bool get _hasMultipleForms => !_loading && _forms.length > 1;
 
   List<String> get _tabs => _hasMultipleForms
-      ? ['Sobre', 'Status', 'Formas', 'Moves']
-      : ['Sobre', 'Status', 'Moves'];
+      ? ['Sobre', 'Status', 'Formas', 'Golpes']
+      : ['Sobre', 'Status', 'Golpes'];
 
   @override
   void initState() {
@@ -93,6 +95,11 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
     _flavorTextPt = svc.getFlavorText(id);
 
     if (mounted) setState(() => _loading = false);
+
+    // Carrega moves em background
+    _api.fetchPokemon(id).then((d) {
+      if (d != null && mounted) _parseMoves(d);
+    });
   }
 
   void _parseForms(Map<String, dynamic> d) {
