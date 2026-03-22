@@ -6,7 +6,7 @@ import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/services/dex_bundle_service.dart';
 import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
-    show defaultSpriteNotifier, TypeBadge;
+    show defaultSpriteNotifier;
 import 'package:pokedex_tracker/screens/detail/nacional_detail_screen.dart';
 import 'package:pokedex_tracker/screens/detail/mainline_detail_screen.dart';
 import 'package:pokedex_tracker/screens/go/go_detail_screen.dart';
@@ -1008,16 +1008,6 @@ class _PokedexScreenState extends State<PokedexScreen>
   }
 }
 
-// Retorna o caminho do asset de sprite para um pokémon
-String pokemonSpriteAsset(int id, String type) {
-  switch (type) {
-    case 'pixel':   return 'assets/sprites/pixel/$id.webp';
-    case 'home':    return 'assets/sprites/home/$id.webp';
-    case 'artwork':
-    default:        return 'assets/sprites/artwork/$id.webp';
-  }
-}
-
 // ─── CARD DE POKÉMON ─────────────────────────────────────────────
 
 class _PokemonCard extends StatelessWidget {
@@ -1041,16 +1031,20 @@ class _PokemonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (data == null) return _SkeletonCard();
 
-    final displayName = data!['name'] as String;
+    final rawName = data!['name'] as String;
+    final baseName = rawName.split('-').first;
+    final displayName = baseName[0].toUpperCase() + baseName.substring(1);
+
     final types = (data!['types'] as List<dynamic>)
         .map((t) => t['type']['name'] as String)
         .toList();
 
+    // Cores dos tipos — mais saturadas
     final color1 = TypeColors.fromType(_pt(types[0]));
     final color2 = types.length > 1 ? TypeColors.fromType(_pt(types[1])) : color1;
 
-    final displayNumber =
-        '#${entry.entryNumber.toString().padLeft(3, '0')}';
+    // Número formatado com o entryNumber da dex (não o ID nacional)
+    final displayNumber = '#${entry.entryNumber.toString().padLeft(3, '0')}';
 
     return GestureDetector(
       onTap: onTap,
@@ -1085,11 +1079,8 @@ class _PokemonCard extends StatelessWidget {
                       child: Image.asset(
                         pokemonSpriteAsset(entry.speciesId, defaultSprite),
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
-                          Icons.catching_pokemon,
-                          size: 28,
-                          color: color1.withOpacity(0.4),
-                        ),
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.catching_pokemon, size: 40),
                       ),
                     ),
                   ),
@@ -1110,11 +1101,29 @@ class _PokemonCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 3),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 3,
-                    children: types.map<Widget>((t) => TypeBadge(type: t)).toList(),
+                  const SizedBox(height: 4),
+                  // Badges: cor sólida por tipo
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: types.map((type) {
+                      final color = TypeColors.fromType(_pt(type));
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: Text(
+                          _pt(type),
+                          style: const TextStyle(
+                            fontSize: 8,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
