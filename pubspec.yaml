@@ -59,6 +59,7 @@ flutter:
 
   assets:
     - assets/pocket/boosters/
+    - assets/pocket/energy/
     - assets/pokopia/specialties/
     - assets/pokopia/habitats/
     - assets/pokopia/habitats/event/

@@ -39,14 +39,18 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
         if (parts.length >= 2) localId = parts[parts.length - 2];
       }
 
-      final results = await Future.wait([
-        TcgPocketService.fetchCard(widget.card.id, setId: widget.setId, localId: localId),
-        TcgPocketService.fetchCardPt(widget.card.id, setId: widget.setId, localId: localId),
-      ]);
+      // Buscar EN e PT em paralelo com tipos corretos
+      final detailFuture = TcgPocketService.fetchCard(
+        widget.card.id, setId: widget.setId, localId: localId);
+      final ptFuture = TcgPocketService.fetchCardPt(
+        widget.card.id, setId: widget.setId, localId: localId);
+
+      final detail = await detailFuture;
+      final pt     = await ptFuture;
 
       if (mounted) setState(() {
-        _detail        = results[0] as PocketCardDetail?;
-        _pt            = results[1] as Map<String, String>;
+        _detail        = detail;
+        _pt            = pt;
         _loadingDetail = false;
       });
     } catch (_) {
@@ -63,7 +67,8 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
   // Nome do Pokémon: PT se disponível, senão EN
   String get _displayName => _pt['name'] ?? widget.card.name;
 
-  // Descrição: PT se disponível, senão EN
+  // Descrição: PT via API > EN (flavor texts são específicos por carta,
+  // não há dicionário viável — mostrar em EN com label correto)
   String? get _displayDescription {
     final pt = _pt['description'];
     if (pt != null && pt.isNotEmpty) return pt;
@@ -72,13 +77,13 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
 
   // Nome do ataque: PT se disponível, senão EN
   String _attackName(int i, PocketAttack atk) =>
-      _pt['attack_$i'] ?? atk.name;
+      _pt['attack_$i'] ?? _PocketTranslations.translateAttackName(atk.name);
 
-  // Efeito do ataque: PT se disponível, senão EN
+  // Efeito do ataque: PT via API > tradução manual > EN
   String? _attackEffect(int i, PocketAttack atk) {
     final pt = _pt['attackEffect_$i'];
     if (pt != null && pt.isNotEmpty) return pt;
-    return atk.effect;
+    return _PocketTranslations.translateAttackEffect(atk.effect);
   }
 
   @override
@@ -482,4 +487,149 @@ class _Cell {
   final String label;
   final String value;
   const _Cell({required this.label, required this.value});
+}
+
+// ─── Traduções manuais TCG Pocket ────────────────────────────────
+// Usadas como fallback quando a API /pt/ não retorna dados
+class _PocketTranslations {
+  // Nomes de ataques comuns
+  static const Map<String, String> attackNames = {
+    'Vine Whip': 'Chicote de Cipó',
+    'Razor Leaf': 'Folha Navalha',
+    'Mega Drain': 'Megassução',
+    'Solar Beam': 'Raio Solar',
+    'Petal Dance': 'Dança de Pétalas',
+    'Seed Bomb': 'Bomba de Semente',
+    'Leech Seed': 'Semente Parasita',
+    'Scratch': 'Arranhão',
+    'Ember': 'Brasa',
+    'Flamethrower': 'Lança-Chamas',
+    'Fire Spin': 'Rodoflama',
+    'Heat Blast': 'Explosão de Calor',
+    'Inferno': 'Inferno',
+    'Tail Whip': 'Chicote de Cauda',
+    'Water Gun': 'Pistola d'Água',
+    'Bubble': 'Bolha',
+    'Surf': 'Surfada',
+    'Hydro Pump': 'Hidrobomba',
+    'Thunder Shock': 'Trovão',
+    'Thunder': 'Raio',
+    'Thunderbolt': 'Trovoada',
+    'Quick Attack': 'Ataque Rápido',
+    'Tackle': 'Investida',
+    'Pound': 'Soco',
+    'Bite': 'Mordida',
+    'Slash': 'Corte',
+    'Body Slam': 'Golpe Duplo',
+    'Headbutt': 'Cabeçada',
+    'Hyper Beam': 'Hiperraio',
+    'Psybeam': 'Psicoraio',
+    'Confusion': 'Confusão',
+    'Psychic': 'Psíquico',
+    'Night Slash': 'Corte Noturno',
+    'Shadow Ball': 'Bola Sombria',
+    'Poison Sting': 'Ferrão Venenoso',
+    'Sludge': 'Lodo',
+    'Dig': 'Cavar',
+    'Earthquake': 'Terremoto',
+    'Rock Throw': 'Arremesso de Pedra',
+    'Rock Slide': 'Avalanche',
+    'Karate Chop': 'Golpe Caratê',
+    'Low Kick': 'Pontapé Baixo',
+    'Ice Beam': 'Raio de Gelo',
+    'Blizzard': 'Nevasca',
+    'Dragon Rage': 'Ira do Dragão',
+    'Leer': 'Olhar Feroz',
+    'Growl': 'Grunhido',
+    'Feint Attack': 'Ataque Fingido',
+    'Whirlpool': 'Redemoinho',
+    'Smash': 'Esmagamento',
+    'Double Slap': 'Tapa Duplo',
+    'Stomp': 'Pisão',
+    'Horn Attack': 'Ataque de Chifre',
+    'Flame Charge': 'Carga Ígnea',
+    'Burn Out': 'Esgotamento',
+    'Power Whip': 'Chicote Poderoso',
+    'Leaf Blade': 'Folha Espada',
+    'Gnaw': 'Roer',
+    'Fury Swipes': 'Garras Furiosas',
+    'Electro Ball': 'Bola Elétrica',
+    'Ion Deluge': 'Dilúvio de Íons',
+    'Spark': 'Faísca',
+    'Tail Smash': 'Cauda Destruidora',
+    'Feelin' Fine': 'Me Sentindo Bem',
+    'Poisonpowder': 'Pó Venenoso',
+    'Sleep Powder': 'Pó do Sono',
+    'Bullet Seed': 'Semente Bala',
+    'Energy Ball': 'Bola de Energia',
+    'Flash Cannon': 'Canhão de Luz',
+    'Metal Claw': 'Garra Metálica',
+    'Iron Tail': 'Cauda de Ferro',
+    'Mud Slap': 'Tapa de Lama',
+    'Muddy Water': 'Água Turva',
+    'Wing Attack': 'Ataqueasa',
+    'Aerial Ace': 'Ás Aéreo',
+    'Drill Peck': 'Bicada Perfurante',
+    'Fury Attack': 'Ataque Furioso',
+    'Peck': 'Bicada',
+    'Sand Attack': 'Areia nos Olhos',
+    'Double-Edge': 'Choque do Destino',
+    'Take Down': 'Derrubar',
+    'Return': 'Retribuir',
+    'Outrage': 'Fúria',
+    'Hyper Fang': 'Presa Suprema',
+    'Super Fang': 'Superfresa',
+    'Bind': 'Amarrar',
+    'Wrap': 'Enrolar',
+    'Glare': 'Olhar Intimidador',
+    'Smokescreen': 'Cortina de Fumaça',
+    'Lunge': 'Arremetida',
+    'String Shot': 'Fio de Seda',
+    'Bug Bite': 'Mordida de Inseto',
+    'Signal Beam': 'Raio Sinal',
+    'Struggle Bug': 'Resistência',
+    'Thunder Wave': 'Onda Trovão',
+    'Discharge': 'Descarga',
+    'Zap Cannon': 'Canhão Elétrico',
+    'Charm': 'Encanto',
+    'Moonblast': 'Luablast',
+    'Dazzling Gleam': 'Brilho Ofuscante',
+    'Gust': 'Rajada',
+    'Whirlwind': 'Vento Giratório',
+    'Sky Attack': 'Ataque Aéreo',
+  };
+
+  // Efeitos de ataques comuns
+  static const Map<String, String> attackEffects = {
+    'Flip a coin. If tails, this attack does nothing.':
+        'Lance uma moeda. Se der coroa, este ataque não faz nada.',
+    'Flip a coin. If heads, this attack does nothing.':
+        'Lance uma moeda. Se der cara, este ataque não faz nada.',
+    'Draw 3 cards.': 'Compre 3 cartas.',
+    'Draw 2 cards.': 'Compre 2 cartas.',
+    'Your opponent's Active Pokémon is now Poisoned.':
+        'O Pokémon Ativo do oponente fica Envenenado.',
+    'Your opponent's Active Pokémon is now Paralyzed.':
+        'O Pokémon Ativo do oponente fica Paralisado.',
+    'Your opponent's Active Pokémon is now Asleep.':
+        'O Pokémon Ativo do oponente fica Adormecido.',
+    'Your opponent's Active Pokémon is now Burned.':
+        'O Pokémon Ativo do oponente fica Queimado.',
+    'Discard a random Energy from your opponent's Active Pokémon.':
+        'Descarte uma Energia aleatória do Pokémon Ativo do oponente.',
+    'Heal 20 damage from this Pokémon.':
+        'Cure 20 de dano deste Pokémon.',
+    'Heal 30 damage from this Pokémon.':
+        'Cure 30 de dano deste Pokémon.',
+    'During your opponent's next turn, this Pokémon takes −20 damage from attacks.':
+        'Durante o próximo turno do oponente, este Pokémon recebe −20 de dano de ataques.',
+  };
+
+  static String translateAttackName(String name) =>
+      attackNames[name] ?? name;
+
+  static String? translateAttackEffect(String? effect) {
+    if (effect == null || effect.isEmpty) return effect;
+    return attackEffects[effect] ?? effect;
+  }
 }
