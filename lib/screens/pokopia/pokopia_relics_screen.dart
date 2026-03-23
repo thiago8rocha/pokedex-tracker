@@ -34,7 +34,9 @@ class _PokopiaRelicsScreenState extends State<PokopiaRelicsScreen>
         title: const Text('Relíquias e Fósseis'),
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        bottom: TabBar(
+      ),
+      body: Column(children: [
+        TabBar(
           controller: _tab,
           tabs: const [
             Tab(text: 'Relíquias Grandes'),
@@ -44,11 +46,7 @@ class _PokopiaRelicsScreenState extends State<PokopiaRelicsScreen>
           labelColor: scheme.primary,
           unselectedLabelColor: scheme.onSurfaceVariant,
           indicatorColor: scheme.primary,
-          tabAlignment: TabAlignment.fill,
-          isScrollable: true,
         ),
-      ),
-      body: Column(children: [
         // Info geral
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
