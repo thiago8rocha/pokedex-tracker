@@ -120,8 +120,8 @@ class PocketAbility {
   final String name; final String? effect; final String? type;
   const PocketAbility({required this.name, this.effect, this.type});
   factory PocketAbility.fromJson(Map<String, dynamic> json) => PocketAbility(
-      name: json['name'] as String, effect: json['effect'] as String?,
-      type: json['type'] as String?);
+      name: json['name']?.toString() ?? '', effect: json['effect']?.toString(),
+      type: json['type']?.toString());
 }
 
 class PocketCardDetail {
@@ -149,23 +149,35 @@ class PocketCardDetail {
     final abilitRaw  = (json['abilities'] as List<dynamic>?) ?? [];
     final weaknesses = (json['weaknesses'] as List<dynamic>?) ?? [];
     String? weakType; int? weakVal;
+    // hp e retreat podem vir como String ("70") ou int (70) dependendo da versão da API
+    int? parseIntField(dynamic v) {
+      if (v == null) return null;
+      if (v is int) return v;
+      return int.tryParse(v.toString().replaceAll(RegExp(r'[^0-9]'), ''));
+    }
+
+    // weakness value pode vir como "+20" (String) ou 20 (int)
     if (weaknesses.isNotEmpty) {
       final w = weaknesses.first as Map<String, dynamic>;
-      weakType = w['type'] as String?; weakVal = w['value'] as int?;
+      weakType = w['type']?.toString();
+      weakVal  = parseIntField(w['value']);
     }
+
     return PocketCardDetail(
       id: json['id'] as String, localId: json['localId']?.toString() ?? '',
       name: json['name'] as String,
       imageUrlHigh: raw != null ? '$raw/high.webp' : null,
-      rarity: json['rarity'] as String?, category: json['category'] as String?,
-      hp: json['hp'] as int?,
+      rarity: json['rarity']?.toString(), category: json['category']?.toString(),
+      hp: parseIntField(json['hp']),
       types: typesRaw.map((e) => e.toString()).toList(),
-      stage: json['stage'] as String?, evolveFrom: json['evolveFrom'] as String?,
-      description: json['description'] as String?,
+      stage: json['stage']?.toString(), evolveFrom: json['evolveFrom']?.toString(),
+      description: json['description']?.toString(),
       attacks:   attacksRaw.map((a) => PocketAttack.fromJson(a  as Map<String, dynamic>)).toList(),
       abilities: abilitRaw.map((a)  => PocketAbility.fromJson(a as Map<String, dynamic>)).toList(),
-      weaknessType: weakType, weaknessValue: weakVal, retreat: json['retreat'] as int?,
-      trainerEffect: json['effect'] as String?, trainerType: json['trainerType'] as String?,
+      weaknessType: weakType, weaknessValue: weakVal,
+      retreat: parseIntField(json['retreat']),
+      trainerEffect: (json['effect'] ?? json['trainerEffect'])?.toString(),
+      trainerType: json['trainerType']?.toString(),
     );
   }
 }
