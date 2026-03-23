@@ -62,11 +62,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
           _card    = card;
           _loading = false;
           if (card == null) {
-            _error = 'Não encontrada\n'
-                'setId: ${widget.setId}\n'
-                'localId: $localId0\n'
-                'url1: $url0\n'
-                'url2: $url1';
+            _error = 'Não encontrada. Tente novamente.';
           }
         });
       }

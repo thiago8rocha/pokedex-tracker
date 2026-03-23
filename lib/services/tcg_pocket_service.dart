@@ -173,6 +173,11 @@ class PocketCardDetail {
 // ─── SERVIÇO ──────────────────────────────────────────────────────
 
 class TcgPocketService {
+  static const Map<String, String> _headers = {
+    'User-Agent': 'Mozilla/5.0 (Android; PokopiaTracker)',
+    'Accept': 'application/json',
+  };
+
   static const Duration _timeout = Duration(seconds: 12);
   static List<PocketSet>?                    _seriesCache;
   static final Map<String, PocketSet>        _setCache  = {};
@@ -181,7 +186,7 @@ class TcgPocketService {
   static Future<List<PocketSet>> fetchSeries() async {
     if (_seriesCache != null) return _seriesCache!;
     try {
-      final res = await http.get(Uri.parse('$_kBase/series/tcgp')).timeout(_timeout);
+      final res = await http.get(Uri.parse('$_kBase/series/tcgp'), headers: _headers).timeout(_timeout);
       if (res.statusCode != 200) return _fallbackSeries();
 
       final json = jsonDecode(res.body) as Map<String, dynamic>;
@@ -242,7 +247,7 @@ class TcgPocketService {
   static Future<PocketSet?> fetchSet(String setId) async {
     if (_setCache.containsKey(setId)) return _setCache[setId];
     try {
-      final res = await http.get(Uri.parse('$_kBase/sets/$setId')).timeout(_timeout);
+      final res = await http.get(Uri.parse('$_kBase/sets/$setId'), headers: _headers).timeout(_timeout);
       if (res.statusCode != 200) return null;
       final set = PocketSet.fromJson(jsonDecode(res.body) as Map<String, dynamic>,
           overrideName: kPocketSetMeta[setId]?.namePt);
@@ -281,7 +286,9 @@ class TcgPocketService {
       if (n != null) urls.add('$_kBase/sets/$resolvedSet/$n');
 
       for (final url in urls) {
-        final res = await http.get(Uri.parse(url)).timeout(_timeout);
+        final res = await http
+            .get(Uri.parse(url), headers: _headers)
+            .timeout(_timeout);
         if (res.statusCode == 200) {
           final card = PocketCardDetail.fromJson(
               jsonDecode(res.body) as Map<String, dynamic>);
