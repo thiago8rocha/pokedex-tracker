@@ -514,6 +514,7 @@ class _CardList extends StatelessWidget {
     required this.setId,
     required this.owned,
     required this.onToggle,
+    this.totalCards,
   });
 
   @override
@@ -522,10 +523,11 @@ class _CardList extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
       itemCount: cards.length,
       itemBuilder: (context, i) => _CardListTile(
-        card:     cards[i],
-        setId:    setId,
-        isOwned:  owned[cards[i].id] ?? false,
-        onToggle: () => onToggle(cards[i].id),
+        card:       cards[i],
+        setId:      setId,
+        isOwned:    owned[cards[i].id] ?? false,
+        onToggle:   () => onToggle(cards[i].id),
+        totalCards: totalCards,
       ),
     );
   }
