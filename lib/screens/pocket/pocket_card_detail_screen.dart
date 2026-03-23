@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/services/tcg_pocket_service.dart';
 import 'package:pokedex_tracker/screens/pocket/pocket_rarity_widget.dart';
+import 'package:pokedex_tracker/screens/pocket/pocket_energy_icon.dart';
 
 class PocketCardDetailScreen extends StatefulWidget {
   final PocketCardBrief card;
   final String          setId;
+  final int?            totalCards; // total de cartas do set
 
   const PocketCardDetailScreen({
     super.key,
     required this.card,
     required this.setId,
+    this.totalCards,
   });
 
   @override
@@ -138,20 +141,19 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
-                  // ── Nome + ícone(s) de tipo ───────────────────
+                  // ── Nome + ícone(s) de tipo (junto ao nome) ──
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: Text(
-                          _displayName,
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                        ),
+                      Text(
+                        _displayName,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
                       ),
                       if (_detail != null && _detail!.types.isNotEmpty)
                         ...(_detail!.types.map((t) => Padding(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: _EnergyIcon(type: t, size: 26),
+                          padding: const EdgeInsets.only(left: 8),
+                          child: PocketEnergyIcon(type: t, size: 26),
                         ))),
                     ],
                   ),
@@ -254,7 +256,12 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
   // ── Tabela de stats ──────────────────────────────────────────
   Widget _buildStatsTable(ColorScheme scheme, bool isDark) {
     final cells = <_Cell>[
-      _Cell(label: 'Número', value: '#${widget.card.localId}'),
+      _Cell(
+        label: 'Número',
+        value: widget.totalCards != null
+            ? '${widget.card.localId}/${widget.totalCards.toString().padLeft(3, "0")}'
+            : widget.card.localId,
+      ),
     ];
     if (_detail?.stage != null)
       cells.add(_Cell(label: 'Evolução', value: _stageLabel(_detail!.stage!)));
@@ -266,7 +273,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
     if (_detail?.weaknessType != null) {
       final val = _detail!.weaknessValue != null ? '+${_detail!.weaknessValue}' : '';
       weakWidget = Row(mainAxisSize: MainAxisSize.min, children: [
-        _EnergyIcon(type: _detail!.weaknessType!, size: 20),
+        PocketEnergyIcon(type: _detail!.weaknessType!, size: 20),
         const SizedBox(width: 4),
         Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
       ]);
@@ -279,7 +286,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
         mainAxisSize: MainAxisSize.min,
         children: List.generate(_detail!.retreat!.clamp(0, 5), (_) => Padding(
           padding: const EdgeInsets.only(right: 3),
-          child: _EnergyIcon(type: 'Colorless', size: 16),
+          child: PocketEnergyIcon(type: 'Colorless', size: 16),
         )),
       );
     } else if (_detail?.retreat == 0) {
@@ -321,7 +328,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                   VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
                 if (retreatWidget != null)
                   Expanded(child: _buildStatCellWidget(
-                      label: 'Recuo', widget: retreatWidget, scheme: scheme)),
+                      label: 'Custo de Recuo', widget: retreatWidget, scheme: scheme)),
               ]),
             ),
           ],
@@ -419,7 +426,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                   if (_detail!.attacks[i].cost.isNotEmpty) ...[
                     ..._detail!.attacks[i].cost.map((c) => Padding(
                       padding: const EdgeInsets.only(right: 4),
-                      child: _EnergyIcon(type: c, size: 20),
+                      child: PocketEnergyIcon(type: c, size: 20),
                     )),
                     const SizedBox(width: 6),
                   ],
@@ -470,66 +477,6 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
   }
 }
 
-// ── Ícone de energia (TCG) ────────────────────────────────────────
-// Usa assets/types/ — mesmo mapeamento do resto do app
-
-class _EnergyIcon extends StatelessWidget {
-  final String type;
-  final double size;
-
-  // TCG usa nomes diferentes do main game:
-  // Lightning = Electric, Darkness = Dark, Metal = Steel
-  static const Map<String, String> _assetMap = {
-    'Grass': 'grass',       'Fire': 'fire',         'Water': 'water',
-    'Lightning': 'electric','Psychic': 'psychic',   'Fighting': 'fighting',
-    'Darkness': 'dark',     'Metal': 'steel',       'Fairy': 'fairy',
-    'Dragon': 'dragon',     'Colorless': 'normal',
-    // aliases
-    'Electric': 'electric', 'Dark': 'dark', 'Steel': 'steel',
-    'Normal': 'normal',     'Bug': 'bug',   'Rock': 'rock',
-    'Ghost': 'ghost',       'Ice': 'ice',   'Poison': 'poison',
-    'Ground': 'ground',     'Flying': 'flying',
-  };
-
-  static const Map<String, Color> _colors = {
-    'Grass': Color(0xFF78C850),       'Fire': Color(0xFFF08030),
-    'Water': Color(0xFF6890F0),       'Lightning': Color(0xFFF8D030),
-    'Psychic': Color(0xFFF85888),     'Fighting': Color(0xFFC03028),
-    'Darkness': Color(0xFF705848),    'Metal': Color(0xFFB8B8D0),
-    'Fairy': Color(0xFFEE99AC),       'Dragon': Color(0xFF7038F8),
-    'Colorless': Color(0xFFA8A878),
-    'Electric': Color(0xFFF8D030),    'Dark': Color(0xFF705848),
-    'Steel': Color(0xFFB8B8D0),       'Normal': Color(0xFFA8A878),
-  };
-
-  const _EnergyIcon({required this.type, this.size = 22});
-
-  @override
-  Widget build(BuildContext context) {
-    final asset = _assetMap[type] ?? 'normal';
-    final color = _colors[type] ?? const Color(0xFFA8A878);
-    return Container(
-      width: size, height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: ClipOval(
-        child: Image.asset(
-          'assets/types/$asset.png',
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Center(
-            child: Text(
-              type.isNotEmpty ? type[0] : '?',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: size * 0.5,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _Cell {
   final String label;

@@ -281,15 +281,17 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
                             )
                           : _isGrid
                               ? _CardGrid(
-                                  cards:    cards,
-                                  setId:    widget.setId,
-                                  owned:    _owned,
+                                  cards:      cards,
+                                  setId:      widget.setId,
+                                  owned:      _owned,
+                                  totalCards: _set?.totalCards,
                                   onToggle: _toggleOwned,
                                 )
                               : _CardList(
-                                  cards:    cards,
-                                  setId:    widget.setId,
-                                  owned:    _owned,
+                                  cards:      cards,
+                                  setId:      widget.setId,
+                                  owned:      _owned,
+                                  totalCards: _set?.totalCards,
                                   onToggle: _toggleOwned,
                                 ),
                     ),
@@ -351,12 +353,14 @@ class _CardGrid extends StatelessWidget {
   final String                   setId;
   final Map<String, bool>        owned;
   final void Function(String id) onToggle;
+  final int?                     totalCards;
 
   const _CardGrid({
     required this.cards,
     required this.setId,
     required this.owned,
     required this.onToggle,
+    this.totalCards,
   });
 
   @override
@@ -371,10 +375,11 @@ class _CardGrid extends StatelessWidget {
       ),
       itemCount: cards.length,
       itemBuilder: (context, i) => _CardGridTile(
-        card:     cards[i],
-        setId:    setId,
-        isOwned:  owned[cards[i].id] ?? false,
-        onToggle: () => onToggle(cards[i].id),
+        card:       cards[i],
+        setId:      setId,
+        isOwned:    owned[cards[i].id] ?? false,
+        onToggle:   () => onToggle(cards[i].id),
+        totalCards: totalCards,
       ),
     );
   }
@@ -385,12 +390,14 @@ class _CardGridTile extends StatelessWidget {
   final String          setId;
   final bool            isOwned;
   final VoidCallback    onToggle;
+  final int?            totalCards;
 
   const _CardGridTile({
     required this.card,
     required this.setId,
     required this.isOwned,
     required this.onToggle,
+    this.totalCards,
   });
 
   @override
@@ -402,8 +409,9 @@ class _CardGridTile extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (_) => PocketCardDetailScreen(
-            card:  card,
-            setId: setId,
+            card:       card,
+            setId:      setId,
+            totalCards: totalCards,
           ),
         ),
       ),
@@ -499,6 +507,7 @@ class _CardList extends StatelessWidget {
   final String                   setId;
   final Map<String, bool>        owned;
   final void Function(String id) onToggle;
+  final int?                     totalCards;
 
   const _CardList({
     required this.cards,
@@ -527,12 +536,14 @@ class _CardListTile extends StatelessWidget {
   final String          setId;
   final bool            isOwned;
   final VoidCallback    onToggle;
+  final int?            totalCards;
 
   const _CardListTile({
     required this.card,
     required this.setId,
     required this.isOwned,
     required this.onToggle,
+    this.totalCards,
   });
 
   @override
@@ -544,8 +555,9 @@ class _CardListTile extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (_) => PocketCardDetailScreen(
-            card:  card,
-            setId: setId,
+            card:       card,
+            setId:      setId,
+            totalCards: totalCards,
           ),
         ),
       ),
