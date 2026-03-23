@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pokedex_tracker/theme/type_colors.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
-    show ptType, typeIconAsset, typeTextColor, TypeColors, neutralBg, kApiBase;
+    show ptType, typeIconAsset, typeTextColor, neutralBg, kApiBase;
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
 import 'package:pokedex_tracker/services/dex_bundle_service.dart';
 import 'package:pokedex_tracker/services/pokedex_data_service.dart';
