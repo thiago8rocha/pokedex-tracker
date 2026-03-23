@@ -1,7 +1,6 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/services/tcg_pocket_service.dart';
+import 'package:pokedex_tracker/services/translation_service.dart';
 import 'package:pokedex_tracker/screens/pocket/pocket_rarity_widget.dart';
 import 'package:pokedex_tracker/screens/pocket/pocket_energy_icon.dart';
 
@@ -35,56 +34,42 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
 
   Future<void> _fetchAll() async {
     try {
-      final imgUrl = widget.card.imageUrlLow;
       String localId = widget.card.localId;
+      final imgUrl = widget.card.imageUrlLow;
       if (imgUrl != null) {
         final parts = imgUrl.split('/');
         if (parts.length >= 2) localId = parts[parts.length - 2];
       }
 
-      // Buscar dados EN, dados PT e tradução MyMemory todos em paralelo
-      final detailFuture = TcgPocketService.fetchCard(
-        widget.card.id, setId: widget.setId, localId: localId);
-      final ptFuture = TcgPocketService.fetchCardPt(
-        widget.card.id, setId: widget.setId, localId: localId);
-
-      // Aguarda EN e PT antes de tentar tradução (precisa do texto EN)
+      // Buscar carta EN e tradução em paralelo:
+      // - fetchCard: ~500ms (rede)
+      // - getCached: <1ms (SharedPreferences local)
+      // Se warmup já rodou, getCached retorna resultado instantâneo
+      // e translate() vai ao cache sem fazer requisição de rede
+      final detailFuture     = TcgPocketService.fetchCard(
+          widget.card.id, setId: widget.setId, localId: localId);
       final detail = await detailFuture;
-      final pt     = await ptFuture;
 
-      // Se /pt/ não trouxe descrição, traduzir via MyMemory antes de exibir
-      String? descPt = pt['description'];
-      if ((descPt == null || descPt.isEmpty) &&
-          detail?.description != null &&
-          detail!.description!.isNotEmpty) {
-        descPt = await _fetchTranslation(detail.description!);
+      // Tradução: vai ao cache local primeiro (getCached dentro de translate)
+      // Se cache hit: < 1ms. Se miss: chama MyMemory (~1s)
+      // Usuário sempre vê PT — nunca EN
+      String? descPt;
+      if (detail?.description != null && detail!.description!.isNotEmpty) {
+        descPt = await TranslationService.translate(detail.description!);
       }
 
       if (mounted) setState(() {
-        _detail         = detail;
-        _pt             = pt;
-        _descriptionPt  = descPt;
-        _loadingDetail  = false;
+        _detail        = detail;
+        _pt            = const {};
+        _descriptionPt = descPt;
+        _loadingDetail = false;
       });
     } catch (_) {
       if (mounted) setState(() => _loadingDetail = false);
     }
   }
 
-  Future<String?> _fetchTranslation(String text) async {
-    try {
-      final encoded = Uri.encodeComponent(text);
-      final url = Uri.parse(
-          'https://api.mymemory.translated.net/get?q=$encoded&langpair=en|pt-BR');
-      final res = await http.get(url).timeout(const Duration(seconds: 8));
-      if (res.statusCode == 200) {
-        final j     = jsonDecode(res.body) as Map<String, dynamic>;
-        final match = j['responseData']?['translatedText'] as String?;
-        if (match != null && match.isNotEmpty) return match;
-      }
-    } catch (_) {}
-    return null;
-  }
+
 
   String? get _highUrl {
     final low = widget.card.imageUrlLow;
@@ -95,13 +80,8 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
   // Nome do Pokémon: PT se disponível, senão EN
   String get _displayName => _pt['name'] ?? widget.card.name;
 
-  // Descrição: PT via API > EN (flavor texts são específicos por carta,
-  // não há dicionário viável — mostrar em EN com label correto)
-  String? get _displayDescription {
-    final pt = _pt['description'];
-    if (pt != null && pt.isNotEmpty) return pt;
-    return _detail?.description;
-  }
+  // Descrição em PT (via /pt/ API ou MyMemory com cache local)
+  String? get _displayDescription => _descriptionPt;
 
   // Nome do ataque: PT se disponível, senão EN
   String _attackName(int i, PocketAttack atk) =>
