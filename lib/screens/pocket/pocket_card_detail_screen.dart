@@ -596,7 +596,6 @@ class _PocketTranslations {
     "Whirlwind":       "Vento Giratório",
     "Sky Attack":      "Ataque Aéreo",
     "Leafage":         "Foliagem",
-    "Tackle":          "Investida",
     "Pounce":          "Salto",
     "Flare":           "Clarão",
   };
