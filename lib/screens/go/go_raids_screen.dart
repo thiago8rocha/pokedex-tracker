@@ -9,33 +9,49 @@ class GoRaidsScreen extends StatefulWidget {
 
 class _GoRaidsScreenState extends State<GoRaidsScreen> {
   List<_RaidBoss> _raids = [];
-  bool _loading = true;
+  bool   _loading = true;
   String? _error;
 
   @override
   void initState() { super.initState(); _loadRaids(); }
 
   Future<void> _loadRaids() async {
+    setState(() { _loading = true; _error = null; });
     try {
+      // pogoapi.net: formato { "current": { "1": [...], "5": [...] }, "previous": {...} }
       final res = await http.get(
-        Uri.parse('https://pokemon-go-api.github.io/pokemon-go-api/api/raidBoss.json'),
+        Uri.parse('https://pogoapi.net/api/v1/raid_bosses.json'),
         headers: {'User-Agent': 'Mozilla/5.0 (Android; PokopiaTracker)'},
       ).timeout(const Duration(seconds: 10));
 
       if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        final list = data is List ? data : (data as Map).values.toList();
-        final raids = <_RaidBoss>[];
-        for (final item in list) {
-          if (item is Map) {
-            raids.add(_RaidBoss.fromJson(item as Map<String, dynamic>));
+        final body    = jsonDecode(res.body) as Map<String, dynamic>;
+        final current = body['current'] as Map<String, dynamic>? ?? {};
+        final raids   = <_RaidBoss>[];
+
+        for (final tierKey in current.keys) {
+          final tier  = int.tryParse(tierKey) ?? 0;
+          final bosses = current[tierKey] as List<dynamic>? ?? [];
+          for (final b in bosses) {
+            final m = b as Map<String, dynamic>;
+            raids.add(_RaidBoss(
+              id:           (m['id']   as num?)?.toInt() ?? 0,
+              name:          m['name'] as String? ?? '',
+              tier:          tier,
+              form:          m['form'] as String? ?? 'Normal',
+              possibleShiny: m['possible_shiny'] as bool? ?? false,
+              maxCp:         (m['max_unboosted_cp'] as num?)?.toInt() ?? 0,
+              minCp:         (m['min_unboosted_cp'] as num?)?.toInt() ?? 0,
+              types:         (m['type'] as List<dynamic>?)
+                                 ?.map((t) => t.toString()).toList() ?? [],
+            ));
           }
         }
-        // Ordenar por tier (5→1)
+
         raids.sort((a, b) => b.tier.compareTo(a.tier));
         if (mounted) setState(() { _raids = raids; _loading = false; });
       } else {
-        if (mounted) setState(() { _error = 'Erro ao carregar raids'; _loading = false; });
+        if (mounted) setState(() { _error = 'Erro ${res.statusCode}'; _loading = false; });
       }
     } catch (e) {
       if (mounted) setState(() { _error = 'Sem conexão'; _loading = false; });
@@ -51,102 +67,103 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
         title: const Text('Raids Ativos'),
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_outlined),
+            onPressed: _loadRaids,
+          ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _raids.isEmpty
               ? _EmptyState(
-                  message: _error ?? 'Nenhum evento ativo no momento',
-                  onRetry: () { setState(() { _loading = true; _error = null; }); _loadRaids(); },
+                  message: _error ?? 'Nenhum raid ativo no momento',
+                  onRetry: _loadRaids,
                 )
               : ListView(
                   padding: const EdgeInsets.all(16),
-                  children: [
-                    for (final tier in [5, 4, 3, 2, 1, 6]) ...[
-                      if (_raids.any((r) => r.tier == tier)) ...[
-                        _TierHeader(tier: tier),
-                        const SizedBox(height: 8),
-                        ..._raids.where((r) => r.tier == tier).map(
-                          (r) => _RaidTile(boss: r, scheme: scheme)),
-                        const SizedBox(height: 16),
-                      ],
-                    ],
-                  ],
+                  children: _buildTierSections(scheme),
                 ),
     );
   }
+
+  List<Widget> _buildTierSections(ColorScheme scheme) {
+    final widgets = <Widget>[];
+    // Mega primeiro (tier 6), depois 5 → 1
+    for (final tier in [6, 5, 4, 3, 2, 1]) {
+      final bosses = _raids.where((r) => r.tier == tier).toList();
+      if (bosses.isEmpty) continue;
+
+      widgets.add(_TierHeader(tier: tier, count: bosses.length));
+      widgets.add(const SizedBox(height: 8));
+      for (final boss in bosses) {
+        widgets.add(_RaidTile(boss: boss, scheme: scheme));
+      }
+      widgets.add(const SizedBox(height: 16));
+    }
+    return widgets;
+  }
 }
 
-// ─── Modelos ──────────────────────────────────────────────────────
+// ─── Modelo ───────────────────────────────────────────────────────
 
 class _RaidBoss {
-  final String name;
-  final int    tier;
-  final int    id;
-  final bool   isMega;
-  final bool   isShadow;
+  final int      id;
+  final String   name;
+  final int      tier;
+  final String   form;
+  final bool     possibleShiny;
+  final int      maxCp;
+  final int      minCp;
+  final List<String> types;
 
-  _RaidBoss({required this.name, required this.tier, required this.id,
-      required this.isMega, required this.isShadow});
+  bool get isMega   => tier == 6 || name.toLowerCase().contains('mega');
+  bool get isShadow => name.toLowerCase().contains('shadow');
 
-  factory _RaidBoss.fromJson(Map<String, dynamic> j) {
-    // A pokemon-go-api pode variar o formato — tratar os dois mais comuns
-    final nameRaw = (j['pokemon_name'] ?? j['name'] ?? '') as String;
-    final level   = j['level'] ?? j['raid_level'] ?? j['tier'] ?? 0;
-    final tid     = (j['pokemon_id'] ?? j['id'] ?? 0) as int;
-    int tier;
-    if (level is String) {
-      tier = int.tryParse(level.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-    } else {
-      tier = (level as num).toInt();
-    }
-    final isMega   = nameRaw.toLowerCase().contains('mega');
-    final isShadow = nameRaw.toLowerCase().contains('shadow') ||
-                     (j['type'] as String? ?? '').contains('shadow');
-    return _RaidBoss(name: nameRaw, tier: tier, id: tid,
-        isMega: isMega, isShadow: isShadow);
-  }
+  const _RaidBoss({
+    required this.id, required this.name, required this.tier,
+    required this.form, required this.possibleShiny,
+    required this.maxCp, required this.minCp, required this.types,
+  });
 }
 
 // ─── Widgets ──────────────────────────────────────────────────────
 
 class _TierHeader extends StatelessWidget {
   final int tier;
-  const _TierHeader({required this.tier});
+  final int count;
+  const _TierHeader({required this.tier, required this.count});
 
-  static const Map<int, _TierMeta> _meta = {
-    6: _TierMeta('Mega',     Color(0xFF9C27B0), 'Mega Raids'),
-    5: _TierMeta('5★',       Color(0xFFE65100), 'Raids Lendários'),
-    4: _TierMeta('4★',       Color(0xFF1565C0), 'Raids Difíceis'),
-    3: _TierMeta('3★',       Color(0xFF2E7D32), 'Raids Normais'),
-    2: _TierMeta('2★',       Color(0xFF795548), 'Raids Fáceis'),
-    1: _TierMeta('1★',       Color(0xFF546E7A), 'Raids Iniciante'),
+  static const _meta = {
+    6: ('Mega / Primal', Color(0xFF9C27B0)),
+    5: ('5 Estrelas',    Color(0xFFE65100)),
+    4: ('4 Estrelas',    Color(0xFF1565C0)),
+    3: ('3 Estrelas',    Color(0xFF2E7D32)),
+    2: ('2 Estrelas',    Color(0xFF795548)),
+    1: ('1 Estrela',     Color(0xFF546E7A)),
   };
 
   @override
   Widget build(BuildContext context) {
-    final m = _meta[tier] ?? const _TierMeta('?', Color(0xFF888888), 'Raids');
+    final (label, color) = _meta[tier] ?? ('Raid', const Color(0xFF888888));
     return Row(children: [
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: m.color.withOpacity(0.15),
+          color: color.withOpacity(0.15),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: m.color.withOpacity(0.4)),
+          border: Border.all(color: color.withOpacity(0.4)),
         ),
-        child: Text(m.label,
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: m.color)),
+        child: Text(label, style: TextStyle(
+            fontSize: 12, fontWeight: FontWeight.w700, color: color)),
       ),
       const SizedBox(width: 8),
-      Text(m.title, style: TextStyle(fontSize: 12,
-          color: Theme.of(context).colorScheme.onSurfaceVariant)),
+      Text('$count boss${count > 1 ? 'es' : ''}',
+          style: TextStyle(fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant)),
     ]);
   }
-}
-
-class _TierMeta {
-  final String label; final Color color; final String title;
-  const _TierMeta(this.label, this.color, this.title);
 }
 
 class _RaidTile extends StatelessWidget {
@@ -156,6 +173,8 @@ class _RaidTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNotNormal = boss.form != 'Normal' && boss.form.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -165,59 +184,59 @@ class _RaidTile extends StatelessWidget {
         border: Border.all(color: scheme.outlineVariant, width: 0.5),
       ),
       child: Row(children: [
+        // Sprite
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: Image.asset(
             'assets/sprites/artwork/${boss.id}.webp',
-            width: 48, height: 48, fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => SizedBox(
-              width: 48, height: 48,
-              child: Icon(Icons.catching_pokemon, color: scheme.onSurfaceVariant, size: 28)),
+            width: 52, height: 52, fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => SizedBox(width: 52, height: 52,
+              child: Icon(Icons.catching_pokemon,
+                  color: scheme.onSurfaceVariant.withOpacity(0.4), size: 30)),
           ),
         ),
         const SizedBox(width: 12),
+
+        // Info
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(boss.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-          if (boss.isMega || boss.isShadow)
-            Row(children: [
-              if (boss.isMega) _Badge('Mega', const Color(0xFF9C27B0)),
-              if (boss.isShadow) _Badge('Shadow', const Color(0xFF7B1FA2)),
-            ]),
+          Row(children: [
+            Expanded(child: Text(boss.name,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600))),
+            if (boss.possibleShiny)
+              const Icon(Icons.star_rounded, color: Color(0xFFFFCC00), size: 16),
+          ]),
+          if (isNotNormal)
+            Text(boss.form, style: TextStyle(
+                fontSize: 11, color: scheme.onSurfaceVariant)),
+          const SizedBox(height: 3),
+          Text('CP: ${boss.minCp} – ${boss.maxCp}',
+              style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
         ])),
       ]),
     );
   }
 }
 
-class _Badge extends StatelessWidget {
-  final String label; final Color color;
-  const _Badge(this.label, this.color);
-  @override Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.only(right: 4, top: 3),
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.12),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: color)),
-  );
-}
-
 class _EmptyState extends StatelessWidget {
-  final String message; final VoidCallback onRetry;
+  final String message;
+  final VoidCallback onRetry;
   const _EmptyState({required this.message, required this.onRetry});
-  @override Widget build(BuildContext context) => Center(child: Column(
-    mainAxisSize: MainAxisSize.min, children: [
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.event_busy_outlined, size: 64,
           color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.4)),
       const SizedBox(height: 16),
       Text(message, style: TextStyle(
           color: Theme.of(context).colorScheme.onSurfaceVariant)),
       const SizedBox(height: 16),
-      OutlinedButton(onPressed: onRetry,
+      OutlinedButton(
+        onPressed: onRetry,
         style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6))),
-        child: const Text('Tentar novamente')),
-    ],
-  ));
+        child: const Text('Tentar novamente'),
+      ),
+    ]));
+  }
 }
