@@ -17,24 +17,24 @@ const List<String> kPocketSetOrder = [
 
 // Nomes PT-BR oficiais + cores temáticas
 const Map<String, PocketSetMeta> kPocketSetMeta = {
-  'A1':  PocketSetMeta(id: 'A1',  namePt: 'Dominação Genética',        releaseDate: '2024-10-30', color1: 0xFF7038F8, color2: 0xFFF08030),
-  'A1a': PocketSetMeta(id: 'A1a', namePt: 'Ilha Mítica',               releaseDate: '2024-12-17', color1: 0xFF1B5E20, color2: 0xFF006064),
-  'A2':  PocketSetMeta(id: 'A2',  namePt: 'Embate do Tempo e Espaço',  releaseDate: '2025-01-30', color1: 0xFF0D47A1, color2: 0xFF4E342E),
-  'A2a': PocketSetMeta(id: 'A2a', namePt: 'Luz Triunfante',            releaseDate: '2025-03-27', color1: 0xFF5D4037, color2: 0xFF827717),
-  'A2b': PocketSetMeta(id: 'A2b', namePt: 'Brilho Deslumbrante',       releaseDate: '2025-04-30', color1: 0xFF880E4F, color2: 0xFF006064),
-  'A3':  PocketSetMeta(id: 'A3',  namePt: 'Guardiões Celestiais',      releaseDate: '2025-03-06', color1: 0xFF4A148C, color2: 0xFFE65100),
-  'A3a': PocketSetMeta(id: 'A3a', namePt: 'Crise Extradimensional',    releaseDate: '2025-05-01', color1: 0xFF1A237E, color2: 0xFF33691E),
-  'A3b': PocketSetMeta(id: 'A3b', namePt: 'Bosque de Eevee',           releaseDate: '2025-05-29', color1: 0xFF2E7D32, color2: 0xFF6A1B9A),
-  'A4':  PocketSetMeta(id: 'A4',  namePt: 'Sabedoria do Mar e do Céu', releaseDate: '2025-07-03', color1: 0xFF01579B, color2: 0xFF006064),
-  'A4a': PocketSetMeta(id: 'A4a', namePt: 'Fontes Isoladas',           releaseDate: '2025-08-21', color1: 0xFF1B5E20, color2: 0xFF01579B),
-  'A4b': PocketSetMeta(id: 'A4b', namePt: 'Pack Deluxe ex',            releaseDate: '2025-09-18', color1: 0xFFBF360C, color2: 0xFF827717),
-  'B1':  PocketSetMeta(id: 'B1',  namePt: 'Ascensão Mega',             releaseDate: '2025-10-16', color1: 0xFF880E4F, color2: 0xFF4A148C),
-  'B1a': PocketSetMeta(id: 'B1a', namePt: 'Chamas Carmesim',           releaseDate: '2025-12-17', color1: 0xFFB71C1C, color2: 0xFFE65100),
-  'B2':  PocketSetMeta(id: 'B2',  namePt: 'Desfile Onírico',           releaseDate: '2026-01-29', color1: 0xFF4A148C, color2: 0xFF880E4F),
-  'B2a': PocketSetMeta(id: 'B2a', namePt: 'Maravilhas de Paldea',      releaseDate: '2026-02-26', color1: 0xFFBF360C, color2: 0xFF1B5E20),
-  'B2b': PocketSetMeta(id: 'B2b', namePt: 'Mega Brilho',               releaseDate: '2026-03-26', color1: 0xFF0D47A1, color2: 0xFF880E4F),
-  'P-A': PocketSetMeta(id: 'P-A', namePt: 'Promos-A',                  releaseDate: '2024-10-30', color1: 0xFF263238, color2: 0xFF37474F),
-  'P-B': PocketSetMeta(id: 'P-B', namePt: 'Promos-B',                  releaseDate: '2025-10-16', color1: 0xFF1C1C1C, color2: 0xFF263238),
+  'A1':  PocketSetMeta(id: 'A1',  namePt: 'Dominação Genética',        releaseDate: '2024-10-30', color1: 0xFF2D0A5F, color2: 0xFF7A3000),
+  'A1a': PocketSetMeta(id: 'A1a', namePt: 'Ilha Mítica',               releaseDate: '2024-12-17', color1: 0xFF0A3D1F, color2: 0xFF003D40),
+  'A2':  PocketSetMeta(id: 'A2',  namePt: 'Embate do Tempo e Espaço',  releaseDate: '2025-01-30', color1: 0xFF062040, color2: 0xFF2D1A00),
+  'A2a': PocketSetMeta(id: 'A2a', namePt: 'Luz Triunfante',            releaseDate: '2025-03-27', color1: 0xFF2D1A00, color2: 0xFF1A1800),
+  'A2b': PocketSetMeta(id: 'A2b', namePt: 'Brilho Deslumbrante',       releaseDate: '2025-04-30', color1: 0xFF3D0020, color2: 0xFF003040),
+  'A3':  PocketSetMeta(id: 'A3',  namePt: 'Guardiões Celestiais',      releaseDate: '2025-03-06', color1: 0xFF1F0040, color2: 0xFF3D1A00),
+  'A3a': PocketSetMeta(id: 'A3a', namePt: 'Crise Extradimensional',    releaseDate: '2025-05-01', color1: 0xFF05073D, color2: 0xFF0D1F00),
+  'A3b': PocketSetMeta(id: 'A3b', namePt: 'Bosque de Eevee',           releaseDate: '2025-05-29', color1: 0xFF0A2E0A, color2: 0xFF280040),
+  'A4':  PocketSetMeta(id: 'A4',  namePt: 'Sabedoria do Mar e do Céu', releaseDate: '2025-07-03', color1: 0xFF002040, color2: 0xFF003035),
+  'A4a': PocketSetMeta(id: 'A4a', namePt: 'Fontes Isoladas',           releaseDate: '2025-08-21', color1: 0xFF062010, color2: 0xFF002035),
+  'A4b': PocketSetMeta(id: 'A4b', namePt: 'Pack Deluxe ex',            releaseDate: '2025-09-18', color1: 0xFF3D1000, color2: 0xFF1A1400),
+  'B1':  PocketSetMeta(id: 'B1',  namePt: 'Ascensão Mega',             releaseDate: '2025-10-16', color1: 0xFF2D0010, color2: 0xFF190030),
+  'B1a': PocketSetMeta(id: 'B1a', namePt: 'Chamas Carmesim',           releaseDate: '2025-12-17', color1: 0xFF3D0000, color2: 0xFF3D1800),
+  'B2':  PocketSetMeta(id: 'B2',  namePt: 'Desfile Onírico',           releaseDate: '2026-01-29', color1: 0xFF1A0030, color2: 0xFF2D0020),
+  'B2a': PocketSetMeta(id: 'B2a', namePt: 'Maravilhas de Paldea',      releaseDate: '2026-02-26', color1: 0xFF2D0800, color2: 0xFF062010),
+  'B2b': PocketSetMeta(id: 'B2b', namePt: 'Mega Brilho',               releaseDate: '2026-03-26', color1: 0xFF001040, color2: 0xFF2D0020),
+  'P-A': PocketSetMeta(id: 'P-A', namePt: 'Promos-A',                  releaseDate: '2024-10-30', color1: 0xFF0D1015, color2: 0xFF101518),
+  'P-B': PocketSetMeta(id: 'P-B', namePt: 'Promos-B',                  releaseDate: '2025-10-16', color1: 0xFF080A0A, color2: 0xFF0D1010),
 };
 
 class PocketSetMeta {
@@ -251,10 +251,17 @@ class TcgPocketService {
     } catch (_) { return null; }
   }
 
-  static Future<PocketCardDetail?> fetchCard(String cardId) async {
+  /// Busca detalhes de uma carta via /sets/{setId}/{localId}
+  /// cardId é usado apenas como chave de cache.
+  static Future<PocketCardDetail?> fetchCard(
+    String cardId, {
+    required String setId,
+    required String localId,
+  }) async {
     if (_cardCache.containsKey(cardId)) return _cardCache[cardId];
     try {
-      final res = await http.get(Uri.parse('$_kBase/cards/$cardId')).timeout(_timeout);
+      final url = '$_kBase/sets/$setId/$localId';
+      final res = await http.get(Uri.parse(url)).timeout(_timeout);
       if (res.statusCode != 200) return null;
       final card = PocketCardDetail.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
       _cardCache[cardId] = card;

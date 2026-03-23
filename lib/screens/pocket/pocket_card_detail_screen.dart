@@ -32,7 +32,11 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
   Future<void> _loadCard() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final card = await TcgPocketService.fetchCard(widget.cardId);
+      final card = await TcgPocketService.fetchCard(
+        widget.cardId,
+        setId: widget.setId,
+        localId: widget.localId,
+      );
       if (mounted) {
         setState(() {
           _card    = card;
@@ -140,7 +144,7 @@ class _CardImage extends StatelessWidget {
           aspectRatio: 0.714, // proporção padrão de carta TCG (63×88mm)
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(4),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.25),
@@ -150,7 +154,7 @@ class _CardImage extends StatelessWidget {
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12), // carta TCG tem cantos arredondados
               child: card.imageUrlHigh != null
                   ? Image.network(
                       card.imageUrlHigh!,
@@ -408,7 +412,7 @@ class _StatsRow extends StatelessWidget {
         color: isDark
             ? scheme.surfaceContainerHigh
             : scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: scheme.outlineVariant, width: 0.5),
       ),
       child: Row(
@@ -478,7 +482,7 @@ class _DescriptionCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: scheme.outlineVariant, width: 0.5),
       ),
       child: Text(
@@ -799,7 +803,7 @@ class _SectionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: cardBg,
             border: Border.all(color: titleColor.withOpacity(0.3), width: 1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
           ),
           child: child,
         ),
@@ -897,7 +901,7 @@ class _DetailSkeletonState extends State<_DetailSkeleton>
                 height: 60,
                 decoration: BoxDecoration(
                   color: shimmer,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
               const SizedBox(height: 16),
@@ -906,7 +910,7 @@ class _DetailSkeletonState extends State<_DetailSkeleton>
                 height: 100,
                 decoration: BoxDecoration(
                   color: shimmer,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ],

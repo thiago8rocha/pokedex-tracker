@@ -29,16 +29,15 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
   bool    _loading = true;
   String? _error;
 
-  // Estado local de coleção: cardId → true/false
   final Map<String, bool> _owned = {};
 
-  // View e filtros
   bool              _isGrid    = true;
+  bool              _searching = false;
   _CollectionFilter _filter    = _CollectionFilter.all;
   String            _search    = '';
-  final _searchCtrl = TextEditingController();
+  final _searchCtrl  = TextEditingController();
+  final _searchFocus = FocusNode();
 
-  // Chave SharedPreferences: pocket_owned_{setId}_{cardId}
   String _prefKey(String cardId) => 'pocket_owned_${widget.setId}_$cardId';
 
   @override
@@ -50,6 +49,7 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
@@ -80,24 +80,40 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
   }
 
   Future<void> _toggleOwned(String cardId) async {
-    final next  = !(_owned[cardId] ?? false);
+    final next = !(_owned[cardId] ?? false);
     setState(() => _owned[cardId] = next);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefKey(cardId), next);
+  }
+
+  // Marcar/desmarcar todas as cartas visíveis de uma vez
+  Future<void> _toggleAll() async {
+    final cards = _filteredCards;
+    if (cards.isEmpty) return;
+
+    // Se todas marcadas → desmarcar; senão → marcar todas
+    final allOwned = cards.every((c) => _owned[c.id] == true);
+    final next = !allOwned;
+
+    final prefs   = await SharedPreferences.getInstance();
+    final updates = <String, bool>{};
+    for (final c in cards) {
+      updates[c.id] = next;
+      await prefs.setBool(_prefKey(c.id), next);
+    }
+    if (mounted) setState(() => _owned.addAll(updates));
   }
 
   List<PocketCardBrief> get _filteredCards {
     if (_set == null) return [];
     var list = _set!.cards;
 
-    // Filtro de coleção
     if (_filter == _CollectionFilter.owned) {
       list = list.where((c) => _owned[c.id] == true).toList();
     } else if (_filter == _CollectionFilter.missing) {
       list = list.where((c) => _owned[c.id] != true).toList();
     }
 
-    // Busca por nome ou número
     final q = _search.trim().toLowerCase();
     if (q.isNotEmpty) {
       list = list.where((c) =>
@@ -109,21 +125,76 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
     return list;
   }
 
-  int get _ownedCount => _owned.values.where((v) => v).length;
-  int get _totalCount => _set?.cards.length ?? 0;
+  // Conta apenas cartas com número ≤ total oficial (exclui secret rares / variantes)
+  int get _collectibleTotal {
+    if (_set == null) return 0;
+    final official = _set!.totalCards;
+    if (official <= 0) return _set!.cards.length;
+    return _set!.cards.where((c) {
+      final n = int.tryParse(c.localId);
+      return n != null && n <= official;
+    }).length;
+  }
+
+  int get _ownedCount {
+    if (_set == null) return 0;
+    final official = _set!.totalCards;
+    return _owned.entries.where((e) {
+      if (!e.value) return false;
+      final card = _set!.cards.where((c) => c.id == e.key).firstOrNull;
+      if (card == null) return false;
+      if (official > 0) {
+        final n = int.tryParse(card.localId);
+        return n != null && n <= official;
+      }
+      return true;
+    }).length;
+  }
+
+  void _openSearch() {
+    setState(() => _searching = true);
+    Future.delayed(
+      const Duration(milliseconds: 50),
+      () => _searchFocus.requestFocus(),
+    );
+  }
+
+  void _closeSearch() {
+    _searchCtrl.clear();
+    _searchFocus.unfocus();
+    setState(() { _searching = false; _search = ''; });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final cards  = _filteredCards;
+    final scheme     = Theme.of(context).colorScheme;
+    final cards      = _filteredCards;
+    final allMarked  = cards.isNotEmpty && cards.every((c) => _owned[c.id] == true);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.setName),
+        title: _searching
+            ? TextField(
+                controller: _searchCtrl,
+                focusNode:  _searchFocus,
+                onChanged:  (v) => setState(() => _search = v),
+                decoration: const InputDecoration(
+                  hintText: 'Buscar por nome ou número...',
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(fontSize: 16),
+              )
+            : Text(widget.setName),
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         actions: [
-          // Toggle lista/grid
+          // Botão busca — ao lado do toggle de visualização
+          IconButton(
+            icon: Icon(_searching ? Icons.close : Icons.search),
+            tooltip: _searching ? 'Fechar busca' : 'Buscar',
+            onPressed: _searching ? _closeSearch : _openSearch,
+          ),
+          // Toggle lista / grid
           IconButton(
             icon: Icon(_isGrid ? Icons.view_list_outlined : Icons.grid_view_outlined),
             tooltip: _isGrid ? 'Ver em lista' : 'Ver em grid',
@@ -137,78 +208,65 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
               ? _ErrorView(message: _error!, onRetry: _loadSet)
               : Column(
                   children: [
-                    // ── Barra de busca ──
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-                      child: TextField(
-                        controller: _searchCtrl,
-                        onChanged: (v) => setState(() => _search = v),
-                        decoration: InputDecoration(
-                          hintText: 'Buscar por nome ou número...',
-                          prefixIcon: const Icon(Icons.search, size: 20),
-                          suffixIcon: _search.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.close, size: 18),
-                                  onPressed: () {
-                                    _searchCtrl.clear();
-                                    setState(() => _search = '');
-                                  },
-                                )
-                              : null,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          isDense: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: scheme.outlineVariant),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: scheme.outlineVariant),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // ── Filtros de coleção ──
+                    // ── Filtros + progresso + adicionar todas ──────
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                       child: Row(
                         children: [
                           _FilterBtn(
                             label: 'Todas',
-                            count: _totalCount,
+                            count: _collectibleTotal,
                             active: _filter == _CollectionFilter.all,
                             onTap: () => setState(() => _filter = _CollectionFilter.all),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           _FilterBtn(
                             label: 'Tenho',
                             count: _ownedCount,
                             active: _filter == _CollectionFilter.owned,
                             onTap: () => setState(() => _filter = _CollectionFilter.owned),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           _FilterBtn(
                             label: 'Faltam',
-                            count: _totalCount - _ownedCount,
+                            count: _collectibleTotal - _ownedCount,
                             active: _filter == _CollectionFilter.missing,
                             onTap: () => setState(() => _filter = _CollectionFilter.missing),
                           ),
                           const Spacer(),
-                          // Progresso
+                          // Contador
                           Text(
-                            '$_ownedCount/$_totalCount',
+                            '$_ownedCount/$_collectibleTotal',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: scheme.onSurfaceVariant,
                             ),
                           ),
+                          const SizedBox(width: 10),
+                          // Botão "Adicionar / remover todas"
+                          Tooltip(
+                            message: allMarked ? 'Remover todas' : 'Adicionar todas',
+                            child: GestureDetector(
+                              onTap: cards.isEmpty ? null : _toggleAll,
+                              child: Icon(
+                                allMarked
+                                    ? Icons.catching_pokemon
+                                    : Icons.catching_pokemon_outlined,
+                                size: 22,
+                                color: cards.isEmpty
+                                    ? scheme.onSurfaceVariant.withOpacity(0.25)
+                                    : allMarked
+                                        ? const Color(0xFFE53935)
+                                        : scheme.onSurfaceVariant.withOpacity(0.55),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
 
-                    // ── Lista ou Grid ──
+                    // ── Grid ou Lista ──────────────────────────────
                     Expanded(
                       child: cards.isEmpty
                           ? Center(
@@ -223,16 +281,16 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
                             )
                           : _isGrid
                               ? _CardGrid(
-                                  cards:     cards,
-                                  setId:     widget.setId,
-                                  owned:     _owned,
-                                  onToggle:  _toggleOwned,
+                                  cards:    cards,
+                                  setId:    widget.setId,
+                                  owned:    _owned,
+                                  onToggle: _toggleOwned,
                                 )
                               : _CardList(
-                                  cards:     cards,
-                                  setId:     widget.setId,
-                                  owned:     _owned,
-                                  onToggle:  _toggleOwned,
+                                  cards:    cards,
+                                  setId:    widget.setId,
+                                  owned:    _owned,
+                                  onToggle: _toggleOwned,
                                 ),
                     ),
                   ],
@@ -241,7 +299,7 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
   }
 }
 
-// ─── Botão de filtro ─────────────────────────────────────────────
+// ─── Botão de filtro ──────────────────────────────────────────────
 
 class _FilterBtn extends StatelessWidget {
   final String label;
@@ -264,7 +322,7 @@ class _FilterBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
@@ -286,7 +344,7 @@ class _FilterBtn extends StatelessWidget {
   }
 }
 
-// ─── Grid 3 colunas ──────────────────────────────────────────────
+// ─── Grid 3 colunas ───────────────────────────────────────────────
 
 class _CardGrid extends StatelessWidget {
   final List<PocketCardBrief>    cards;
@@ -307,7 +365,7 @@ class _CardGrid extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount:   3,
-        childAspectRatio: 0.6,
+        childAspectRatio: 0.56, // mais alto — imagem completa sem corte
         crossAxisSpacing: 8,
         mainAxisSpacing:  8,
       ),
@@ -338,7 +396,6 @@ class _CardGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -352,79 +409,79 @@ class _CardGridTile extends StatelessWidget {
         ),
       ),
       child: Container(
+        // Sem highlight quando possuída — visual neutro
         decoration: BoxDecoration(
-          color: isOwned
-              ? scheme.primaryContainer.withOpacity(isDark ? 0.3 : 0.25)
-              : (isDark ? scheme.surfaceContainerHigh : scheme.surfaceContainerLow),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isOwned ? scheme.primary.withOpacity(0.5) : scheme.outlineVariant,
-            width: isOwned ? 1.5 : 0.5,
-          ),
+          color: scheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: scheme.outlineVariant, width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Imagem
+            // ── Imagem: proporção carta TCG (63×88 ≈ 0.716) ──────
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    card.imageUrlLow != null
-                        ? Image.network(
-                            card.imageUrlLow!,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (_, child, p) => p == null ? child
-                                : Container(color: scheme.surfaceContainerHighest),
-                            errorBuilder: (_, __, ___) => _CardPlaceholder(scheme: scheme),
-                          )
-                        : _CardPlaceholder(scheme: scheme),
-                    // Tick de "tenho"
-                    if (isOwned)
-                      Positioned(
-                        top: 4, right: 4,
-                        child: Container(
-                          width: 18, height: 18,
-                          decoration: BoxDecoration(
-                            color: scheme.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.check, size: 12, color: Colors.white),
-                        ),
-                      ),
-                  ],
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                child: card.imageUrlLow != null
+                    ? Image.network(
+                        card.imageUrlLow!,
+                        fit: BoxFit.contain, // contain = sem corte
+                        loadingBuilder: (_, child, p) => p == null
+                            ? child
+                            : Container(color: scheme.surfaceContainerHighest),
+                        errorBuilder: (_, __, ___) => _CardPlaceholder(scheme: scheme),
+                      )
+                    : _CardPlaceholder(scheme: scheme),
               ),
             ),
-            // Rodapé
+
+            // ── Rodapé: nome + número (esq) | pokébola (dir) ─────
             Padding(
-              padding: const EdgeInsets.fromLTRB(5, 3, 5, 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(5, 4, 5, 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('#${card.localId}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600,
-                        color: scheme.onSurfaceVariant)),
-                  Text(card.name,
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      if (card.rarity != null)
-                        Expanded(child: PocketRarityBadge(rarity: card.rarity!)),
-                      // Botão "tenho"
-                      GestureDetector(
-                        onTap: onToggle,
-                        child: Icon(
-                          isOwned ? Icons.catching_pokemon : Icons.catching_pokemon_outlined,
-                          size: 16,
-                          color: isOwned ? scheme.primary : scheme.onSurfaceVariant.withOpacity(0.5),
+                  // Nome + número
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          card.name,
+                          style: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        Text(
+                          '#${card.localId}',
+                          style: TextStyle(
+                            fontSize: 8,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Pokébola — vermelha quando possuída, cinza quando não
+                  GestureDetector(
+                    onTap: onToggle,
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Icon(
+                        isOwned
+                            ? Icons.catching_pokemon
+                            : Icons.catching_pokemon_outlined,
+                        size: 16,
+                        color: isOwned
+                            ? const Color(0xFFE53935)
+                            : scheme.onSurfaceVariant.withOpacity(0.4),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -436,7 +493,7 @@ class _CardGridTile extends StatelessWidget {
   }
 }
 
-// ─── Lista linear ────────────────────────────────────────────────
+// ─── Lista linear ─────────────────────────────────────────────────
 
 class _CardList extends StatelessWidget {
   final List<PocketCardBrief>    cards;
@@ -482,7 +539,6 @@ class _CardListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -498,21 +554,17 @@ class _CardListTile extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 6),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        // Sem highlight — visual neutro independente de posse
         decoration: BoxDecoration(
-          color: isOwned
-              ? scheme.primaryContainer.withOpacity(isDark ? 0.25 : 0.18)
-              : (isDark ? scheme.surfaceContainerHigh : scheme.surfaceContainerLow),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isOwned ? scheme.primary.withOpacity(0.4) : scheme.outlineVariant,
-            width: isOwned ? 1.5 : 0.5,
-          ),
+          color: scheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: scheme.outlineVariant, width: 0.5),
         ),
         child: Row(
           children: [
             // Miniatura
             ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(4),
               child: SizedBox(
                 width: 52, height: 72,
                 child: card.imageUrlLow != null
@@ -533,12 +585,17 @@ class _CardListTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('#${card.localId}',
-                    style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant)),
-                  Text(card.name,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 4),
-                  if (card.rarity != null)
+                  Text(
+                    card.name,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '#${card.localId}',
+                    style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant),
+                  ),
+                  if (card.rarity != null) ...[
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         PocketRarityBadge(rarity: card.rarity!, expanded: true),
@@ -549,19 +606,24 @@ class _CardListTile extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ],
                 ],
               ),
             ),
-            // Botão "tenho"
+            // Pokébola — vermelha quando possuída
             GestureDetector(
               onTap: onToggle,
               behavior: HitTestBehavior.opaque,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Icon(
-                  isOwned ? Icons.catching_pokemon : Icons.catching_pokemon_outlined,
+                  isOwned
+                      ? Icons.catching_pokemon
+                      : Icons.catching_pokemon_outlined,
                   size: 26,
-                  color: isOwned ? scheme.primary : scheme.onSurfaceVariant.withOpacity(0.4),
+                  color: isOwned
+                      ? const Color(0xFFE53935)
+                      : scheme.onSurfaceVariant.withOpacity(0.4),
                 ),
               ),
             ),
@@ -621,14 +683,14 @@ class _ListSkeletonState extends State<_ListSkeleton>
       builder: (_, __) => GridView.builder(
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, childAspectRatio: 0.6,
+          crossAxisCount: 3, childAspectRatio: 0.56,
           crossAxisSpacing: 8, mainAxisSpacing: 8,
         ),
         itemCount: 18,
         itemBuilder: (_, __) => Container(
           decoration: BoxDecoration(
             color: scheme.onSurface.withOpacity(_anim.value * 0.12),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ),
@@ -636,7 +698,7 @@ class _ListSkeletonState extends State<_ListSkeleton>
   }
 }
 
-// ─── Error view ──────────────────────────────────────────────────
+// ─── Error view ───────────────────────────────────────────────────
 
 class _ErrorView extends StatelessWidget {
   final String message; final VoidCallback onRetry;
