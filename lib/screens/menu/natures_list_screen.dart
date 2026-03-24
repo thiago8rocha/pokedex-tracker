@@ -109,7 +109,7 @@ class _NaturesListScreenState extends State<NaturesListScreen> {
     final rect = RelativeRect.fromLTRB(
         pos.dx, pos.dy + size.height, pos.dx + size.width, 0);
 
-    Widget item(String label, String? value) {
+    PopupMenuItem<String?> item(String label, String? value) {
       final sel = _filterStat == value;
       return PopupMenuItem<String?>(
         value: value,
@@ -130,7 +130,7 @@ class _NaturesListScreenState extends State<NaturesListScreen> {
       items: [
         item('Todas', null),
         for (final s in ['atk', 'def', 'spa', 'spd', 'spe'])
-          item('+ ${_statLabel[s]}', s),
+          item('+ \${_statLabel[s]}', s),
       ],
     );
     if (mounted) setState(() => _filterStat = result);
