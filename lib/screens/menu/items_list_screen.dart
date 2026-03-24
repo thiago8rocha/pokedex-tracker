@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/screens/menu/item_detail_screen.dart';
@@ -191,11 +192,13 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
       }
     }
 
-    // Carregar item_map.json
+    // Carregar item_map.json — parsear em background para não travar a UI
     if (_itemMapCache == null) {
       try {
         final raw = await rootBundle.loadString('assets/data/item_map.json');
-        _itemMapCache = jsonDecode(raw) as Map<String, dynamic>;
+        // compute() roda o jsonDecode em um isolate separado
+        _itemMapCache = await compute(
+          (String s) => jsonDecode(s) as Map<String, dynamic>, raw);
       } catch (_) {
         _itemMapCache = {};
       }
@@ -209,6 +212,12 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
     final map  = _itemMapCache ?? {};
     final gameId = _filterByGame ? _activeGameId : null;
 
+    // Categorias sem relevância para display (ruído do JSON)
+    const skipCategories = {
+      'Cristais Dynamax', 'Ingredientes de Sanduíche', 'Ingredientes de Curry',
+      'Piquenique', 'Dados', 'Jogo',
+    };
+
     final entries = map.entries.map((e) {
       final v = e.value as Map<String, dynamic>;
       return ItemEntry(
@@ -221,9 +230,15 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
         effect:     v['effect']     as String? ?? '',
         flavor:     v['flavor']     as String? ?? '',
         sprite:     v['sprite']     as String? ?? '',
-        versions:   (v['versions'] as List<dynamic>?)?.cast<String>() ?? [],
+        versions:   (v['versions'] as List<dynamic>?)
+            ?.cast<String>()
+            .where((s) => s.isNotEmpty)
+            .toList() ?? [],
       );
     }).where((item) {
+      // Excluir categorias irrelevantes
+      if (skipCategories.contains(item.categoryPt)) return false;
+      // Filtrar por jogo quando versions estão disponíveis
       if (gameId != null && item.versions.isNotEmpty) {
         return item.versions.any((v) => _versionToGameId[v] == gameId);
       }
