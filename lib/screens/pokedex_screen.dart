@@ -619,30 +619,34 @@ class _PokedexScreenState extends State<PokedexScreen>
     final isPokopia = _effectivePokedexId.contains('pokopia');
 
     if (!mounted) return;
-    await Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (routeContext, __, ___) {
-          // Ao navegar para prev/next: pushReplacement no context da rota atual
-          // Isso troca a rota sem revelar o que está atrás → sem piscar
-          onPrevCallback() => _navigateFromDetail(routeContext, filtered, idx - 1);
-          onNextCallback() => _navigateFromDetail(routeContext, filtered, idx + 1);
 
+    // Captura o NavigatorState antes do push — permanece válido mesmo após pushReplacement
+    final nav = Navigator.of(context);
+
+    // Closures capturando filtered e idx — não dependem do routeContext
+    final onPrevCallback = prevEntry != null
+        ? () => _navigateFromDetail(nav, filtered, idx - 1)
+        : null;
+    final onNextCallback = nextEntry != null
+        ? () => _navigateFromDetail(nav, filtered, idx + 1)
+        : null;
+
+    await nav.push(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) {
           if (isNacional) {
             return NacionalDetailScreen(
               pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
               prevName: _prevName, prevId: _prevId,
               nextName: _nextName, nextId: _nextId,
-              onPrev: prevEntry != null ? onPrevCallback : null,
-              onNext: nextEntry != null ? onNextCallback : null,
+              onPrev: onPrevCallback, onNext: onNextCallback,
             );
           } else if (isGo) {
             return GoDetailScreen(
               pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
               prevName: _prevName, prevId: _prevId,
               nextName: _nextName, nextId: _nextId,
-              onPrev: prevEntry != null ? onPrevCallback : null,
-              onNext: nextEntry != null ? onNextCallback : null,
+              onPrev: onPrevCallback, onNext: onNextCallback,
             );
           } else if (isPokopia) {
             return PokopiaDetailScreen(
@@ -653,8 +657,7 @@ class _PokedexScreenState extends State<PokedexScreen>
               pokedexId: _effectivePokedexId,
               prevName: _prevName, prevId: _prevId,
               nextName: _nextName, nextId: _nextId,
-              onPrev: prevEntry != null ? onPrevCallback : null,
-              onNext: nextEntry != null ? onNextCallback : null,
+              onPrev: onPrevCallback, onNext: onNextCallback,
             );
           }
         },
@@ -673,7 +676,7 @@ class _PokedexScreenState extends State<PokedexScreen>
   /// Navega para prev/next a partir da tela de detalhe usando pushReplacement
   /// com fade — evita o piscar da tela anterior.
   Future<void> _navigateFromDetail(
-      BuildContext detailContext, List<_Entry> filtered, int newIdx) async {
+      NavigatorState nav, List<_Entry> filtered, int newIdx) async {
     if (newIdx < 0 || newIdx >= filtered.length) return;
     final entry = filtered[newIdx];
 
@@ -684,7 +687,7 @@ class _PokedexScreenState extends State<PokedexScreen>
     }
 
     final pokemon = _buildPokemon(entry.speciesId, entryNumber: entry.entryNumber);
-    if (pokemon == null || !detailContext.mounted) return;
+    if (pokemon == null) return;
 
     bool isCaught = _caughtMap[entry.speciesId] ?? false;
 
@@ -723,21 +726,25 @@ class _PokedexScreenState extends State<PokedexScreen>
     final isGo = _effectivePokedexId.contains('pokémon_go') || _effectivePokedexId.contains('pokemon_go');
     final isPokopia = _effectivePokedexId.contains('pokopia');
 
-    Navigator.of(detailContext).pushReplacement(PageRouteBuilder(
+    nav.pushReplacement(PageRouteBuilder(
       pageBuilder: (rc, __, ___) {
-        onP() => _navigateFromDetail(rc, filtered, newIdx - 1);
-        onN() => _navigateFromDetail(rc, filtered, newIdx + 1);
+        final onP = newIdx > 0
+            ? () => _navigateFromDetail(nav, filtered, newIdx - 1)
+            : null;
+        final onN = newIdx < filtered.length - 1
+            ? () => _navigateFromDetail(nav, filtered, newIdx + 1)
+            : null;
         if (isNacional) {
           return NacionalDetailScreen(
             pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
             prevName: prevName, prevId: prevId, nextName: nextName, nextId: nextId,
-            onPrev: prevEntry != null ? onP : null, onNext: nextEntry != null ? onN : null,
+            onPrev: onP, onNext: onN,
           );
         } else if (isGo) {
           return GoDetailScreen(
             pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
             prevName: prevName, prevId: prevId, nextName: nextName, nextId: nextId,
-            onPrev: prevEntry != null ? onP : null, onNext: nextEntry != null ? onN : null,
+            onPrev: onP, onNext: onN,
           );
         } else if (isPokopia) {
           return PokopiaDetailScreen(pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle);
@@ -746,7 +753,7 @@ class _PokedexScreenState extends State<PokedexScreen>
             pokemon: pokemon, caught: isCaught, onToggleCaught: onToggle,
             pokedexId: _effectivePokedexId,
             prevName: prevName, prevId: prevId, nextName: nextName, nextId: nextId,
-            onPrev: prevEntry != null ? onP : null, onNext: nextEntry != null ? onN : null,
+            onPrev: onP, onNext: onN,
           );
         }
       },
