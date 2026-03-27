@@ -97,11 +97,19 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
         }
       }
 
+      // Traduzir efeito do trainer
+      String? trainerEffectPt;
+      if (detail.trainerEffect != null && detail.trainerEffect!.isNotEmpty) {
+        final translated = await translateFlavorText(detail.trainerEffect!);
+        if (translated != detail.trainerEffect) trainerEffectPt = translated;
+      }
+
       if (mounted) setState(() {
-        _detail        = detail;
-        _pt            = pt;
-        _descriptionPt = descPt;
-        _loadingDetail = false;
+        _detail           = detail;
+        _pt               = pt;
+        _descriptionPt    = descPt;
+        _trainerEffectPt  = trainerEffectPt;
+        _loadingDetail    = false;
       });
     } catch (_) {
       if (mounted) setState(() => _loadingDetail = false);
@@ -282,7 +290,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                       _detail!.category == 'Trainer' &&
                       _detail!.trainerEffect != null &&
                       _detail!.trainerEffect!.isNotEmpty) ...[
-                    Text(_trainerLabel(_detail!.trainerType),
+                    Text('Efeito',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
                           color: scheme.onSurfaceVariant)),
                     const SizedBox(height: 8),
@@ -293,9 +301,32 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(color: Colors.teal.withOpacity(0.3)),
                       ),
-                      child: Text(_detail!.trainerEffect!,
-                          style: TextStyle(fontSize: 13, height: 1.5,
-                              color: scheme.onSurface.withOpacity(0.85))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Efeito traduzido
+                          Text(
+                            _trainerEffectPt ?? _detail!.trainerEffect!,
+                            style: TextStyle(fontSize: 13, height: 1.5,
+                                color: scheme.onSurface.withOpacity(0.85)),
+                          ),
+                          // Regra fixa do tipo de trainer
+                          if (_trainerRule(_detail!.trainerType) != null) ...[
+                            const SizedBox(height: 10),
+                            Divider(height: 1, color: Colors.teal.withOpacity(0.2)),
+                            const SizedBox(height: 8),
+                            Text(
+                              _trainerRule(_detail!.trainerType)!,
+                              style: TextStyle(
+                                fontSize: 11,
+                                height: 1.4,
+                                color: scheme.onSurfaceVariant,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ],
                 ],
@@ -567,6 +598,26 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
       case 'stadium':   return 'Estádio';
       case 'tool':      return 'Ferramenta';
       default:          return t ?? 'Efeito';
+    }
+  }
+
+  // Regra fixa exibida na parte inferior de cada tipo de carta Trainer
+  String? _trainerRule(String? t) {
+    switch (t?.toLowerCase()) {
+      case 'item':
+        return 'Você pode usar quantas cartas de Item quiser durante seu turno.';
+      case 'supporter':
+        return 'Você só pode usar 1 carta de Suporte por turno. '
+            'Ao usar, descarte-a.';
+      case 'stadium':
+        return 'Esta carta fica em campo e afeta ambos os jogadores. '
+            'Se outro Estádio entrar em campo, descarte este. '
+            'Descarte este Estádio se outro Estádio vier a campo.';
+      case 'tool':
+        return 'Anexe esta carta a um dos seus Pokémon em campo. '
+            'Cada Pokémon pode ter apenas 1 Ferramenta Pokémon.';
+      default:
+        return null;
     }
   }
 }
