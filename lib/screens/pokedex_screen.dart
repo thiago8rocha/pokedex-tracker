@@ -783,22 +783,7 @@ class _PokedexScreenState extends State<PokedexScreen>
       appBar: AppBar(
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
-        title: _searchOpen
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Nome, número ou tipo...',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(fontSize: 15),
-                ),
-                style: const TextStyle(fontSize: 15),
-                onChanged: (v) {
-                  setState(() => _searchQuery = v);
-                  _loadPage(0);
-                },
-              )
-            : Column(
+        title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(_pokedexDisplayTitle,
@@ -813,18 +798,17 @@ class _PokedexScreenState extends State<PokedexScreen>
                 ],
               ),
         actions: [
-          if (_searchOpen)
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: Icon(_searchOpen ? Icons.search_off : Icons.search),
               onPressed: () => setState(() {
-                _searchOpen = false;
-                _searchQuery = '';
-                _searchController.clear();
-                _loadPage(0);
+                _searchOpen = !_searchOpen;
+                if (!_searchOpen) {
+                  _searchQuery = '';
+                  _searchController.clear();
+                  _loadPage(0);
+                }
               }),
-            )
-          else ...[
-            IconButton(icon: const Icon(Icons.search), onPressed: () => setState(() => _searchOpen = true)),
+            ),
             IconButton(icon: const Icon(Icons.filter_list), onPressed: _showFilterSheet),
             IconButton(
               icon: const Icon(Icons.settings_outlined),
@@ -838,8 +822,41 @@ class _PokedexScreenState extends State<PokedexScreen>
       bottomNavigationBar: _buildBottomNav(),
       body: Column(
         children: [
-          // Filtro de jogo — aparece abaixo do AppBar
-          if (!_searchOpen) _buildAllFiltersBar(),
+          // Filtro de jogo — sempre visível
+          _buildAllFiltersBar(),
+          // Campo de busca inline — aparece abaixo dos filtros quando ativo
+          if (_searchOpen)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Nome, número ou tipo...',
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close, size: 18),
+                          onPressed: () => setState(() {
+                            _searchQuery = '';
+                            _searchController.clear();
+                            _loadPage(0);
+                          }),
+                        )
+                      : null,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                style: const TextStyle(fontSize: 14),
+                onChanged: (v) {
+                  setState(() => _searchQuery = v);
+                  _loadPage(0);
+                },
+              ),
+            ),
           // Abas Standard / Event (só Pokopia base)
           if (_isPokopiaBase && _pokopiaTabController != null)
             _buildPokopiaTabBar(),
