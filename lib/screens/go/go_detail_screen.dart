@@ -124,7 +124,7 @@ const Map<int, String> _goEvoItems = {
   212: 'Casaco de Metal',   // Scizor
   208: 'Casaco de Metal',   // Steelix
   // King's Rock
-  182: 'Pedra do Rei',      // Politoed
+  186: 'Pedra do Rei',      // Politoed
   199: 'Pedra do Rei',      // Slowking
   // Magnetic Lure
   462: 'Módulo de Isca Magnética', // Magnezone (alternativa)
