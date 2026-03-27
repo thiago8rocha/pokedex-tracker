@@ -1617,10 +1617,8 @@ class _MovesTabState extends State<MovesTab> {
         String ptDesc = '', enDesc = '';
         for (final e in flavors) {
           final lang = e['language']['name'] as String;
-          if (lang == 'pt-BR' && ptDesc.isEmpty) ptDesc = (e['flavor_text'] as String? ?? '').replaceAll('
-', ' ').trim();
-          else if (lang == 'en' && enDesc.isEmpty) enDesc = (e['flavor_text'] as String? ?? '').replaceAll('
-', ' ').trim();
+          if (lang == 'pt-BR' && ptDesc.isEmpty) ptDesc = (e['flavor_text'] as String? ?? '').replaceAll('\n', ' ').replaceAll('\f', ' ').trim();
+          else if (lang == 'en' && enDesc.isEmpty) enDesc = (e['flavor_text'] as String? ?? '').replaceAll('\n', ' ').replaceAll('\f', ' ').trim();
         }
         if (ptDesc.isNotEmpty) {
           descEn = ''; // já tem PT nativo
