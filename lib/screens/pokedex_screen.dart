@@ -588,19 +588,23 @@ class _PokedexScreenState extends State<PokedexScreen>
     int?    _prevId,   _nextId;
 
     if (prevEntry != null) {
+      _prevId = prevEntry.entryNumber;
       final d = _pokemonData[prevEntry.speciesId];
       if (d != null) {
         final raw = (d['name'] as String).split('-').first;
         _prevName = raw[0].toUpperCase() + raw.substring(1);
-        _prevId   = prevEntry.entryNumber;
+      } else {
+        _prevName = PokedexDataService.instance.getName(prevEntry.speciesId);
       }
     }
     if (nextEntry != null) {
+      _nextId = nextEntry.entryNumber;
       final d = _pokemonData[nextEntry.speciesId];
       if (d != null) {
         final raw = (d['name'] as String).split('-').first;
         _nextName = raw[0].toUpperCase() + raw.substring(1);
-        _nextId   = nextEntry.entryNumber;
+      } else {
+        _nextName = PokedexDataService.instance.getName(nextEntry.speciesId);
       }
     }
 
@@ -698,11 +702,15 @@ class _PokedexScreenState extends State<PokedexScreen>
     String? prevName, nextName; int? prevId, nextId;
     if (prevEntry != null) {
       final d = _pokemonData[prevEntry.speciesId];
-      if (d != null) { final r = (d['name'] as String).split('-').first; prevName = r[0].toUpperCase() + r.substring(1); prevId = d['id'] as int; }
+      prevId = prevEntry.entryNumber;
+      if (d != null) { final r = (d['name'] as String).split('-').first; prevName = r[0].toUpperCase() + r.substring(1); }
+      else { prevName = PokedexDataService.instance.getName(prevEntry.speciesId); }
     }
     if (nextEntry != null) {
       final d = _pokemonData[nextEntry.speciesId];
-      if (d != null) { final r = (d['name'] as String).split('-').first; nextName = r[0].toUpperCase() + r.substring(1); nextId = d['id'] as int; }
+      nextId = nextEntry.entryNumber;
+      if (d != null) { final r = (d['name'] as String).split('-').first; nextName = r[0].toUpperCase() + r.substring(1); }
+      else { nextName = PokedexDataService.instance.getName(nextEntry.speciesId); }
     }
 
     final onToggle = () async {
