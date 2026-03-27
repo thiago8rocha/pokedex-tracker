@@ -348,24 +348,28 @@ class _PokedexScreenState extends State<PokedexScreen>
     // Filtro de busca — nome, número e tipo
     if (_searchQuery.isNotEmpty) {
       final q = _searchQuery.toLowerCase().trim();
+      final qIsNumeric = RegExp(r'^\d+$').hasMatch(q);
       entries = entries.where((e) {
         final svc = PokedexDataService.instance;
-        // Por número regional (entryNumber) — é o que aparece no card
-        final entryStr    = e.entryNumber.toString();
-        final entryPadded = e.entryNumber.toString().padLeft(3, '0');
-        if (entryStr.contains(q) || entryPadded.contains(q)) return true;
-        // Por número nacional (speciesId) — busca secundária
-        final natStr    = e.speciesId.toString();
-        final natPadded = e.speciesId.toString().padLeft(3, '0');
-        if (natStr.contains(q) || natPadded.contains(q)) return true;
-        // Por nome
+
+        if (qIsNumeric) {
+          // Busca numérica: match exato ignorando zeros à esquerda
+          // "1" == "001", "007" == "7", "025" == "25"
+          final qNum = int.tryParse(q);
+          if (qNum != null && e.entryNumber == qNum) return true;
+          return false;
+        }
+
+        // Busca por nome (substring no nome em inglês)
         final name = svc.getName(e.speciesId).toLowerCase();
         if (name.contains(q)) return true;
-        // Por tipo (EN ou PT)
+
+        // Busca por tipo — apenas no nome PT traduzido (não no slug EN interno)
         for (final t in svc.getTypes(e.speciesId)) {
-          if (t.toLowerCase().contains(q)) return true;
-          if ((_typesPt[t] ?? '').toLowerCase().contains(q)) return true;
+          final namePt = (_typesPt[t] ?? '').toLowerCase();
+          if (namePt.isNotEmpty && namePt.contains(q)) return true;
         }
+
         return false;
       }).toList();
     }
