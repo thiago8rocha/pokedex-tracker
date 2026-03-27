@@ -26,9 +26,21 @@ class _PocketHubScreenState extends State<PocketHubScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       final sets = await TcgPocketService.fetchSeries();
-      if (mounted) setState(() { _sets = sets; _loading = false; });
+      if (mounted) {
+        setState(() { _sets = sets; _loading = false; });
+        // Pré-decodificar assets de booster em background para eliminar
+        // o jank na primeira vez que cada card aparece na tela
+        _precacheBoosters(sets);
+      }
     } catch (_) {
       if (mounted) setState(() { _error = 'Erro ao carregar coleções'; _loading = false; });
+    }
+  }
+
+  void _precacheBoosters(List<PocketSet> sets) {
+    for (final set in sets) {
+      final path = 'assets/pocket/boosters/\${set.id}.png';
+      precacheImage(AssetImage(path), context).catchError((_) {});
     }
   }
 

@@ -32,7 +32,7 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
 
   final Map<String, bool> _owned = {};
 
-  bool              _isGrid    = true;
+  bool              _isGrid    = false;
   bool              _searching = false;
   _CollectionFilter _filter    = _CollectionFilter.all;
   String            _search    = '';
@@ -370,6 +370,7 @@ class _CardGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+      cacheExtent: 1500,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount:   3,
         childAspectRatio: 0.60,
@@ -524,6 +525,9 @@ class _CardList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+      // cacheExtent alto: pré-carrega imagens 1500px além da viewport
+      // elimina o carregamento visível ao scrollar
+      cacheExtent: 1500,
       itemCount: cards.length,
       itemBuilder: (context, i) => _CardListTile(
         card:       cards[i],
@@ -586,6 +590,7 @@ class _CardListTile extends StatelessWidget {
                     ? Image.network(
                         card.imageUrlLow!,
                         fit: BoxFit.cover,
+                        cacheWidth: 104, // 52px × 2x — reduz decode em memória
                         loadingBuilder: (_, child, p) => p == null
                             ? child
                             : Container(color: scheme.surfaceContainerHighest),
