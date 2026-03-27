@@ -1221,41 +1221,54 @@ class _StatusTabState extends State<StatusTab>
           title: 'STATUS BASE',
           pokemonTypes: p.types,
           child: Column(children: [
-            // Abas Base / Mín / Máx — tamanho compacto alinhado ao card
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: typeColor.withOpacity(0.10),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: typeColor.withOpacity(0.25), width: 1),
-                ),
-                child: IntrinsicWidth(
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: typeColor,
-                    unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                    indicator: BoxDecoration(
-                      color: typeColor.withOpacity(0.22),
-                      borderRadius: BorderRadius.circular(5),
+            // Abas Base / Mínimo / Máximo — full width, mesmo padrão da aba Golpes
+            Row(
+              children: [
+                for (final e in [
+                  (0, 'Base'),
+                  (1, 'Mínimo'),
+                  (2, 'Máximo'),
+                ]) ...[
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _tabController.animateTo(e.$1),
+                      child: AnimatedBuilder(
+                        animation: _tabController,
+                        builder: (ctx, _) {
+                          final active = _tabController.index == e.$1;
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 7),
+                            decoration: BoxDecoration(
+                              color: active
+                                  ? typeColor
+                                  : typeColor.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: active
+                                    ? typeColor
+                                    : typeColor.withOpacity(0.35),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(e.$2,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: active
+                                    ? typeTextColor(typeColor)
+                                    : typeColor,
+                              )),
+                          );
+                        },
+                      ),
                     ),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.3),
-                    unselectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
-                    tabAlignment: TabAlignment.center,
-                    isScrollable: true,
-                    padding: const EdgeInsets.all(3),
-                    tabs: const [
-                      Tab(text: 'Base',    height: 28),
-                      Tab(text: 'Mínimo', height: 28),
-                      Tab(text: 'Máximo', height: 28),
-                    ],
                   ),
-                ),
-              ),
+                  if (e.$1 < 2) const SizedBox(width: 5),
+                ],
+              ],
             ),
+            const SizedBox(height: 14),
             // Barras de stat
             ...stats.map((s) => _StatBarRow(
               context: context,
