@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
-    show ptType, typeIconAsset, calculateWeaknesses;
+    show ptType, typeIconAsset, calculateWeaknesses, PokeballLoader;
 import 'package:pokedex_tracker/services/dex_bundle_service.dart';
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
 import 'package:pokedex_tracker/services/pokedex_data_service.dart';

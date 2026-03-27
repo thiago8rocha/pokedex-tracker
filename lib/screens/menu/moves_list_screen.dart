@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/theme/type_colors.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
-    show ptType, typeIconAsset, typeTextColor, neutralBg, kApiBase;
+    show ptType, typeIconAsset, typeTextColor, neutralBg, kApiBase, PokeballLoader;
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
 import 'package:pokedex_tracker/services/dex_bundle_service.dart';

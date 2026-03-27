@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/theme/app_theme.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
-    show bilingualModeNotifier, defaultSpriteNotifier;
+    show bilingualModeNotifier, defaultSpriteNotifier, PokeballLoader;
 
 // ─── MODELO DE POKEDEX ────────────────────────────────────────────
 

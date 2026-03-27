@@ -6,7 +6,7 @@ import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/services/dex_bundle_service.dart';
 import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
-    show defaultSpriteNotifier, typeNamePt, typeIconColors, TypeBadge;
+    show defaultSpriteNotifier, typeNamePt, typeIconColors, TypeBadge, PokeballLoader;
 import 'package:pokedex_tracker/screens/detail/nacional_detail_screen.dart';
 import 'package:pokedex_tracker/screens/detail/mainline_detail_screen.dart';
 import 'package:pokedex_tracker/screens/go/go_detail_screen.dart';
@@ -1022,7 +1022,7 @@ class _PokedexScreenState extends State<PokedexScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const PokeballLoader(),
+            PokeballLoader(),
             const SizedBox(height: 16),
             Text('Carregando Pokémon...',
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
