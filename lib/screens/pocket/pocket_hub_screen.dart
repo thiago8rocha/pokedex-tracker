@@ -200,19 +200,17 @@ class _BoosterBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: Opacity(
-        opacity: 0.55, // sutil — imagem de fundo, não destaque
-        child: Transform.scale(
-          // 1.55 = 55% de zoom a mais em torno do centro
-          // corta ~22% em cada borda — elimina o topo e a base do pacote
-          scale: 1.55,
+      child: Transform.scale(
+        scale: 1.55,
+        alignment: Alignment.center,
+        child: Image.asset(
+          assetPath,
+          fit: BoxFit.cover,
           alignment: Alignment.center,
-          child: Image.asset(
-            assetPath,
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-          ),
+          // color + blendMode em vez de Opacity — evita saveLayer, muito mais eficiente
+          color: Colors.white.withOpacity(0.55),
+          colorBlendMode: BlendMode.modulate,
+          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
         ),
       ),
     );
@@ -230,14 +228,13 @@ class _PromoBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: Opacity(
-        opacity: 0.55,
-        child: Image.asset(
-          assetPath,
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-        ),
+      child: Image.asset(
+        assetPath,
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+        color: Colors.white.withOpacity(0.55),
+        colorBlendMode: BlendMode.modulate,
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
       ),
     );
   }
