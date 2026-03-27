@@ -1957,7 +1957,7 @@ class MoveModal extends StatelessWidget {
         for (final e in (detail!['effect_entries'] as List<dynamic>? ?? [])) {
           if ((e['language']['name'] as String) == 'en') {
             descEn = (e['short_effect'] as String? ?? '').trim();
-            desc = _descEn;
+            desc = descEn;
             break;
           }
         }
