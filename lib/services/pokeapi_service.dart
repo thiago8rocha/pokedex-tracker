@@ -168,6 +168,95 @@ class PokeApiService {
 
   // ─── FETCH POKÉMON ───────────────────────────────────────────
 
+  /// Busca o flavor text correto para o jogo ativo via /pokemon-species.
+  Future<String> fetchFlavorText(int speciesId, String pokedexId) async {
+    try {
+      final res = await http.get(Uri.parse('$_base/pokemon-species/$speciesId'));
+      if (res.statusCode != 200) return '';
+      final data = json.decode(res.body) as Map<String, dynamic>;
+      final entries = data['flavor_text_entries'] as List<dynamic>? ?? [];
+      return _extractFlavorForGame(entries, pokedexId);
+    } catch (_) {
+      return '';
+    }
+  }
+
+  /// Escolhe o flavor text mais adequado para o jogo ativo.
+  String _extractFlavorForGame(List<dynamic> entries, String pokedexId) {
+    // Mapa pokedexId → version-groups da PokeAPI
+    const vgMap = {
+      'red___blue':                    ['red-blue'],
+      'gold___silver':                 ['gold-silver'],
+      'ruby___sapphire':               ['ruby-sapphire'],
+      'firered___leafgreen_(gba)':     ['firered-leafgreen'],
+      'emerald':                       ['emerald'],
+      'diamond___pearl':               ['diamond-pearl'],
+      'platinum':                      ['platinum'],
+      'heartgold___soulsilver':        ['heartgold-soulsilver'],
+      'black___white':                 ['black-white'],
+      'black_2___white_2':             ['black-2-white-2'],
+      'x___y':                         ['x-y'],
+      'omega_ruby___alpha_sapphire':   ['omega-ruby-alpha-sapphire'],
+      'sun___moon':                    ['sun-moon'],
+      'ultra_sun___ultra_moon':        ['ultra-sun-ultra-moon'],
+      'lets_go_pikachu___eevee':       ['lets-go-pikachu-lets-go-eevee'],
+      'sword___shield':                ['sword-shield'],
+      'brilliant_diamond___shining_pearl': ['brilliant-diamond-and-shining-pearl'],
+      'legends_arceus':                ['legends-arceus'],
+      'scarlet___violet':              ['scarlet-violet'],
+      'legends_z-a':                   ['legends-za'],
+    };
+    String clean(String s) => s.replaceAll('\n', ' ').replaceAll('\f', ' ').trim();
+    bool isPt(String l) => l == 'pt-BR' || l == 'pt';
+    final groups = vgMap[pokedexId];
+    if (groups != null) {
+      // Tenta achar texto PT ou EN para o version-group do jogo
+      const versionToGroup = {
+        'sword': 'sword-shield', 'shield': 'sword-shield',
+        'scarlet': 'scarlet-violet', 'violet': 'scarlet-violet',
+        'lets-go-pikachu': 'lets-go-pikachu-lets-go-eevee',
+        'lets-go-eevee': 'lets-go-pikachu-lets-go-eevee',
+        'brilliant-diamond': 'brilliant-diamond-and-shining-pearl',
+        'shining-pearl': 'brilliant-diamond-and-shining-pearl',
+        'legends-arceus': 'legends-arceus', 'legends-za': 'legends-za',
+        'firered': 'firered-leafgreen', 'leafgreen': 'firered-leafgreen',
+        'ultra-sun': 'ultra-sun-ultra-moon', 'ultra-moon': 'ultra-sun-ultra-moon',
+        'sun': 'sun-moon', 'moon': 'sun-moon',
+        'omega-ruby': 'omega-ruby-alpha-sapphire', 'alpha-sapphire': 'omega-ruby-alpha-sapphire',
+        'x': 'x-y', 'y': 'x-y',
+        'black-2': 'black-2-white-2', 'white-2': 'black-2-white-2',
+        'black': 'black-white', 'white': 'black-white',
+        'heartgold': 'heartgold-soulsilver', 'soulsilver': 'heartgold-soulsilver',
+        'platinum': 'platinum', 'diamond': 'diamond-pearl', 'pearl': 'diamond-pearl',
+        'emerald': 'emerald', 'ruby': 'ruby-sapphire', 'sapphire': 'ruby-sapphire',
+        'crystal': 'crystal', 'gold': 'gold-silver', 'silver': 'gold-silver',
+        'red': 'red-blue', 'blue': 'red-blue',
+      };
+      for (final g in groups) {
+        String ptText = '', enText = '';
+        for (final e in entries) {
+          final vg = versionToGroup[e['version']?['name'] as String? ?? ''] ?? '';
+          if (vg != g) continue;
+          final lang = e['language']['name'] as String;
+          final text = clean(e['flavor_text'] as String? ?? '');
+          if (isPt(lang) && ptText.isEmpty) ptText = text;
+          if (lang == 'en' && enText.isEmpty) enText = text;
+        }
+        if (ptText.isNotEmpty) return ptText;
+        if (enText.isNotEmpty) return enText;
+      }
+    }
+    // Fallback: qualquer PT ou EN
+    String anyPt = '', anyEn = '';
+    for (final e in entries) {
+      final lang = e['language']['name'] as String;
+      final text = clean(e['flavor_text'] as String? ?? '');
+      if (isPt(lang) && anyPt.isEmpty) anyPt = text;
+      if (lang == 'en' && anyEn.isEmpty) anyEn = text;
+    }
+    return anyPt.isNotEmpty ? anyPt : anyEn;
+  }
+
   Future<Map<String, dynamic>?> fetchPokemon(int speciesId) async {
     try {
       final res = await http.get(Uri.parse('$_base/pokemon/$speciesId'));

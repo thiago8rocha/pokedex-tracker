@@ -681,52 +681,36 @@ class DetailHeader extends StatefulWidget {
 }
 
 class _DetailHeaderState extends State<DetailHeader> {
-  // Estados dos toggles — independentes e combináveis
-  bool _isHome   = false;
   bool _isShiny  = false;
   bool _isFemale = false;
-  bool _isPixel  = false;
 
   @override
   void initState() {
     super.initState();
-    // Lê do notifier global — já inicializado no main(), sem async
-    final sprite = defaultSpriteNotifier.value;
-    _isPixel = sprite == 'pixel';
-    _isHome  = sprite == 'home';
   }
 
-  /// URL do sprite atual baseado nos estados ativos
+  /// URL do sprite baseado no modo padrão das configurações + shiny/female
   String get _spriteUrl {
     final p = widget.pokemon;
-    final id = p.id;
     const base = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+    final spriteType = defaultSpriteNotifier.value;
 
-    if (_isHome) {
-      if (_isShiny && _isFemale) return p.spriteHomeShinyUrl ?? p.spriteHomeUrl ?? p.spriteUrl;
-      if (_isShiny)  return p.spriteHomeShinyUrl ?? p.spriteUrl;
+    if (spriteType == 'home') {
+      if (_isShiny) return p.spriteHomeShinyUrl ?? p.spriteUrl;
       if (_isFemale) return p.spriteHomeFemaleUrl ?? p.spriteHomeUrl ?? p.spriteUrl;
       return p.spriteHomeUrl ?? p.spriteUrl;
     }
-    if (_isPixel) {
-      if (_isShiny && _isFemale) return p.spritePixelShinyUrl ?? p.spritePixelUrl ?? p.spriteUrl;
-      if (_isShiny)  return p.spritePixelShinyUrl ?? p.spritePixelUrl ?? p.spriteUrl;
+    if (spriteType == 'pixel') {
+      if (_isShiny) return p.spritePixelShinyUrl ?? p.spritePixelUrl ?? p.spriteUrl;
       if (_isFemale) return p.spritePixelFemaleUrl ?? p.spritePixelUrl ?? p.spriteUrl;
       return p.spritePixelUrl ?? p.spriteUrl;
     }
-    // Official artwork
-    if (_isShiny)  return p.spriteShinyUrl ?? p.spriteUrl;
+    // Artwork (padrão)
+    if (_isShiny) return p.spriteShinyUrl ?? p.spriteUrl;
     if (_isFemale) return p.spritePixelFemaleUrl ?? '$base/front_female/${p.id}.png';
     return p.spriteUrl;
   }
 
-  // Quando HOME é ativado, pixel é desativado (e vice-versa)
-  void _toggleHome()  {
-    setState(() { _isHome = !_isHome; if (_isHome) _isPixel = false; });
-  }
-  void _togglePixel() {
-    setState(() { _isPixel = !_isPixel; if (_isPixel) _isHome = false; });
-  }
   void _toggleShiny()  => setState(() => _isShiny  = !_isShiny);
   void _toggleFemale() => setState(() => _isFemale = !_isFemale);
 
@@ -745,20 +729,17 @@ class _DetailHeaderState extends State<DetailHeader> {
         ? const Color(0xFFE24B4A)
         : Colors.white.withOpacity(0.75);
 
-    // Shiny disponível em algum dos modos ativos
-    final hasShinyNow = _isHome
+    final spriteType = defaultSpriteNotifier.value;
+    final hasShinyNow = spriteType == 'home'
         ? p.spriteHomeShinyUrl != null
-        : _isPixel
+        : spriteType == 'pixel'
             ? p.spritePixelShinyUrl != null
             : p.spriteShinyUrl != null;
-
-    // Feminino: só existe na camada pixel (front_female). Ocultar em artwork e HOME
-    // a menos que o HOME tenha versão feminina explícita
-    final hasFemaleNow = _isHome
+    final hasFemaleNow = spriteType == 'home'
         ? p.spriteHomeFemaleUrl != null
-        : _isPixel
+        : spriteType == 'pixel'
             ? p.spritePixelFemaleUrl != null
-            : false; // artwork oficial não tem versão feminina
+            : false;
 
     return SliverAppBar(
       expandedHeight: 280,
@@ -798,14 +779,14 @@ class _DetailHeaderState extends State<DetailHeader> {
                           ? Image.asset(
                               _spriteUrl,
                               fit: BoxFit.contain,
-                              filterQuality: _isPixel ? FilterQuality.none : FilterQuality.medium,
+                              filterQuality: defaultSpriteNotifier.value == 'pixel' ? FilterQuality.none : FilterQuality.medium,
                               errorBuilder: (_, __, ___) =>
                                   const Icon(Icons.catching_pokemon, size: 100, color: Colors.white),
                             )
                           : Image.network(
                               _spriteUrl,
                               fit: BoxFit.contain,
-                              filterQuality: _isPixel ? FilterQuality.none : FilterQuality.medium,
+                              filterQuality: defaultSpriteNotifier.value == 'pixel' ? FilterQuality.none : FilterQuality.medium,
                               errorBuilder: (_, __, ___) =>
                                   const Icon(Icons.catching_pokemon, size: 100, color: Colors.white),
                             ),
@@ -955,23 +936,7 @@ class _DetailHeaderState extends State<DetailHeader> {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        // 2. HOME render (se disponível)
-                        if (p.hasHome)
-                          _HeaderIconButton(
-                            icon: Icons.view_in_ar,
-                            active: _isHome,
-                            activeColor: Colors.lightBlueAccent,
-                            onTap: _toggleHome,
-                          ),
-                        // 3. Pixel art (se disponível)
-                        if (p.hasPixel)
-                          _HeaderIconButton(
-                            icon: Icons.grid_on,
-                            active: _isPixel,
-                            activeColor: Colors.orangeAccent,
-                            onTap: _togglePixel,
-                          ),
-                        // 4. Shiny (só mostra se existe no modo atual)
+                        // 2. Shiny (só mostra se existe no modo atual)
                         if (hasShinyNow)
                           _HeaderIconButton(
                             icon: Icons.auto_awesome,
@@ -979,7 +944,7 @@ class _DetailHeaderState extends State<DetailHeader> {
                             activeColor: const Color(0xFFFFD700),
                             onTap: _toggleShiny,
                           ),
-                        // 5. Feminino (só mostra se existe no modo atual)
+                        // 3. Feminino (só mostra se existe no modo atual)
                         if (hasFemaleNow)
                           _HeaderIconButton(
                             icon: Icons.female,

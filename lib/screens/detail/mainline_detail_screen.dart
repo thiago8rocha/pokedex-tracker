@@ -92,7 +92,12 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
 
     _evoChain = svc.getEvoChain(id);
 
+    // Flavor text do bundle como fallback imediato
     _flavorTextPt = svc.getFlavorText(id);
+    // Busca flavor text correto para o jogo ativo em background
+    _api.fetchFlavorText(id, widget.pokedexId).then((text) {
+      if (text.isNotEmpty && mounted) setState(() => _flavorTextPt = text);
+    });
 
     if (mounted) setState(() => _loading = false);
 

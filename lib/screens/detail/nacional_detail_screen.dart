@@ -100,9 +100,14 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
 
     _evoChain = svc.getEvoChain(id);
 
+    // Flavor text do bundle como fallback imediato
     _flavorTextPt = svc.getFlavorText(id);
-
     if (mounted) setState(() => _loading = false);
+
+    // Busca flavor text correto para o jogo ativo em background
+    _api.fetchFlavorText(id, widget.pokedexId).then((text) {
+      if (text.isNotEmpty && mounted) setState(() => _flavorTextPt = text);
+    });
 
     // Carrega moves em background
     _api.fetchPokemon(id).then((d) {
