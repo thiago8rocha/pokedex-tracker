@@ -210,17 +210,6 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                     style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
                   ),
 
-                  // ── Raridade ──────────────────────────────────
-                  if (widget.card.rarity != null) ...[
-                    const SizedBox(height: 8),
-                    Row(children: [
-                      PocketRarityBadge(rarity: widget.card.rarity!, expanded: true),
-                      const SizedBox(width: 6),
-                      Text(widget.card.rarity!,
-                          style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)),
-                    ]),
-                  ],
-
                   const SizedBox(height: 16),
 
                   // ── Tabela stats ──────────────────────────────
@@ -254,7 +243,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
 
                   // ── Descrição do Pokédex ──────────────────────
                   if (_displayDescription != null && _displayDescription!.isNotEmpty) ...[
-                    Text('Descrição do Pokédex',
+                    Text('Descrição da Pokédex',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
                           color: scheme.onSurfaceVariant)),
                     const SizedBox(height: 6),
@@ -298,7 +287,8 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
 
   // ── Tabela de stats ──────────────────────────────────────────
   Widget _buildStatsTable(ColorScheme scheme, bool isDark) {
-    final cells = <_Cell>[
+    // Linha 1: Número | Evolução | Raridade
+    final row1 = <_Cell>[
       _Cell(
         label: 'Número',
         value: widget.totalCards != null
@@ -307,11 +297,17 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
       ),
     ];
     if (_detail?.stage != null)
-      cells.add(_Cell(label: 'Evolução', value: _stageLabel(_detail!.stage!)));
-    if (_detail?.hp != null)
-      cells.add(_Cell(label: 'HP', value: '${_detail!.hp}'));
+      row1.add(_Cell(label: 'Evolução', value: _stageLabel(_detail!.stage!)));
+    if (widget.card.rarity != null)
+      row1.add(_Cell(label: 'Raridade', value: widget.card.rarity!));
 
-    // Fraqueza: ícone + valor
+    // Linha 2: HP | Fraqueza | Custo de Recuo
+    Widget? hpWidget;
+    if (_detail?.hp != null) {
+      hpWidget = Text('${_detail!.hp}',
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700));
+    }
+
     Widget? weakWidget;
     if (_detail?.weaknessType != null) {
       final val = _detail!.weaknessValue != null ? '+${_detail!.weaknessValue}' : '';
@@ -322,7 +318,6 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
       ]);
     }
 
-    // Recuo: ícones Colorless
     Widget? retreatWidget;
     if (_detail?.retreat != null && _detail!.retreat! > 0) {
       retreatWidget = Row(
@@ -337,6 +332,8 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
           style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700));
     }
 
+    final hasRow2 = hpWidget != null || weakWidget != null || retreatWidget != null;
+
     return Container(
       decoration: BoxDecoration(
         color: isDark ? scheme.surfaceContainerHigh : scheme.surfaceContainerLow,
@@ -345,30 +342,36 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
       ),
       child: Column(
         children: [
-          // Linha 1: células de texto
+          // Linha 1: Número | Evolução | Raridade
           IntrinsicHeight(
             child: Row(children: [
-              for (int i = 0; i < cells.length; i++) ...[
+              for (int i = 0; i < row1.length; i++) ...[
                 if (i > 0) VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
                 Expanded(child: _buildStatCell(
-                  label: cells[i].label,
-                  value: cells[i].value,
+                  label: row1[i].label,
+                  value: row1[i].value,
                   scheme: scheme,
                 )),
               ],
             ]),
           ),
-          // Linha 2: fraqueza + recuo (se disponíveis)
-          if (weakWidget != null || retreatWidget != null) ...[
+          // Linha 2: HP | Fraqueza | Custo de Recuo
+          if (hasRow2) ...[
             Divider(height: 1, thickness: 0.5, color: scheme.outlineVariant),
             IntrinsicHeight(
               child: Row(children: [
+                if (hpWidget != null) ...[
+                  Expanded(child: _buildStatCellWidget(
+                      label: 'HP', widget: hpWidget, scheme: scheme)),
+                  if (weakWidget != null || retreatWidget != null)
+                    VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
+                ],
                 if (weakWidget != null) ...[
                   Expanded(child: _buildStatCellWidget(
                       label: 'Fraqueza', widget: weakWidget, scheme: scheme)),
+                  if (retreatWidget != null)
+                    VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
                 ],
-                if (weakWidget != null && retreatWidget != null)
-                  VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
                 if (retreatWidget != null)
                   Expanded(child: _buildStatCellWidget(
                       label: 'Custo de Recuo', widget: retreatWidget, scheme: scheme)),
