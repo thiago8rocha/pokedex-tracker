@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex_tracker/models/pokemon.dart';
+import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
 import 'package:pokedex_tracker/translations.dart';

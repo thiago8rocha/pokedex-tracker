@@ -42,6 +42,7 @@ class _AbilityDetailScreenState extends State<AbilityDetailScreen>
       builder: (_) => lastDex == 'nacional'
           ? NacionalDetailScreen(
               pokemon: poke, caught: isCaught,
+              pokedexId: 'nacional',
               onToggleCaught: () async {
                 final cur = await StorageService().isCaught(lastDex, id);
                 await StorageService().setCaught(lastDex, id, !cur);

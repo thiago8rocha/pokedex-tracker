@@ -131,6 +131,7 @@ class _MoveDetailScreenState extends State<MoveDetailScreen> {
       builder: (_) => isNacional
           ? NacionalDetailScreen(
               pokemon: poke, caught: isCaught,
+              pokedexId: 'nacional',
               onToggleCaught: () async {
                 final cur = await StorageService().isCaught(widget.activeGameId, l.id);
                 await StorageService().setCaught(widget.activeGameId, l.id, !cur);
