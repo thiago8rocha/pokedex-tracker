@@ -87,7 +87,7 @@ const Map<int, String> _goEvoItems = {
   233: 'Módulo de Upgrade',  // Porygon2
   474: 'Módulo de Upgrade',  // Porygon-Z
   461: 'Pedra de Sinnoh',   // Weavile
-  462: 'Pedra de Sinnoh',   // Magnezone
+  462: 'Pedra de Sinnoh ou Módulo de Isca Magnética',   // Magnezone
   463: 'Pedra de Sinnoh',   // Lickilicky
   464: 'Pedra de Sinnoh',   // Rhyperior
   465: 'Pedra de Sinnoh',   // Tangrowth
@@ -127,7 +127,6 @@ const Map<int, String> _goEvoItems = {
   186: 'Pedra do Rei',      // Politoed
   199: 'Pedra do Rei',      // Slowking
   // Magnetic Lure
-  462: 'Módulo de Isca Magnética', // Magnezone (alternativa)
 };
 
 // Candy necessário padrão por família
