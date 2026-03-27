@@ -815,7 +815,6 @@ class _PokedexScreenState extends State<PokedexScreen>
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const SettingsScreen())),
             ),
-          ],
         ],
       ),
       endDrawer: _buildDrawer(),
