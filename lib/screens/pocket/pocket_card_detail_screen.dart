@@ -43,26 +43,52 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
         if (parts.length >= 2) localId = parts[parts.length - 2];
       }
 
-      // Buscar carta EN e tradução em paralelo:
-      // - fetchCard: ~500ms (rede)
-      // - getCached: <1ms (SharedPreferences local)
-      // Se warmup já rodou, getCached retorna resultado instantâneo
-      // e translate() vai ao cache sem fazer requisição de rede
-      final detailFuture     = TcgPocketService.fetchCard(
+      // 1. Buscar dados da carta
+      final detail = await TcgPocketService.fetchCard(
           widget.card.id, setId: widget.setId, localId: localId);
-      final detail = await detailFuture;
 
-      // Tradução: vai ao cache local primeiro (getCached dentro de translate)
-      // Se cache hit: < 1ms. Se miss: chama MyMemory (~1s)
-      // Usuário sempre vê PT — nunca EN
+      if (detail == null) {
+        if (mounted) setState(() => _loadingDetail = false);
+        return;
+      }
+
+      // 2. Traduzir descrição — TranslationService tem retry interno (3x backoff)
+      //    Só faz setState quando tiver PT — nunca exibe EN ao usuário
       String? descPt;
-      if (detail?.description != null && detail!.description!.isNotEmpty) {
-        descPt = await TranslationService.translate(detail.description!);
+      final descEn = detail.description;
+      if (descEn != null && descEn.isNotEmpty) {
+        descPt = await TranslationService.translate(descEn);
+        // Se todas as tentativas falharam, omite a descrição
+        // (melhor ausente do que em inglês)
+      }
+
+      // 3. Traduzir ataques — mapa estático primeiro, dinâmico para os que faltam
+      final Map<String, String> pt = {};
+      for (int i = 0; i < detail.attacks.length; i++) {
+        final atk = detail.attacks[i];
+
+        // Nome
+        final nameStatic = _PocketTranslations.translateAttackName(atk.name);
+        if (nameStatic == atk.name && atk.name.isNotEmpty) {
+          final namePt = await TranslationService.translate(atk.name);
+          if (namePt != null) pt['attack_$i'] = namePt;
+          // Se null: _attackName() usa o mapa estático ou EN — aceitável para nome
+        }
+
+        // Efeito
+        if (atk.effect != null && atk.effect!.isNotEmpty) {
+          final effStatic = _PocketTranslations.translateAttackEffect(atk.effect);
+          if (effStatic == atk.effect) {
+            final effPt = await TranslationService.translate(atk.effect!);
+            if (effPt != null) pt['attackEffect_$i'] = effPt;
+            // Se null: efeito omitido (melhor ausente do que em inglês)
+          }
+        }
       }
 
       if (mounted) setState(() {
         _detail        = detail;
-        _pt            = const {};
+        _pt            = pt;
         _descriptionPt = descPt;
         _loadingDetail = false;
       });
@@ -127,12 +153,18 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                           ? Image.network(
                               _highUrl!,
                               fit: BoxFit.cover,
-                              loadingBuilder: (_, child, p) => p == null
-                                  ? child
-                                  : Container(
-                                      color: scheme.surfaceContainerHigh,
-                                      child: const Center(child: PokeballLoader.small()),
-                                    ),
+                              // Enquanto a high carrega, exibe a low já em cache
+                              frameBuilder: (ctx, child, frame, wasSynchronouslyLoaded) {
+                                if (wasSynchronouslyLoaded || frame != null) return child;
+                                // high ainda carregando — mostrar low do cache
+                                final low = widget.card.imageUrlLow;
+                                return low != null
+                                    ? Image.network(low, fit: BoxFit.cover)
+                                    : Container(
+                                        color: scheme.surfaceContainerHigh,
+                                        child: Center(child: PokeballLoader.small()),
+                                      );
+                              },
                               errorBuilder: (_, __, ___) => Container(
                                 color: scheme.surfaceContainerHigh,
                                 child: Icon(Icons.style_outlined, size: 48,

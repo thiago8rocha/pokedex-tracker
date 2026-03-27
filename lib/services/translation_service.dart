@@ -103,25 +103,42 @@ class TranslationService {
 
   static Future<String?> _fetch(
       String text, String from, String to, String key) async {
-    try {
-      final url = Uri.parse(
-        'https://api.mymemory.translated.net/get'
-        '?q=${Uri.encodeComponent(text)}&langpair=$from|$to',
-      );
-      final res = await http.get(url, headers: {
-        'User-Agent': 'Mozilla/5.0 (Android; PokopiaTracker)',
-      }).timeout(_timeout);
-
-      if (res.statusCode == 200) {
-        final json   = jsonDecode(res.body) as Map<String, dynamic>;
-        final result = json['responseData']?['translatedText'] as String?;
-        if (result != null && result.isNotEmpty) {
-          await _ensurePrefs();
-          await _prefs!.setString(key, result);
-          return result;
+    // Tenta MyMemory com até 3 tentativas e backoff exponencial
+    const maxRetries = 3;
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          // Espera 1s, 2s, 4s antes de cada retry
+          await Future.delayed(Duration(seconds: 1 << attempt));
         }
+        final url = Uri.parse(
+          'https://api.mymemory.translated.net/get'
+          '?q=${Uri.encodeComponent(text)}&langpair=$from|$to',
+        );
+        final res = await http.get(url, headers: {
+          'User-Agent': 'Mozilla/5.0 (Android; PokopiaTracker)',
+        }).timeout(_timeout);
+
+        if (res.statusCode == 200) {
+          final json   = jsonDecode(res.body) as Map<String, dynamic>;
+          final result = json['responseData']?['translatedText'] as String?;
+          if (result != null && result.isNotEmpty &&
+              result != 'PLEASE SELECT TWO DISTINCT LANGUAGES') {
+            await _ensurePrefs();
+            await _prefs!.setString(key, result);
+            return result;
+          }
+        }
+        // Rate limit (429) — espera mais antes de tentar
+        if (res.statusCode == 429) {
+          await Future.delayed(const Duration(seconds: 3));
+        }
+      } catch (_) {
+        // timeout ou erro de rede — próxima tentativa
       }
-    } catch (_) {}
+    }
+    // Todas as tentativas falharam — não retorna nada
+    // O caller decide o que fazer (mostrar loader, tentar mais tarde)
     return null;
   }
 }
