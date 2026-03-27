@@ -1568,7 +1568,7 @@ class _PokemonCard extends StatelessWidget {
                 ? [color1.withOpacity(0.45), color2.withOpacity(0.30)]
                 : [color1.withOpacity(0.22), color2.withOpacity(0.14)],
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: caught
                 ? color1.withOpacity(0.65)
@@ -1614,7 +1614,7 @@ class _PokemonCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
-                  // Badges com ícone — padrão do projeto
+                  // Badges com ícone — largura fixa para todos os tipos
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: types.map((type) {
@@ -1622,12 +1622,13 @@ class _PokemonCard extends StatelessWidget {
                       final color = TypeColors.fromType(_pt(type));
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 2),
-                        padding: const EdgeInsets.fromLTRB(2, 1, 5, 1),
+                        width: 52,
+                        height: 14,
                         decoration: BoxDecoration(
                           color: color,
                           borderRadius: BorderRadius.zero,
                         ),
-                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                           Image.asset(
                             'assets/types/$typeKey.png',
                             width: 12, height: 12,
