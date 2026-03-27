@@ -62,7 +62,7 @@ class _PocketCardListScreenState extends State<PocketCardListScreen> {
     try {
       // Tentar cache local primeiro — elimina rede no segundo acesso
       final prefs    = await SharedPreferences.getInstance();
-      final cacheKey = '_pocket_set_\${widget.setId}';
+      final cacheKey = '_pocket_set_' + widget.setId;
       final cached   = prefs.getString(cacheKey);
 
       PocketSet? set;

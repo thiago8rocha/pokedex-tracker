@@ -262,22 +262,28 @@ class TcgPocketService {
     sets.sort((a, b) {
       final aPromo = a.id.startsWith('P-');
       final bPromo = b.id.startsWith('P-');
+      // Promos sempre por último
       if (aPromo && !bPromo) return 1;
       if (!aPromo && bPromo) return -1;
       int ai = kPocketSetOrder.indexOf(a.id);
       int bi = kPocketSetOrder.indexOf(b.id);
       if (ai == -1) ai = 990;
       if (bi == -1) bi = 990;
-      return ai.compareTo(bi);
+      // Invertido: mais recente (índice maior) aparece primeiro
+      return bi.compareTo(ai);
     });
   }
 
-  static List<PocketSet> _fallbackSeries() => kPocketSetOrder
-      .where(kPocketSetMeta.containsKey)
-      .map((id) { final m = kPocketSetMeta[id]!;
-        return PocketSet(id: m.id, name: m.namePt,
-            releaseDate: m.releaseDate, totalCards: 0, cards: []); })
-      .toList();
+  static List<PocketSet> _fallbackSeries() {
+    final sets = kPocketSetOrder
+        .where(kPocketSetMeta.containsKey)
+        .map((id) { final m = kPocketSetMeta[id]!;
+          return PocketSet(id: m.id, name: m.namePt,
+              releaseDate: m.releaseDate, totalCards: 0, cards: []); })
+        .toList();
+    _sortSets(sets);
+    return sets;
+  }
 
   static Future<PocketSet?> fetchSet(String setId) async {
     if (_setCache.containsKey(setId)) return _setCache[setId];
