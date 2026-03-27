@@ -1592,6 +1592,7 @@ class _MovesTabState extends State<MovesTab> {
   String _method = 'level';
   Map<String, dynamic>? _selectedMove;
   Map<String, dynamic>? _moveDetail;
+  String _moveDescPt = '';
   bool _loadingMove = false;
 
   List<Map<String, dynamic>> get _currentMoves {
@@ -1604,11 +1605,42 @@ class _MovesTabState extends State<MovesTab> {
   }
 
   Future<void> _openMove(Map<String, dynamic> move) async {
-    setState(() { _selectedMove = move; _loadingMove = true; _moveDetail = null; });
+    setState(() { _selectedMove = move; _loadingMove = true; _moveDetail = null; _moveDescPt = ''; });
     try {
       final r = await http.get(Uri.parse(move['url'] as String));
       if (r.statusCode == 200 && mounted) {
-        setState(() { _moveDetail = json.decode(r.body); _loadingMove = false; });
+        final detail = json.decode(r.body) as Map<String, dynamic>;
+
+        // Extrair descrição EN e traduzir antes de mostrar o modal
+        String descEn = '';
+        final flavors = detail['flavor_text_entries'] as List<dynamic>? ?? [];
+        String ptDesc = '', enDesc = '';
+        for (final e in flavors) {
+          final lang = e['language']['name'] as String;
+          if (lang == 'pt-BR' && ptDesc.isEmpty) ptDesc = (e['flavor_text'] as String? ?? '').replaceAll('
+', ' ').trim();
+          else if (lang == 'en' && enDesc.isEmpty) enDesc = (e['flavor_text'] as String? ?? '').replaceAll('
+', ' ').trim();
+        }
+        if (ptDesc.isNotEmpty) {
+          descEn = ''; // já tem PT nativo
+          _moveDescPt = ptDesc;
+        } else if (enDesc.isNotEmpty) {
+          descEn = enDesc;
+        } else {
+          for (final e in (detail['effect_entries'] as List<dynamic>? ?? [])) {
+            if ((e['language']['name'] as String) == 'en') {
+              descEn = (e['short_effect'] as String? ?? '').trim(); break;
+            }
+          }
+        }
+
+        // Traduzir EN se necessário — feito antes de atualizar o state
+        if (descEn.isNotEmpty) {
+          _moveDescPt = await translateFlavorText(descEn);
+        }
+
+        if (mounted) setState(() { _moveDetail = detail; _loadingMove = false; });
       }
     } catch (_) {
       if (mounted) setState(() => _loadingMove = false);
@@ -1754,8 +1786,9 @@ class _MovesTabState extends State<MovesTab> {
         MoveModal(
           move: _selectedMove!,
           detail: _moveDetail,
+          descPt: _moveDescPt,
           loading: _loadingMove,
-          onClose: () => setState(() { _selectedMove = null; _moveDetail = null; }),
+          onClose: () => setState(() { _selectedMove = null; _moveDetail = null; _moveDescPt = ''; }),
         ),
     ]);
   }
@@ -1917,10 +1950,11 @@ class _MoveRowState extends State<MoveRow> {
 class MoveModal extends StatelessWidget {
   final Map<String, dynamic> move;
   final Map<String, dynamic>? detail;
+  final String descPt;   // já traduzido antes de abrir o modal
   final bool loading;
   final VoidCallback onClose;
   const MoveModal({super.key, required this.move, required this.detail,
-    required this.loading, required this.onClose});
+    required this.descPt, required this.loading, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
@@ -1936,33 +1970,7 @@ class MoveModal extends StatelessWidget {
     final level = move['level'] as int;
     final method = move['method'] as String;
 
-    // Descrição: PT-BR nativo → tradução do EN → effect em EN
-    // A tradução é feita via translateFlavorText (mesmo mecanismo do resto do app)
-    String desc = '';
-    String descEn = '';
-    if (detail != null) {
-      final flavors = detail!['flavor_text_entries'] as List<dynamic>? ?? [];
-      String ptDesc = '', enDesc = '';
-      for (final e in flavors) {
-        final lang = e['language']['name'] as String;
-        if (lang == 'pt-BR' && ptDesc.isEmpty) ptDesc = (e['flavor_text'] as String? ?? '').replaceAll('\n', ' ').trim();
-        else if (lang == 'en' && enDesc.isEmpty) enDesc = (e['flavor_text'] as String? ?? '').replaceAll('\n', ' ').trim();
-      }
-      if (ptDesc.isNotEmpty) {
-        desc = ptDesc;
-      } else if (enDesc.isNotEmpty) {
-        descEn = enDesc;
-        desc = enDesc; // exibido enquanto tradução não chega (mas modal é síncrono aqui)
-      } else {
-        for (final e in (detail!['effect_entries'] as List<dynamic>? ?? [])) {
-          if ((e['language']['name'] as String) == 'en') {
-            descEn = (e['short_effect'] as String? ?? '').trim();
-            desc = descEn;
-            break;
-          }
-        }
-      }
-    }
+    // Descrição já traduzida — recebida via descPt do _openMove
 
     return GestureDetector(
       onTap: onClose,
@@ -2037,21 +2045,13 @@ class MoveModal extends StatelessWidget {
                   _statBox(context, pp != null ? '$pp' : '—', 'PP'),
                 ]),
               const SizedBox(height: 12),
-              if (desc.isNotEmpty) Container(
+              if (descPt.isNotEmpty) Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8)),
-                child: descEn.isNotEmpty
-                    ? FutureBuilder<String>(
-                        future: translateFlavorText(descEn),
-                        builder: (ctx, snap) => Text(
-                          snap.data ?? desc,
-                          style: TextStyle(fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5)),
-                      )
-                    : Text(desc, style: TextStyle(fontSize: 12,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5))),
+                child: Text(descPt, style: TextStyle(fontSize: 12,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5))),
               const SizedBox(height: 8),
               Text(
                 method == 'level-up' && level > 0 ? 'Aprendido no nível $level'
