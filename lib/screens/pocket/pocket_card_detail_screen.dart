@@ -309,7 +309,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
 
   // ── Tabela de stats ──────────────────────────────────────────
   Widget _buildStatsTable(ColorScheme scheme, bool isDark) {
-    // Linha 1: Número | Evolução | Raridade
+    // Linha 1: Número | Raridade | Evolução
     final row1 = <_Cell>[
       _Cell(
         label: 'Número',
@@ -318,9 +318,9 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
             : widget.card.localId,
       ),
     ];
-    if (_detail?.stage != null)
-      row1.add(_Cell(label: 'Evolução', value: _stageLabel(_detail!.stage!)));
-    // Raridade tratada separadamente via _buildStatCellWidget (usa PocketRarityBadge)
+    // Raridade vem após Número, antes da Evolução (tratada como widget inline)
+    // Evolução adicionada por último
+    final stageValue = _detail?.stage != null ? _stageLabel(_detail!.stage!) : null;
 
     // Linha 2: HP | Fraqueza | Custo de Recuo
     Widget? hpWidget;
@@ -363,9 +363,10 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
       ),
       child: Column(
         children: [
-          // Linha 1: Número | Evolução | Raridade
+          // Linha 1: Número | Raridade | Evolução
           IntrinsicHeight(
             child: Row(children: [
+              // Número
               for (int i = 0; i < row1.length; i++) ...[
                 if (i > 0) VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
                 Expanded(child: _buildStatCell(
@@ -374,15 +375,24 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                   scheme: scheme,
                 )),
               ],
+              // Raridade
               if ((_detail?.rarity ?? widget.card.rarity) != null) ...[
-                if (row1.isNotEmpty)
-                  VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
+                VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
                 Expanded(child: _buildStatCellWidget(
                   label: 'Raridade',
                   widget: PocketRarityBadge(
                     rarity: _detail?.rarity ?? widget.card.rarity!,
                     expanded: true,
                   ),
+                  scheme: scheme,
+                )),
+              ],
+              // Evolução
+              if (stageValue != null) ...[
+                VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
+                Expanded(child: _buildStatCell(
+                  label: 'Evolução',
+                  value: stageValue,
                   scheme: scheme,
                 )),
               ],
