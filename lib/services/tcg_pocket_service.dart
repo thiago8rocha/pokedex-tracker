@@ -136,6 +136,7 @@ class PocketCardDetail {
   // Traduções PT obtidas via endpoint /pt/
   final String? namePt;
   final Map<String, String> attackNamesPt; // localId do ataque → nome PT
+  final List<String> boosters; // pacotes onde a carta pode ser encontrada
 
   const PocketCardDetail({
     required this.id, required this.localId, required this.name,
@@ -146,6 +147,7 @@ class PocketCardDetail {
     this.weaknessType, this.weaknessValue, this.retreat,
     this.trainerEffect, this.trainerType,
     this.namePt, this.attackNamesPt = const {},
+    this.boosters = const [],
   });
 
   factory PocketCardDetail.fromJson(Map<String, dynamic> json) {
@@ -184,7 +186,22 @@ class PocketCardDetail {
       retreat: parseIntField(json['retreat']),
       trainerEffect: (json['effect'] ?? json['trainerEffect'])?.toString(),
       trainerType: json['trainerType']?.toString(),
+      boosters: _parseBoosters(json),
     );
+  }
+
+  /// Extrai nomes dos pacotes do campo variants.boosters ou boosters
+  static List<String> _parseBoosters(Map<String, dynamic> json) {
+    // TCGdex pode retornar variants: {boosters: [{name: 'Pikachu', ...}]}
+    final variants = json['variants'] as Map<String, dynamic>?;
+    final raw = variants?['boosters'] ?? json['boosters'];
+    if (raw is List) {
+      return raw
+          .map((e) => (e is Map ? e['name']?.toString() : e?.toString()) ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+    return const [];
   }
 }
 

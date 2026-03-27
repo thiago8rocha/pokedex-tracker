@@ -210,6 +210,15 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                     style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
                   ),
 
+                  // ── Pacotes onde a carta é encontrada ─────────
+                  if (_detail != null && _detail!.boosters.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Pacotes: ${_detail!.boosters.join(', ')}',
+                      style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                    ),
+                  ],
+
                   const SizedBox(height: 16),
 
                   // ── Tabela stats ──────────────────────────────
@@ -298,8 +307,7 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
     ];
     if (_detail?.stage != null)
       row1.add(_Cell(label: 'Evolução', value: _stageLabel(_detail!.stage!)));
-    if (widget.card.rarity != null)
-      row1.add(_Cell(label: 'Raridade', value: widget.card.rarity!));
+    // Raridade tratada separadamente via _buildStatCellWidget (usa PocketRarityBadge)
 
     // Linha 2: HP | Fraqueza | Custo de Recuo
     Widget? hpWidget;
@@ -350,6 +358,15 @@ class _PocketCardDetailScreenState extends State<PocketCardDetailScreen> {
                 Expanded(child: _buildStatCell(
                   label: row1[i].label,
                   value: row1[i].value,
+                  scheme: scheme,
+                )),
+              ],
+              if (widget.card.rarity != null) ...[
+                if (row1.isNotEmpty)
+                  VerticalDivider(width: 1, thickness: 0.5, color: scheme.outlineVariant),
+                Expanded(child: _buildStatCellWidget(
+                  label: 'Raridade',
+                  widget: PocketRarityBadge(rarity: widget.card.rarity!, expanded: true),
                   scheme: scheme,
                 )),
               ],
