@@ -12,24 +12,86 @@ import 'package:pokedex_tracker/theme/type_colors.dart';
 
 // PENDÊNCIA — Créditos/Fontes (registrado em 6.4 do doc de projeto):
 // - Raids Ativas: dados via scraping de leekduck.com/raid-bosses/
-//   LeekDuck é a fonte mais confiável para raids do Pokémon GO.
 //   Quando a tela de Créditos for implementada, incluir LeekDuck como fonte.
 
-// ─── Pokémon com shiny disponível no GO (base estática, mar/2026) ─
-// Complementa detecção pelo HTML do LeekDuck.
-const Set<int> _goShinyAvailable = {
-  // 1 estrela
-  246, 345, 524, 744,
-  // 3 estrelas
-  68, 450, 641,
-  // 5 estrelas
-  889, 894,
-  // Mega
-  229,
-  // Shadow
-  380,
+// ─── Mapa EN → chave lowercase para assets/types/ ─────────────────
+const _typeKeyMap = {
+  'Normal':'normal','Fire':'fire','Water':'water','Electric':'electric',
+  'Grass':'grass','Ice':'ice','Fighting':'fighting','Poison':'poison',
+  'Ground':'ground','Flying':'flying','Psychic':'psychic','Bug':'bug',
+  'Rock':'rock','Ghost':'ghost','Dragon':'dragon','Dark':'dark',
+  'Steel':'steel','Fairy':'fairy',
+};
+
+// ─── Sprites de formas alternativas (regionais / mega) ────────────
+// Chave: (id_base, FORMA) onde FORMA é extraída da URL pm618.fGALARIAN.icon.png
+// Valor: URL do artwork oficial via PokeAPI sprites repo
+const _formaSprites = <String, String>{
   // Regionais
-  618,
+  '618_GALARIAN': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10172.png',
+  '105_ALOLA':    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10104.png',
+  '52_ALOLA':     'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10101.png',
+  '52_GALARIAN':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10161.png',
+  '83_GALARIAN':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10162.png',
+  '199_GALARIAN': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10182.png',
+  '27_ALOLA':     'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10091.png',
+  '77_GALARIAN':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10159.png',
+  // Megas comuns em raids do GO
+  '3_MEGA':    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10033.png',
+  '6_MEGAX':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10034.png',
+  '6_MEGAY':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10035.png',
+  '9_MEGA':    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10036.png',
+  '15_MEGA':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10041.png',
+  '18_MEGA':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10068.png',
+  '65_MEGA':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10043.png',
+  '80_MEGA':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10026.png',
+  '94_MEGA':   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10044.png',
+  '115_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10045.png',
+  '127_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10046.png',
+  '130_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10047.png',
+  '142_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10048.png',
+  '181_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10055.png',
+  '208_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10056.png',
+  '212_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10057.png',
+  '214_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10058.png',
+  '229_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10051.png',
+  '248_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10060.png',
+  '254_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10061.png',
+  '257_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10062.png',
+  '260_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10063.png',
+  '282_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10065.png',
+  '302_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10067.png',
+  '303_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10066.png',
+  '306_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10069.png',
+  '308_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10070.png',
+  '310_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10071.png',
+  '319_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10072.png',
+  '323_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10073.png',
+  '334_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10074.png',
+  '354_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10075.png',
+  '359_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10076.png',
+  '362_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10077.png',
+  '373_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10089.png',
+  '376_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10078.png',
+  '380_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10079.png',
+  '381_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10080.png',
+  '384_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10090.png',
+  '428_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10085.png',
+  '445_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10088.png',
+  '448_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10087.png',
+  '460_MEGA':  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10086.png',
+  // Primal
+  '382_PRIMAL': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10252.png',
+  '383_PRIMAL': 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10253.png',
+};
+
+// ─── Shiny disponível no GO (base estática, mar/2026) ─────────────
+const Set<int> _goShinyAvailable = {
+  246, 345, 618, 744,   // 1★
+  68, 450, 962,         // 3★
+  894,                  // 5★
+  229,                  // Mega
+  380, 147, 131,        // Shadow
 };
 
 class GoRaidsScreen extends StatefulWidget {
@@ -83,6 +145,13 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
   }
 
   // ── Parser de raids ────────────────────────────────────────────
+  // Estrutura real do LeekDuck verificada em mar/2026:
+  //   <h2>1-Star Raids</h2>
+  //   <img src="...pm246.icon.png">
+  //   Larvitar
+  //   <img src="...rock.png" title="Rock">Rock
+  //   CP 548 – 594          ← LeekDuck usa en-dash (–)
+  //   CP 686 – 743
   List<_RaidBoss> _parseRaids(String html) {
     final raids   = <_RaidBoss>[];
     final tierMap = {
@@ -112,13 +181,6 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
       }
       if (tier == null) continue;
 
-      // Data de fim do bloco
-      final endsM = RegExp(
-        r'Ends:\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4}[^<\n]*)',
-        caseSensitive: false,
-      ).firstMatch(content);
-      final endsStr = endsM?.group(1)?.trim();
-
       final bossRx = RegExp(
         r'<img[^>]+src="([^"]*(?:pm\d|poke_capture)[^"]*)"[^>]*>'
         r'([\s\S]*?)(?=<img[^>]+src="[^"]*(?:pm\d|poke_capture)[^"]*"|$)',
@@ -126,37 +188,53 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
       );
 
       for (final bm in bossRx.allMatches(content)) {
-        final img   = bm.group(1) ?? '';
-        final chunk = bm.group(2) ?? '';
+        final imgSrc = bm.group(1) ?? '';
+        final chunk  = bm.group(2) ?? '';
 
-        final pmId   = RegExp(r'pm(\d+)\.').firstMatch(img);
-        final pokeId = RegExp(r'poke_capture_(\d+)').firstMatch(img);
-        final id     = int.tryParse(pmId?.group(1) ?? pokeId?.group(1) ?? '0') ?? 0;
+        // ── ID: da URL da imagem ───────────────────────────────
+        final pmId   = RegExp(r'pm(\d+)\.').firstMatch(imgSrc);
+        final pokeId = RegExp(r'poke_capture_(\d+)').firstMatch(imgSrc);
+        final id     = int.tryParse(
+            pmId?.group(1) ?? pokeId?.group(1) ?? '0') ?? 0;
         if (id == 0) continue;
 
-        final isMega     = img.contains('.fS.') || img.contains('.fMEGA.')
-            || img.toLowerCase().contains('mega');
-        final isRegional = img.contains('.fA.') || img.contains('.fG.')
-            || img.contains('.fH.') || img.contains('.fGAL.')
-            || img.toLowerCase().contains('galarian')
-            || img.toLowerCase().contains('alolan');
+        // ── Forma: extraída da URL para lookup de sprite ───────
+        // ex: pm618.fGALARIAN.icon.png -> "GALARIAN"
+        final formaMatch = RegExp(r'\.f([A-Z_]+)\.icon', caseSensitive: false)
+            .firstMatch(imgSrc);
+        final formaTag = formaMatch?.group(1)?.toUpperCase();
 
-        // Nome base (sem prefixo Shadow)
-        final nameM = RegExp(r'>([A-Za-zÀ-ú][^<\n]+?)<')
-            .allMatches(chunk)
-            .firstWhere(
-              (x) => x.group(1)!.trim().isNotEmpty
-                  && !x.group(1)!.contains('CP')
-                  && !RegExp(r'^\d').hasMatch(x.group(1)!.trim()),
-              orElse: () => RegExp(r'x').firstMatch('') as RegExpMatch,
-            );
-        final baseName = (nameM.group(1)?.trim() ?? '')
-            .replaceFirst(RegExp(r'^Shadow\s+', caseSensitive: false), '');
+        final isMega     = formaTag == 'MEGA' || formaTag == 'MEGAS'
+            || (formaTag?.startsWith('MEGA') ?? false);
+        final isRegional = formaTag != null && !isMega
+            && (formaTag == 'ALOLA' || formaTag == 'GALARIAN'
+            || formaTag == 'HISUI' || formaTag == 'PALDEA');
+
+        // ── Sprite alternativo para formas ─────────────────────
+        final formaKey  = formaTag != null ? '${id}_$formaTag' : null;
+        final altSprite = formaKey != null ? _formaSprites[formaKey] : null;
+
+        // ── Nome: texto antes da primeira <img ─────────────────
+        final beforeImg = chunk.split('<img')[0];
+        var rawName = _strip(beforeImg).trim();
+        // Remove "Shadow " E "Mega " do início — displayName os recoloca
+        final baseName = rawName
+            .replaceFirst(RegExp(r'^(Shadow|Mega)\s+', caseSensitive: false), '')
+            .trim();
         if (baseName.isEmpty) continue;
 
-        // CP — unboosted e boosted (weather)
-        final cpMatches = RegExp(r'CP\s*([\d,]+)\s*[-–]\s*([\d,]+)')
-            .allMatches(chunk).toList();
+        // ── Tipos: do atributo title="Rock" ────────────────────
+        final types = RegExp(r'title="([A-Za-z]+)"')
+            .allMatches(chunk)
+            .map((t) => _typeKeyMap[t.group(1)] ?? '')
+            .where((t) => t.isNotEmpty)
+            .toList();
+
+        // ── CP: LeekDuck usa en-dash (–) entre os valores ──────
+        // Aceita hífen (-), en-dash (–) e entidade HTML (&ndash;)
+        final cpMatches = RegExp(
+          r'CP\s*([\d,]+)\s*(?:-|–|&ndash;)\s*([\d,]+)',
+        ).allMatches(chunk).toList();
         final minCp      = cpMatches.isNotEmpty
             ? int.tryParse(cpMatches[0].group(1)!.replaceAll(',', '')) ?? 0 : 0;
         final maxCp      = cpMatches.isNotEmpty
@@ -166,7 +244,7 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
         final maxCpBoost = cpMatches.length > 1
             ? int.tryParse(cpMatches[1].group(2)!.replaceAll(',', '')) ?? 0 : 0;
 
-        // Shiny — detecta no HTML ou via lista estática
+        // ── Shiny ──────────────────────────────────────────────
         final hasShiny = chunk.toLowerCase().contains('shiny')
             || chunk.contains('icon-shiny')
             || _goShinyAvailable.contains(id);
@@ -174,9 +252,11 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
         raids.add(_RaidBoss(
           id: id, name: baseName, tier: tier,
           isShadow: inShadow, isMega: isMega, isRegional: isRegional,
+          altSprite: altSprite,
+          types: types,
           minCp: minCp, maxCp: maxCp,
           minCpBoost: minCpBoost, maxCpBoost: maxCpBoost,
-          shinyAvailable: hasShiny, endsDate: endsStr,
+          shinyAvailable: hasShiny,
         ));
       }
     }
@@ -184,24 +264,39 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
   }
 
   // ── Parser de eventos ──────────────────────────────────────────
+  // Estrutura real: "Selected Event" e "Ongoing" são texto puro no HTML
+  // mas dentro de spans com classes CSS — strip resolve
   List<_EventInfo> _parseEvents(String html) {
-    final events   = <_EventInfo>[];
-    final endsRx   = RegExp(r'Ends:\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4}[^<\n]*)', caseSensitive: false);
-    final startsRx = RegExp(r'Starts?:\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4}[^<\n]*)', caseSensitive: false);
+    final events = <_EventInfo>[];
 
-    final h1Rx = RegExp(
-      r'<h[12][^>]*class="[^"]*event[^"]*"[^>]*>([\s\S]*?)<\/h[12]>',
+    // Strip completo do HTML antes de aplicar regex de texto
+    final stripped = html.replaceAll(RegExp(r'<[^>]+>'), ' ')
+        .replaceAll(RegExp(r'[ \t]+'), ' ');
+
+    final eventRx = RegExp(
+      r'Selected Event\s+Ongoing\s+([\s\S]*?)(?=Selected Event|\Z)',
       caseSensitive: false,
     );
-    for (final m in h1Rx.allMatches(html)) {
-      final name = _strip(m.group(1) ?? '').trim();
-      if (name.isEmpty) continue;
-      final after = html.substring(m.end, math.min(m.end + 500, html.length));
-      events.add(_EventInfo(
-        name: name,
-        start: startsRx.firstMatch(after)?.group(1)?.trim(),
-        end:   endsRx.firstMatch(after)?.group(1)?.trim(),
-      ));
+    final endsRx   = RegExp(r'Ends?:\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4}[^\n]*)', caseSensitive: false);
+    final startsRx = RegExp(r'Starts?:\s*([A-Za-z]+\s+\d{1,2},?\s*\d{4}[^\n]*)', caseSensitive: false);
+
+    for (final m in eventRx.allMatches(stripped)) {
+      final block = m.group(1) ?? '';
+      final lines = block.split('\n')
+          .map((l) => l.trim())
+          .where((l) => l.isNotEmpty)
+          .toList();
+      if (lines.isEmpty) continue;
+
+      // Primeira linha é o nome do evento
+      final name = lines[0];
+      if (name.length < 4) continue;
+
+      final start = startsRx.firstMatch(block)?.group(1)?.trim();
+      final end   = endsRx.firstMatch(block)?.group(1)?.trim();
+
+      events.add(_EventInfo(name: name, start: start, end: end));
+      if (events.length >= 2) break;
     }
     return events;
   }
@@ -210,8 +305,8 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
 
   // ── Navegação para detalhe ─────────────────────────────────────
   Future<void> _openDetail(BuildContext ctx, _RaidBoss boss) async {
-    final svc   = PokedexDataService.instance;
-    final types = svc.getTypes(boss.id);
+    final bundleTypes = PokedexDataService.instance.getTypes(boss.id);
+    final types = boss.types.isNotEmpty ? boss.types : bundleTypes;
 
     if (!_statsCache.containsKey(boss.id)) {
       final apiData = await _api.fetchPokemon(boss.id)
@@ -231,7 +326,7 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
     }
 
     final spriteType = defaultSpriteNotifier.value;
-    String spriteUrl(String t) {
+    String spriteAsset(String t) {
       switch (t) {
         case 'pixel':   return 'assets/sprites/pixel/${boss.id}.webp';
         case 'home':    return 'assets/sprites/home/${boss.id}.webp';
@@ -239,6 +334,9 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
       }
     }
     const base = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+
+    // Para detalhe, usar artwork da forma quando disponível
+    final detailSprite = boss.altSprite ?? spriteAsset(spriteType);
 
     final pokemon = Pokemon(
       id:                  boss.id,
@@ -251,12 +349,12 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
       baseSpAttack:        statVal('special-attack'),
       baseSpDefense:       statVal('special-defense'),
       baseSpeed:           statVal('speed'),
-      spriteUrl:           spriteUrl(spriteType),
+      spriteUrl:           detailSprite,
       spriteShinyUrl:      '$base/other/official-artwork/shiny/${boss.id}.png',
-      spritePixelUrl:      spriteUrl('pixel'),
+      spritePixelUrl:      spriteAsset('pixel'),
       spritePixelShinyUrl: '$base/shiny/${boss.id}.png',
       spritePixelFemaleUrl: null,
-      spriteHomeUrl:       spriteUrl('home'),
+      spriteHomeUrl:       spriteAsset('home'),
       spriteHomeShinyUrl:  '$base/other/home/shiny/${boss.id}.png',
       spriteHomeFemaleUrl: null,
     );
@@ -361,28 +459,30 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
 // ─── Modelos ──────────────────────────────────────────────────────
 
 class _RaidBoss {
-  final int     id;
-  final String  name;
-  final int     tier;
-  final bool    isShadow;
-  final bool    isMega;
-  final bool    isRegional;
-  final int     minCp;
-  final int     maxCp;
-  final int     minCpBoost;
-  final int     maxCpBoost;
-  final bool    shinyAvailable;
-  final String? endsDate;
+  final int      id;
+  final String   name;
+  final int      tier;
+  final bool     isShadow;
+  final bool     isMega;
+  final bool     isRegional;
+  final String?  altSprite;      // URL do sprite da forma (regional/mega)
+  final List<String> types;      // chaves lowercase: 'fire', 'rock', etc.
+  final int      minCp;
+  final int      maxCp;
+  final int      minCpBoost;
+  final int      maxCpBoost;
+  final bool     shinyAvailable;
 
   const _RaidBoss({
     required this.id, required this.name, required this.tier,
     required this.isShadow, required this.isMega, required this.isRegional,
+    this.altSprite,
+    required this.types,
     required this.minCp, required this.maxCp,
     required this.minCpBoost, required this.maxCpBoost,
-    required this.shinyAvailable, this.endsDate,
+    required this.shinyAvailable,
   });
 
-  /// Nome de exibição — reconstrói "Shadow" / "Mega" de forma controlada
   String get displayName {
     var n = name;
     if (isMega)   n = 'Mega $n';
@@ -419,12 +519,9 @@ class _EventBanner extends StatelessWidget {
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
         if (event.start != null || event.end != null) ...[
           const SizedBox(height: 4),
-          Row(children: [
+          Wrap(children: [
             if (event.start != null)
-              Text('Início: ${event.start}',
-                  style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
-            if (event.start != null && event.end != null)
-              Text('  ·  ',
+              Text('Início: ${event.start}  ',
                   style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
             if (event.end != null)
               Text('Fim: ${event.end}',
@@ -484,8 +581,7 @@ class _TierHeader extends StatelessWidget {
         border: Border.all(color: c.withOpacity(0.4)),
       ),
       child: Text(label,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w700, color: c)),
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: c)),
     );
   }
 }
@@ -506,7 +602,7 @@ class _RaidGrid extends StatelessWidget {
         crossAxisCount:   3,
         crossAxisSpacing: 8,
         mainAxisSpacing:  8,
-        childAspectRatio: 0.62,
+        childAspectRatio: 0.72,
       ),
       itemCount: bosses.length,
       itemBuilder: (ctx, i) => _RaidCard(boss: bosses[i], onTap: onTap),
@@ -532,14 +628,15 @@ class _RaidCardState extends State<_RaidCard> {
   Widget build(BuildContext context) {
     final boss   = widget.boss;
     final scheme = Theme.of(context).colorScheme;
-    final svc    = PokedexDataService.instance;
-    final types  = svc.getTypes(boss.id);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final color1 = types.isNotEmpty
-        ? TypeColors.fromType(ptType(types[0])) : scheme.primary;
-    final color2 = types.length > 1
-        ? TypeColors.fromType(ptType(types[1])) : color1;
+    final bundleTypes = PokedexDataService.instance.getTypes(boss.id);
+    final displayTypes = boss.types.isNotEmpty ? boss.types : bundleTypes;
+
+    final color1 = displayTypes.isNotEmpty
+        ? TypeColors.fromType(ptType(displayTypes[0])) : scheme.primary;
+    final color2 = displayTypes.length > 1
+        ? TypeColors.fromType(ptType(displayTypes[1])) : color1;
     final bgOp = isDark ? 0.15 : 0.10;
 
     return GestureDetector(
@@ -553,7 +650,7 @@ class _RaidCardState extends State<_RaidCard> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: types.length > 1
+            colors: displayTypes.length > 1
                 ? [color1.withOpacity(bgOp), color2.withOpacity(bgOp)]
                 : [color1.withOpacity(bgOp), color1.withOpacity(bgOp * 0.5)],
           ),
@@ -562,39 +659,46 @@ class _RaidCardState extends State<_RaidCard> {
         ),
         child: Stack(
           children: [
-            // ── Conteúdo
             Padding(
-              padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
+              padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Sprite
+                  // Sprite — usa altSprite (rede) para formas, bundle para base
                   SizedBox(
                     height: 64,
+                    width: double.infinity,
                     child: _loading
                         ? Center(
                             child: SizedBox(
                               width: 22, height: 22,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2, color: color1),
+                                  strokeWidth: 2, color: color1),
                             ),
                           )
-                        : Image.asset(
-                            'assets/sprites/artwork/${boss.id}.webp',
-                            width: 64, height: 64, fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => SizedBox(
-                              width: 64, height: 64,
-                              child: Icon(Icons.catching_pokemon,
+                        : boss.altSprite != null
+                            ? Image.network(
+                                boss.altSprite!,
+                                width: 64, height: 64, fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  'assets/sprites/artwork/${boss.id}.webp',
+                                  width: 64, height: 64, fit: BoxFit.contain,
+                                ),
+                              )
+                            : Image.asset(
+                                'assets/sprites/artwork/${boss.id}.webp',
+                                width: 64, height: 64, fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.catching_pokemon,
                                   color: scheme.onSurfaceVariant.withOpacity(0.4),
                                   size: 36),
-                            ),
-                          ),
+                              ),
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
 
-                  // Nome com prefixos (Shadow / Mega)
+                  // Nome
                   Text(
                     boss.displayName,
                     textAlign: TextAlign.center,
@@ -604,17 +708,19 @@ class _RaidCardState extends State<_RaidCard> {
                         fontSize: 11, fontWeight: FontWeight.w600, height: 1.2),
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
 
-                  // Tipos com ícone PNG
-                  if (types.isNotEmpty)
-                    Wrap(
-                      spacing: 3, runSpacing: 3,
-                      alignment: WrapAlignment.center,
-                      children: types.map((t) => _TypeBadge(type: t)).toList(),
+                  // Tipos — linha única, tamanho fixo para consistência
+                  if (displayTypes.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: displayTypes.map((t) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: _TypeBadge(type: t),
+                      )).toList(),
                     ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
 
                   // CP unboosted
                   if (boss.minCp > 0) ...[
@@ -626,7 +732,7 @@ class _RaidCardState extends State<_RaidCard> {
                           fontWeight: FontWeight.w600,
                           color: scheme.onSurface),
                     ),
-                    // CP boosted (ícone sol)
+                    // CP boosted
                     if (boss.minCpBoost > 0)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -645,59 +751,25 @@ class _RaidCardState extends State<_RaidCard> {
                         ],
                       ),
                   ],
-
-                  // Data de fim
-                  if (boss.endsDate != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      'Até ${_fmtDate(boss.endsDate!)}',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 9, color: scheme.onSurfaceVariant),
-                    ),
-                  ],
                 ],
               ),
             ),
 
-            // ── Ícone shiny canto superior direito
+            // Ícone shiny — discreto, sem caixa, canto superior direito
             if (boss.shinyAvailable)
-              Positioned(
-                top: 4, right: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFC107).withOpacity(0.18),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Icon(Icons.auto_awesome,
-                      size: 12, color: Color(0xFFFFC107)),
-                ),
+              const Positioned(
+                top: 5, right: 5,
+                child: Icon(Icons.auto_awesome,
+                    size: 12, color: Color(0xFFFFC107)),
               ),
           ],
         ),
       ),
     );
   }
-
-  /// "March 31, 2026, 8:00 PM" → "31/03"
-  String _fmtDate(String raw) {
-    const months = {
-      'january': '01', 'february': '02', 'march': '03',    'april': '04',
-      'may': '05',     'june': '06',     'july': '07',     'august': '08',
-      'september': '09','october': '10', 'november': '11', 'december': '12',
-    };
-    final m = RegExp(r'([A-Za-z]+)\s+(\d{1,2})').firstMatch(raw);
-    if (m == null) return raw;
-    final mo  = months[m.group(1)!.toLowerCase()] ?? '??';
-    final day = m.group(2)!.padLeft(2, '0');
-    return '$day/$mo';
-  }
 }
 
-// ─── Badge de tipo com ícone PNG ──────────────────────────────────
+// ─── Badge de tipo com ícone PNG — largura fixa para consistência ──
 
 class _TypeBadge extends StatelessWidget {
   final String type;
@@ -717,23 +789,27 @@ class _TypeBadge extends StatelessWidget {
     final color = TypeColors.fromType(ptType(type));
     final label = _names[type] ?? type;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      height: 18,                        // altura fixa em todos os badges
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(3),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
             'assets/types/$type.png',
-            width: 11, height: 11,
-            errorBuilder: (_, __, ___) => const SizedBox(width: 11, height: 11),
+            width: 10, height: 10,
+            errorBuilder: (_, __, ___) =>
+                const SizedBox(width: 10, height: 10),
           ),
           const SizedBox(width: 3),
           Text(label,
               style: const TextStyle(
-                  fontSize: 9, fontWeight: FontWeight.w600, color: Colors.white)),
+                  fontSize: 9, fontWeight: FontWeight.w600,
+                  color: Colors.white, height: 1.0)),
         ],
       ),
     );
@@ -743,7 +819,7 @@ class _TypeBadge extends StatelessWidget {
 // ─── Estado vazio ─────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
-  final String   message;
+  final String       message;
   final VoidCallback onRetry;
   const _EmptyState({required this.message, required this.onRetry});
 
