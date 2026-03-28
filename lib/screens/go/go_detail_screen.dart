@@ -208,6 +208,13 @@ class _GoDetailScreenState extends State<GoDetailScreen>
   bool _loadingForms = true;
   static const _tabs = ['Sobre', 'Status', 'Golpes', 'Formas'];
 
+  // Controllers explícitos para abas que NÃO devem participar do
+  // PrimaryScrollController do NestedScrollView.
+  // Solução documentada para NestedScrollView+TabBarView scroll sync bug.
+  final _statusCtrl = ScrollController();
+  final _movesCtrl  = ScrollController();
+  final _formsCtrl  = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -217,7 +224,13 @@ class _GoDetailScreenState extends State<GoDetailScreen>
   }
 
   @override
-  void dispose() { _tabController.dispose(); super.dispose(); }
+  void dispose() {
+    _tabController.dispose();
+    _statusCtrl.dispose();
+    _movesCtrl.dispose();
+    _formsCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _loadForms() async {
     try {
@@ -283,9 +296,9 @@ class _GoDetailScreenState extends State<GoDetailScreen>
                 controller: _tabController,
                 children: [
                   _GoSobreTab(pokemon: widget.pokemon),
-                  _GoStatusTab(pokemon: widget.pokemon),
-                  _GoMovesTab(pokemon: widget.pokemon),
-                  FormsTab(forms: _forms, loading: _loadingForms),
+                  _GoStatusTab(pokemon: widget.pokemon, scrollCtrl: _statusCtrl),
+                  _GoMovesTab(pokemon: widget.pokemon, scrollCtrl: _movesCtrl),
+                  _GoFormsWrapper(forms: _forms, loading: _loadingForms, scrollCtrl: _formsCtrl),
                 ],
               )),
             ]),
@@ -507,7 +520,8 @@ class _MoveChip extends StatelessWidget {
 
 class _GoMovesTab extends StatefulWidget {
   final Pokemon pokemon;
-  const _GoMovesTab({required this.pokemon});
+  final ScrollController? scrollCtrl;
+  const _GoMovesTab({required this.pokemon, this.scrollCtrl});
   @override
   State<_GoMovesTab> createState() => _GoMovesTabState();
 }
@@ -631,6 +645,7 @@ class _GoMovesTabState extends State<_GoMovesTab> {
     }
 
     return SingleChildScrollView(
+      controller: widget.scrollCtrl,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
@@ -900,7 +915,8 @@ class _CandyChip extends StatelessWidget {
 
 class _GoStatusTab extends StatefulWidget {
   final Pokemon pokemon;
-  const _GoStatusTab({required this.pokemon});
+  final ScrollController? scrollCtrl;
+  const _GoStatusTab({required this.pokemon, this.scrollCtrl});
 
   @override
   State<_GoStatusTab> createState() => _GoStatusTabState();
@@ -1045,3 +1061,23 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     );
 }
 
+// ─── WRAPPER DO FORMSAB COM SCROLL CONTROLLER EXPLÍCITO ──────────
+// FormsTab (detail_shared) usa GridView sem controller.
+// Este wrapper envolve com PrimaryScrollController explícito,
+// quebrando o link com o NestedScrollView.
+
+class _GoFormsWrapper extends StatelessWidget {
+  final List<Map<String, dynamic>> forms;
+  final bool loading;
+  final ScrollController? scrollCtrl;
+  const _GoFormsWrapper({
+    required this.forms, required this.loading, this.scrollCtrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return PrimaryScrollController(
+      controller: scrollCtrl ?? ScrollController(),
+      child: FormsTab(forms: forms, loading: loading),
+    );
+  }
+}
