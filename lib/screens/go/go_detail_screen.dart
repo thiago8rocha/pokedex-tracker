@@ -256,54 +256,56 @@ class _GoDetailScreenState extends State<GoDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Só a aba "Sobre" (índice 0) permite scroll.
-    // Nas demais, o NestedScrollView fica com NeverScrollableScrollPhysics
-    // impedindo qualquer gesto de scroll — no header e no conteúdo.
+    // Substituir NestedScrollView por Column simples:
+    // - Header fixo (não colapsa, não há scroll do header)
+    // - TabBar fixo
+    // - TabBarView ocupa o restante — cada aba tem tamanho exato do seu conteúdo
+    // Resultado: nenhuma aba tem espaço vazio abaixo do conteúdo
     return Scaffold(
-      body: AnimatedBuilder(
-        animation: _tabController,
-        builder: (context, _) {
-          final allowScroll = _tabController.index == 0;
-          return NestedScrollView(
-            physics: allowScroll
-                ? const ClampingScrollPhysics()
-                : const NeverScrollableScrollPhysics(),
-            headerSliverBuilder: (_, __) => [
-              DetailHeader(
-                pokemon: widget.pokemon,
-                caught: _caught,
-                onToggleCaught: () {
-                  setState(() => _caught = !_caught);
-                  widget.onToggleCaught();
-                },
-                prevName: widget.prevName, prevId: widget.prevId,
-                nextName: widget.nextName, nextId: widget.nextId,
-                onPrev: widget.onPrev, onNext: widget.onNext,
-              ),
-            ],
-            body: Column(children: [
-              Material(
-                elevation: 0,
-                child: TabBar(
-                  controller: _tabController,
-                  tabs: _tabs.map((t) => Tab(text: t)).toList(),
-                  labelColor: Theme.of(context).colorScheme.primary,
-                  unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                  indicatorColor: Theme.of(context).colorScheme.primary,
+      body: SafeArea(
+        child: Column(children: [
+          // Header fixo com CustomScrollView interno apenas para o SliverAppBar
+          SizedBox(
+            height: 280,
+            child: CustomScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              slivers: [
+                DetailHeader(
+                  pokemon: widget.pokemon,
+                  caught: _caught,
+                  onToggleCaught: () {
+                    setState(() => _caught = !_caught);
+                    widget.onToggleCaught();
+                  },
+                  prevName: widget.prevName, prevId: widget.prevId,
+                  nextName: widget.nextName, nextId: widget.nextId,
+                  onPrev: widget.onPrev, onNext: widget.onNext,
                 ),
-              ),
-              Expanded(child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _GoSobreTab(pokemon: widget.pokemon),
-                  _GoStatusTab(pokemon: widget.pokemon, scrollCtrl: _statusCtrl),
-                  _GoMovesTab(pokemon: widget.pokemon, scrollCtrl: _movesCtrl),
-                  _GoFormsWrapper(forms: _forms, loading: _loadingForms, scrollCtrl: _formsCtrl),
-                ],
-              )),
-            ]),
-          );
-        },
+              ],
+            ),
+          ),
+          // TabBar fixo
+          Material(
+            elevation: 0,
+            child: TabBar(
+              controller: _tabController,
+              tabs: _tabs.map((t) => Tab(text: t)).toList(),
+              labelColor: Theme.of(context).colorScheme.primary,
+              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+              indicatorColor: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          // Abas: ocupam o espaço restante
+          Expanded(child: TabBarView(
+            controller: _tabController,
+            children: [
+              _GoSobreTab(pokemon: widget.pokemon),
+              _GoStatusTab(pokemon: widget.pokemon),
+              _GoMovesTab(pokemon: widget.pokemon),
+              FormsTab(forms: _forms, loading: _loadingForms),
+            ],
+          )),
+        ]),
       ),
     );
   }
