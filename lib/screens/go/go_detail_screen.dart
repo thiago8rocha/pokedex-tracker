@@ -205,13 +205,13 @@ class _GoDetailScreenState extends State<GoDetailScreen>
   late TabController _tabController;
   List<Map<String, dynamic>> _forms = [];
   bool _loadingForms = true;
-  static const _tabs = ['Sobre', 'Status', 'Formas'];
+  static const _tabs = ['Sobre', 'Status', 'Golpes', 'Formas'];
 
   @override
   void initState() {
     super.initState();
     _caught = widget.caught;
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadForms();
   }
 
@@ -273,6 +273,7 @@ class _GoDetailScreenState extends State<GoDetailScreen>
             children: [
               _GoSobreTab(pokemon: widget.pokemon),
               _GoStatusTab(pokemon: widget.pokemon),
+              _GoMovesTab(pokemon: widget.pokemon),
               FormsTab(forms: _forms, loading: _loadingForms),
             ],
           )),
@@ -292,41 +293,6 @@ class _GoSobreTab extends StatefulWidget {
 }
 
 class _GoSobreTabState extends State<_GoSobreTab> {
-  List<String> _fastMoves    = [];
-  List<String> _chargeMoves  = [];
-  bool         _loadingMoves = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadMoves();
-  }
-
-  Future<void> _loadMoves() async {
-    try {
-      // pogoapi.net — moves disponíveis por Pokémon
-      final r = await http.get(Uri.parse(
-        'https://pogoapi.net/api/v1/pokemon_moves.json'
-      )).timeout(const Duration(seconds: 8));
-      if (r.statusCode == 200 && mounted) {
-        final body = json.decode(r.body) as Map<String, dynamic>;
-        final pid  = widget.pokemon.id.toString();
-        final data = body[pid] as Map<String, dynamic>?;
-        if (data != null) {
-          final fast   = (data['fast_moves']    as List<dynamic>? ?? []).cast<String>();
-          final charge = (data['charged_moves'] as List<dynamic>? ?? []).cast<String>();
-          setState(() {
-            _fastMoves   = fast;
-            _chargeMoves = charge;
-            _loadingMoves = false;
-          });
-          return;
-        }
-      }
-    } catch (_) {}
-    if (mounted) setState(() => _loadingMoves = false);
-  }
-
   @override
   Widget build(BuildContext context) {
     final svc      = PokedexDataService.instance;
@@ -458,34 +424,6 @@ class _GoSobreTabState extends State<_GoSobreTab> {
           ),
         ),
 
-        // ── Moves no GO ──────────────────────────────────────
-        if (!_loadingMoves && (_fastMoves.isNotEmpty || _chargeMoves.isNotEmpty)) ...[
-          const SizedBox(height: 16),
-          SectionCard(
-            title: 'GOLPES NO GO',
-            pokemonTypes: types,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              if (_fastMoves.isNotEmpty) ...[
-                Text('Golpes Rápidos',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 6),
-                Wrap(spacing: 6, runSpacing: 6,
-                  children: _fastMoves.map((m) => _MoveChip(name: m, types: types)).toList()),
-              ],
-              if (_chargeMoves.isNotEmpty) ...[
-                if (_fastMoves.isNotEmpty) const SizedBox(height: 12),
-                Text('Golpes Carregados',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 6),
-                Wrap(spacing: 6, runSpacing: 6,
-                  children: _chargeMoves.map((m) => _MoveChip(name: m, types: types)).toList()),
-              ],
-            ]),
-          ),
-        ],
-
         const SizedBox(height: 16),
         _GoEvoSection(pokemon: widget.pokemon),
 
@@ -545,6 +483,156 @@ class _MoveChip extends StatelessWidget {
       child: Text(_fmt(name),
         style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500,
           color: typeColor)),
+    );
+  }
+}
+
+
+// ─── ABA GOLPES GO ────────────────────────────────────────────────
+// Golpes Rápidos e Carregados via pogoapi.net
+// Mesmo padrão visual da MovesTab das outras telas
+
+class _GoMovesTab extends StatefulWidget {
+  final Pokemon pokemon;
+  const _GoMovesTab({required this.pokemon});
+  @override
+  State<_GoMovesTab> createState() => _GoMovesTabState();
+}
+
+class _GoMovesTabState extends State<_GoMovesTab> {
+  List<String> _fast    = [];
+  List<String> _charged = [];
+  bool _loading = true;
+  bool _error   = false;
+
+  // Cache estático para não rebuscar ao trocar de aba
+  static final Map<int, Map<String, List<String>>> _cache = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMoves();
+  }
+
+  Future<void> _loadMoves() async {
+    final id = widget.pokemon.id;
+    if (_cache.containsKey(id)) {
+      if (mounted) setState(() {
+        _fast    = _cache[id]!['fast']    ?? [];
+        _charged = _cache[id]!['charged'] ?? [];
+        _loading = false;
+      });
+      return;
+    }
+    try {
+      final r = await http.get(
+        Uri.parse('https://pogoapi.net/api/v1/pokemon_moves.json'),
+      ).timeout(const Duration(seconds: 8));
+      if (r.statusCode == 200 && mounted) {
+        final body = json.decode(r.body) as Map<String, dynamic>;
+        final data = body[id.toString()] as Map<String, dynamic>?;
+        if (data != null) {
+          final fast    = (data['fast_moves']    as List? ?? []).cast<String>();
+          final charged = (data['charged_moves'] as List? ?? []).cast<String>();
+          _cache[id] = {'fast': fast, 'charged': charged};
+          if (mounted) setState(() {
+            _fast = fast; _charged = charged; _loading = false;
+          });
+          return;
+        }
+      }
+    } catch (_) {}
+    if (mounted) setState(() { _loading = false; _error = true; });
+  }
+
+  // Formatar nome: VINE_WHIP → Vine Whip
+  String _fmt(String s) => s
+      .replaceAll('_', ' ')
+      .split(' ')
+      .map((w) => w.isEmpty ? '' : w[0].toUpperCase() + w.substring(1).toLowerCase())
+      .join(' ');
+
+  @override
+  Widget build(BuildContext context) {
+    final types     = widget.pokemon.types;
+    final typeColor = types.isNotEmpty
+        ? TypeColors.fromType(ptType(types[0]))
+        : Theme.of(context).colorScheme.primary;
+
+    if (_loading) {
+      return const Center(child: PokeballLoader.small());
+    }
+
+    if (_error || (_fast.isEmpty && _charged.isEmpty)) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Icon(Icons.sports_martial_arts_outlined, size: 48,
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
+            const SizedBox(height: 12),
+            Text('Golpes não disponíveis no momento',
+              style: TextStyle(fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+              textAlign: TextAlign.center),
+          ]),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+        if (_fast.isNotEmpty)
+          SectionCard(
+            title: 'GOLPES RÁPIDOS',
+            pokemonTypes: types,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _fast.map((move) =>
+                _GoMoveRow(name: _fmt(move), typeColor: typeColor)
+              ).toList(),
+            ),
+          ),
+
+        if (_fast.isNotEmpty && _charged.isNotEmpty)
+          const SizedBox(height: 16),
+
+        if (_charged.isNotEmpty)
+          SectionCard(
+            title: 'GOLPES CARREGADOS',
+            pokemonTypes: types,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _charged.map((move) =>
+                _GoMoveRow(name: _fmt(move), typeColor: typeColor)
+              ).toList(),
+            ),
+          ),
+
+      ]),
+    );
+  }
+}
+
+class _GoMoveRow extends StatelessWidget {
+  final String name;
+  final Color typeColor;
+  const _GoMoveRow({required this.name, required this.typeColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(children: [
+        Container(width: 3, height: 18,
+          decoration: BoxDecoration(
+            color: typeColor,
+            borderRadius: BorderRadius.circular(2))),
+        const SizedBox(width: 10),
+        Text(name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+      ]),
     );
   }
 }
@@ -769,55 +857,71 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     final qurt = eff.entries.where((e) => e.value == .391).toList()..sort((a,b) => a.key.compareTo(b.key));
 
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    // Golpes GO — lidos do estado da aba Sobre via chave global
+    // Como a aba Status é instanciada junto com a Sobre, buscamos os moves aqui também
+    return LayoutBuilder(builder: (context, constraints) {
+      final content = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
 
-        SectionCard(
-          title: 'STATUS',
-          pokemonTypes: types,
-          child: _goAtk == 0
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: PokeballLoader.small()))
-              : Row(children: [
-                  _statBox(context, 'Ataque', '$_goAtk', typeColor),
-                  Container(width: 0.5, height: 48, color: neutralBorder(context)),
-                  _statBox(context, 'Defesa', '$_goDef', typeColor),
-                  Container(width: 0.5, height: 48, color: neutralBorder(context)),
-                  _statBox(context, 'PS', '$_goSta', typeColor),
-                ]),
-        ),
-
-        const SizedBox(height: 20),
-
-        SectionCard(
-          title: 'EFETIVIDADE DE TIPOS',
-          pokemonTypes: types,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
-              if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
-              if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
-              if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
-            ],
+          SectionCard(
+            title: 'STATUS',
+            pokemonTypes: types,
+            child: _goAtk == 0
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: PokeballLoader.small()))
+                : Row(children: [
+                    _statBox(context, 'PS',     '$_goSta', typeColor),
+                    Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                    _statBox(context, 'Ataque', '$_goAtk', typeColor),
+                    Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                    _statBox(context, 'Defesa', '$_goDef', typeColor),
+                  ]),
           ),
-        ),
 
-      ]),
-    );
+          const SizedBox(height: 20),
+
+          SectionCard(
+            title: 'EFETIVIDADE DE TIPOS',
+            pokemonTypes: types,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
+                if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
+                if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
+                if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
+              ],
+            ),
+          ),
+
+        ],
+      );
+
+      // Só rolar se o conteúdo ultrapassar a altura disponível
+      final contentHeight = constraints.maxHeight;
+      return SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: contentHeight - 40),
+          child: IntrinsicHeight(child: content),
+        ),
+      );
+    });
   }
 
   Widget _statBox(BuildContext ctx, String label, String value, Color color) =>
     Expanded(child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(children: [
-        Text(value, style: TextStyle(fontSize: 22,
-          fontWeight: FontWeight.w700, color: color)),
-        const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 11,
+        Text(label, style: TextStyle(fontSize: 12,
           color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 6),
+        Text(value, style: TextStyle(fontSize: 26,
+          fontWeight: FontWeight.w800, color: color)),
       ]),
     ));
 
