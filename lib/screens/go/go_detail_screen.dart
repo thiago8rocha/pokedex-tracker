@@ -957,54 +957,49 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     final qurt = eff.entries.where((e) => e.value == .391).toList()..sort((a,b) => a.key.compareTo(b.key));
 
 
-    // Sem scroll: Align(topLeft) + Column(mainAxisSize.min)
-    // O conteúdo cresce de cima para baixo e não cria área rolável
-    return Align(
-      alignment: Alignment.topCenter,
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+    // Sem nenhum widget de scroll — Padding direto + Column.
+    // O NestedScrollView do pai captura qualquer ScrollView filho.
+    // Padding + Column é completamente estático, sem área rolável.
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
 
-              SectionCard(
-                title: 'STATUS',
-                pokemonTypes: types,
-                child: _goAtk == 0
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Center(child: PokeballLoader.small()))
-                    : Row(children: [
-                        _statBox(context, 'PS',     '$_goSta', typeColor),
-                        Container(width: 0.5, height: 56, color: neutralBorder(context)),
-                        _statBox(context, 'Ataque', '$_goAtk', typeColor),
-                        Container(width: 0.5, height: 56, color: neutralBorder(context)),
-                        _statBox(context, 'Defesa', '$_goDef', typeColor),
-                      ]),
-              ),
-
-              const SizedBox(height: 20),
-
-              SectionCard(
-                title: 'EFETIVIDADE DE TIPOS',
-                pokemonTypes: types,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
-                    if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
-                    if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
-                    if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
-                  ],
-                ),
-              ),
-
-            ],
+          SectionCard(
+            title: 'STATUS',
+            pokemonTypes: types,
+            child: _goAtk == 0
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: PokeballLoader.small()))
+                : Row(children: [
+                    _statBox(context, 'PS',     '$_goSta', typeColor),
+                    Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                    _statBox(context, 'Ataque', '$_goAtk', typeColor),
+                    Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                    _statBox(context, 'Defesa', '$_goDef', typeColor),
+                  ]),
           ),
-        ),
+
+          const SizedBox(height: 20),
+
+          SectionCard(
+            title: 'EFETIVIDADE DE TIPOS',
+            pokemonTypes: types,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
+                if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
+                if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
+                if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
+              ],
+            ),
+          ),
+
+        ],
       ),
     );
   }
