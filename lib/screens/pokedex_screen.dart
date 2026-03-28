@@ -1758,9 +1758,8 @@ class _PokemonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (data == null) return _SkeletonCard();
 
-    final rawName = data!['name'] as String;
-    final baseName = rawName.split('-').first;
-    final displayName = baseName[0].toUpperCase() + baseName.substring(1);
+    // Nome já está correto no _pokemonData (tratado em _localPokemonData)
+    final displayName = data!['name'] as String;
 
     final types = (data!['types'] as List<dynamic>)
         .map((t) => t['type']['name'] as String)
@@ -1772,6 +1771,11 @@ class _PokemonCard extends StatelessWidget {
 
     // Número formatado com o entryNumber da dex (não o ID nacional)
     final displayNumber = '#${entry.entryNumber.toString().padLeft(3, '0')}';
+
+    // Sprite: usa formaKey quando presente para mostrar a forma regional correta
+    final spritePath = entry.formaKey != null
+        ? 'assets/sprites/${ defaultSprite == 'pixel' ? 'pixel' : defaultSprite == 'home' ? 'home' : 'artwork'}/${entry.formaKey}.webp'
+        : pokemonSpriteAsset(entry.speciesId, defaultSprite);
 
     return GestureDetector(
       onTap: onTap,
@@ -1804,12 +1808,14 @@ class _PokemonCard extends StatelessWidget {
                     child: Opacity(
                       opacity: caught ? 1.0 : 0.5,
                       child: Image.asset(
-                        pokemonSpriteAsset(entry.speciesId, defaultSprite),
+                        spritePath,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, error, ___) {
-                          debugPrint('SPRITE FAIL: ${pokemonSpriteAsset(entry.speciesId, defaultSprite)} — $error');
-                          return const Icon(Icons.catching_pokemon, size: 40);
-                        },
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          pokemonSpriteAsset(entry.speciesId, defaultSprite),
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.catching_pokemon, size: 40),
+                        ),
                       ),
                     ),
                   ),
