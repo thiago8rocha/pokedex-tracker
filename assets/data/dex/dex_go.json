@@ -1,1 +1,4026 @@
-{"apiName":"go","pokedexId":"pokémon_go","displayName":"Pokémon GO","entries":[{"entryNumber":1,"speciesId":1},{"entryNumber":2,"speciesId":2},{"entryNumber":3,"speciesId":3},{"entryNumber":4,"speciesId":4},{"entryNumber":5,"speciesId":5},{"entryNumber":6,"speciesId":6},{"entryNumber":7,"speciesId":7},{"entryNumber":8,"speciesId":8},{"entryNumber":9,"speciesId":9},{"entryNumber":10,"speciesId":10},{"entryNumber":11,"speciesId":11},{"entryNumber":12,"speciesId":12},{"entryNumber":13,"speciesId":13},{"entryNumber":14,"speciesId":14},{"entryNumber":15,"speciesId":15},{"entryNumber":16,"speciesId":16},{"entryNumber":17,"speciesId":17},{"entryNumber":18,"speciesId":18},{"entryNumber":19,"speciesId":19},{"entryNumber":20,"speciesId":20},{"entryNumber":21,"speciesId":21},{"entryNumber":22,"speciesId":22},{"entryNumber":23,"speciesId":23},{"entryNumber":24,"speciesId":24},{"entryNumber":25,"speciesId":25},{"entryNumber":26,"speciesId":26},{"entryNumber":27,"speciesId":27},{"entryNumber":28,"speciesId":28},{"entryNumber":29,"speciesId":29},{"entryNumber":30,"speciesId":30},{"entryNumber":31,"speciesId":31},{"entryNumber":32,"speciesId":32},{"entryNumber":33,"speciesId":33},{"entryNumber":34,"speciesId":34},{"entryNumber":35,"speciesId":35},{"entryNumber":36,"speciesId":36},{"entryNumber":37,"speciesId":37},{"entryNumber":38,"speciesId":38},{"entryNumber":39,"speciesId":39},{"entryNumber":40,"speciesId":40},{"entryNumber":41,"speciesId":41},{"entryNumber":42,"speciesId":42},{"entryNumber":43,"speciesId":43},{"entryNumber":44,"speciesId":44},{"entryNumber":45,"speciesId":45},{"entryNumber":46,"speciesId":46},{"entryNumber":47,"speciesId":47},{"entryNumber":48,"speciesId":48},{"entryNumber":49,"speciesId":49},{"entryNumber":50,"speciesId":50},{"entryNumber":51,"speciesId":51},{"entryNumber":52,"speciesId":52},{"entryNumber":53,"speciesId":53},{"entryNumber":54,"speciesId":54},{"entryNumber":55,"speciesId":55},{"entryNumber":56,"speciesId":56},{"entryNumber":57,"speciesId":57},{"entryNumber":58,"speciesId":58},{"entryNumber":59,"speciesId":59},{"entryNumber":60,"speciesId":60},{"entryNumber":61,"speciesId":61},{"entryNumber":62,"speciesId":62},{"entryNumber":63,"speciesId":63},{"entryNumber":64,"speciesId":64},{"entryNumber":65,"speciesId":65},{"entryNumber":66,"speciesId":66},{"entryNumber":67,"speciesId":67},{"entryNumber":68,"speciesId":68},{"entryNumber":69,"speciesId":69},{"entryNumber":70,"speciesId":70},{"entryNumber":71,"speciesId":71},{"entryNumber":72,"speciesId":72},{"entryNumber":73,"speciesId":73},{"entryNumber":74,"speciesId":74},{"entryNumber":75,"speciesId":75},{"entryNumber":76,"speciesId":76},{"entryNumber":77,"speciesId":77},{"entryNumber":78,"speciesId":78},{"entryNumber":79,"speciesId":79},{"entryNumber":80,"speciesId":80},{"entryNumber":81,"speciesId":81},{"entryNumber":82,"speciesId":82},{"entryNumber":83,"speciesId":83},{"entryNumber":84,"speciesId":84},{"entryNumber":85,"speciesId":85},{"entryNumber":86,"speciesId":86},{"entryNumber":87,"speciesId":87},{"entryNumber":88,"speciesId":88},{"entryNumber":89,"speciesId":89},{"entryNumber":90,"speciesId":90},{"entryNumber":91,"speciesId":91},{"entryNumber":92,"speciesId":92},{"entryNumber":93,"speciesId":93},{"entryNumber":94,"speciesId":94},{"entryNumber":95,"speciesId":95},{"entryNumber":96,"speciesId":96},{"entryNumber":97,"speciesId":97},{"entryNumber":98,"speciesId":98},{"entryNumber":99,"speciesId":99},{"entryNumber":100,"speciesId":100},{"entryNumber":101,"speciesId":101},{"entryNumber":102,"speciesId":102},{"entryNumber":103,"speciesId":103},{"entryNumber":104,"speciesId":104},{"entryNumber":105,"speciesId":105},{"entryNumber":106,"speciesId":106},{"entryNumber":107,"speciesId":107},{"entryNumber":108,"speciesId":108},{"entryNumber":109,"speciesId":109},{"entryNumber":110,"speciesId":110},{"entryNumber":111,"speciesId":111},{"entryNumber":112,"speciesId":112},{"entryNumber":113,"speciesId":113},{"entryNumber":114,"speciesId":114},{"entryNumber":115,"speciesId":115},{"entryNumber":116,"speciesId":116},{"entryNumber":117,"speciesId":117},{"entryNumber":118,"speciesId":118},{"entryNumber":119,"speciesId":119},{"entryNumber":120,"speciesId":120},{"entryNumber":121,"speciesId":121},{"entryNumber":122,"speciesId":122},{"entryNumber":123,"speciesId":123},{"entryNumber":124,"speciesId":124},{"entryNumber":125,"speciesId":125},{"entryNumber":126,"speciesId":126},{"entryNumber":127,"speciesId":127},{"entryNumber":128,"speciesId":128},{"entryNumber":129,"speciesId":129},{"entryNumber":130,"speciesId":130},{"entryNumber":131,"speciesId":131},{"entryNumber":132,"speciesId":132},{"entryNumber":133,"speciesId":133},{"entryNumber":134,"speciesId":134},{"entryNumber":135,"speciesId":135},{"entryNumber":136,"speciesId":136},{"entryNumber":137,"speciesId":137},{"entryNumber":138,"speciesId":138},{"entryNumber":139,"speciesId":139},{"entryNumber":140,"speciesId":140},{"entryNumber":141,"speciesId":141},{"entryNumber":142,"speciesId":142},{"entryNumber":143,"speciesId":143},{"entryNumber":144,"speciesId":144},{"entryNumber":145,"speciesId":145},{"entryNumber":146,"speciesId":146},{"entryNumber":147,"speciesId":147},{"entryNumber":148,"speciesId":148},{"entryNumber":149,"speciesId":149},{"entryNumber":150,"speciesId":150},{"entryNumber":151,"speciesId":151},{"entryNumber":152,"speciesId":152},{"entryNumber":153,"speciesId":153},{"entryNumber":154,"speciesId":154},{"entryNumber":155,"speciesId":155},{"entryNumber":156,"speciesId":156},{"entryNumber":157,"speciesId":157},{"entryNumber":158,"speciesId":158},{"entryNumber":159,"speciesId":159},{"entryNumber":160,"speciesId":160},{"entryNumber":161,"speciesId":161},{"entryNumber":162,"speciesId":162},{"entryNumber":163,"speciesId":163},{"entryNumber":164,"speciesId":164},{"entryNumber":165,"speciesId":165},{"entryNumber":166,"speciesId":166},{"entryNumber":167,"speciesId":167},{"entryNumber":168,"speciesId":168},{"entryNumber":169,"speciesId":169},{"entryNumber":170,"speciesId":170},{"entryNumber":171,"speciesId":171},{"entryNumber":172,"speciesId":172},{"entryNumber":173,"speciesId":173},{"entryNumber":174,"speciesId":174},{"entryNumber":175,"speciesId":175},{"entryNumber":176,"speciesId":176},{"entryNumber":177,"speciesId":177},{"entryNumber":178,"speciesId":178},{"entryNumber":179,"speciesId":179},{"entryNumber":180,"speciesId":180},{"entryNumber":181,"speciesId":181},{"entryNumber":182,"speciesId":182},{"entryNumber":183,"speciesId":183},{"entryNumber":184,"speciesId":184},{"entryNumber":185,"speciesId":185},{"entryNumber":186,"speciesId":186},{"entryNumber":187,"speciesId":187},{"entryNumber":188,"speciesId":188},{"entryNumber":189,"speciesId":189},{"entryNumber":190,"speciesId":190},{"entryNumber":191,"speciesId":191},{"entryNumber":192,"speciesId":192},{"entryNumber":193,"speciesId":193},{"entryNumber":194,"speciesId":194},{"entryNumber":195,"speciesId":195},{"entryNumber":196,"speciesId":196},{"entryNumber":197,"speciesId":197},{"entryNumber":198,"speciesId":198},{"entryNumber":199,"speciesId":199},{"entryNumber":200,"speciesId":200},{"entryNumber":201,"speciesId":201},{"entryNumber":202,"speciesId":202},{"entryNumber":203,"speciesId":203},{"entryNumber":204,"speciesId":204},{"entryNumber":205,"speciesId":205},{"entryNumber":206,"speciesId":206},{"entryNumber":207,"speciesId":207},{"entryNumber":208,"speciesId":208},{"entryNumber":209,"speciesId":209},{"entryNumber":210,"speciesId":210},{"entryNumber":211,"speciesId":211},{"entryNumber":212,"speciesId":212},{"entryNumber":213,"speciesId":213},{"entryNumber":214,"speciesId":214},{"entryNumber":215,"speciesId":215},{"entryNumber":216,"speciesId":216},{"entryNumber":217,"speciesId":217},{"entryNumber":218,"speciesId":218},{"entryNumber":219,"speciesId":219},{"entryNumber":220,"speciesId":220},{"entryNumber":221,"speciesId":221},{"entryNumber":222,"speciesId":222},{"entryNumber":223,"speciesId":223},{"entryNumber":224,"speciesId":224},{"entryNumber":225,"speciesId":225},{"entryNumber":226,"speciesId":226},{"entryNumber":227,"speciesId":227},{"entryNumber":228,"speciesId":228},{"entryNumber":229,"speciesId":229},{"entryNumber":230,"speciesId":230},{"entryNumber":231,"speciesId":231},{"entryNumber":232,"speciesId":232},{"entryNumber":233,"speciesId":233},{"entryNumber":234,"speciesId":234},{"entryNumber":235,"speciesId":235},{"entryNumber":236,"speciesId":236},{"entryNumber":237,"speciesId":237},{"entryNumber":238,"speciesId":238},{"entryNumber":239,"speciesId":239},{"entryNumber":240,"speciesId":240},{"entryNumber":241,"speciesId":241},{"entryNumber":242,"speciesId":242},{"entryNumber":243,"speciesId":243},{"entryNumber":244,"speciesId":244},{"entryNumber":245,"speciesId":245},{"entryNumber":246,"speciesId":246},{"entryNumber":247,"speciesId":247},{"entryNumber":248,"speciesId":248},{"entryNumber":249,"speciesId":249},{"entryNumber":250,"speciesId":250},{"entryNumber":251,"speciesId":251},{"entryNumber":252,"speciesId":252},{"entryNumber":253,"speciesId":253},{"entryNumber":254,"speciesId":254},{"entryNumber":255,"speciesId":255},{"entryNumber":256,"speciesId":256},{"entryNumber":257,"speciesId":257},{"entryNumber":258,"speciesId":258},{"entryNumber":259,"speciesId":259},{"entryNumber":260,"speciesId":260},{"entryNumber":261,"speciesId":261},{"entryNumber":262,"speciesId":262},{"entryNumber":263,"speciesId":263},{"entryNumber":264,"speciesId":264},{"entryNumber":265,"speciesId":265},{"entryNumber":266,"speciesId":266},{"entryNumber":267,"speciesId":267},{"entryNumber":268,"speciesId":268},{"entryNumber":269,"speciesId":269},{"entryNumber":270,"speciesId":270},{"entryNumber":271,"speciesId":271},{"entryNumber":272,"speciesId":272},{"entryNumber":273,"speciesId":273},{"entryNumber":274,"speciesId":274},{"entryNumber":275,"speciesId":275},{"entryNumber":276,"speciesId":276},{"entryNumber":277,"speciesId":277},{"entryNumber":278,"speciesId":278},{"entryNumber":279,"speciesId":279},{"entryNumber":280,"speciesId":280},{"entryNumber":281,"speciesId":281},{"entryNumber":282,"speciesId":282},{"entryNumber":283,"speciesId":283},{"entryNumber":284,"speciesId":284},{"entryNumber":285,"speciesId":285},{"entryNumber":286,"speciesId":286},{"entryNumber":287,"speciesId":287},{"entryNumber":288,"speciesId":288},{"entryNumber":289,"speciesId":289},{"entryNumber":290,"speciesId":290},{"entryNumber":291,"speciesId":291},{"entryNumber":292,"speciesId":292},{"entryNumber":293,"speciesId":293},{"entryNumber":294,"speciesId":294},{"entryNumber":295,"speciesId":295},{"entryNumber":296,"speciesId":296},{"entryNumber":297,"speciesId":297},{"entryNumber":298,"speciesId":298},{"entryNumber":299,"speciesId":299},{"entryNumber":300,"speciesId":300},{"entryNumber":301,"speciesId":301},{"entryNumber":302,"speciesId":302},{"entryNumber":303,"speciesId":303},{"entryNumber":304,"speciesId":304},{"entryNumber":305,"speciesId":305},{"entryNumber":306,"speciesId":306},{"entryNumber":307,"speciesId":307},{"entryNumber":308,"speciesId":308},{"entryNumber":309,"speciesId":309},{"entryNumber":310,"speciesId":310},{"entryNumber":311,"speciesId":311},{"entryNumber":312,"speciesId":312},{"entryNumber":313,"speciesId":313},{"entryNumber":314,"speciesId":314},{"entryNumber":315,"speciesId":315},{"entryNumber":316,"speciesId":316},{"entryNumber":317,"speciesId":317},{"entryNumber":318,"speciesId":318},{"entryNumber":319,"speciesId":319},{"entryNumber":320,"speciesId":320},{"entryNumber":321,"speciesId":321},{"entryNumber":322,"speciesId":322},{"entryNumber":323,"speciesId":323},{"entryNumber":324,"speciesId":324},{"entryNumber":325,"speciesId":325},{"entryNumber":326,"speciesId":326},{"entryNumber":327,"speciesId":327},{"entryNumber":328,"speciesId":328},{"entryNumber":329,"speciesId":329},{"entryNumber":330,"speciesId":330},{"entryNumber":331,"speciesId":331},{"entryNumber":332,"speciesId":332},{"entryNumber":333,"speciesId":333},{"entryNumber":334,"speciesId":334},{"entryNumber":335,"speciesId":335},{"entryNumber":336,"speciesId":336},{"entryNumber":337,"speciesId":337},{"entryNumber":338,"speciesId":338},{"entryNumber":339,"speciesId":339},{"entryNumber":340,"speciesId":340},{"entryNumber":341,"speciesId":341},{"entryNumber":342,"speciesId":342},{"entryNumber":343,"speciesId":343},{"entryNumber":344,"speciesId":344},{"entryNumber":345,"speciesId":345},{"entryNumber":346,"speciesId":346},{"entryNumber":347,"speciesId":347},{"entryNumber":348,"speciesId":348},{"entryNumber":349,"speciesId":349},{"entryNumber":350,"speciesId":350},{"entryNumber":351,"speciesId":351},{"entryNumber":352,"speciesId":352},{"entryNumber":353,"speciesId":353},{"entryNumber":354,"speciesId":354},{"entryNumber":355,"speciesId":355},{"entryNumber":356,"speciesId":356},{"entryNumber":357,"speciesId":357},{"entryNumber":358,"speciesId":358},{"entryNumber":359,"speciesId":359},{"entryNumber":360,"speciesId":360},{"entryNumber":361,"speciesId":361},{"entryNumber":362,"speciesId":362},{"entryNumber":363,"speciesId":363},{"entryNumber":364,"speciesId":364},{"entryNumber":365,"speciesId":365},{"entryNumber":366,"speciesId":366},{"entryNumber":367,"speciesId":367},{"entryNumber":368,"speciesId":368},{"entryNumber":369,"speciesId":369},{"entryNumber":370,"speciesId":370},{"entryNumber":371,"speciesId":371},{"entryNumber":372,"speciesId":372},{"entryNumber":373,"speciesId":373},{"entryNumber":374,"speciesId":374},{"entryNumber":375,"speciesId":375},{"entryNumber":376,"speciesId":376},{"entryNumber":377,"speciesId":377},{"entryNumber":378,"speciesId":378},{"entryNumber":379,"speciesId":379},{"entryNumber":380,"speciesId":380},{"entryNumber":381,"speciesId":381},{"entryNumber":382,"speciesId":382},{"entryNumber":383,"speciesId":383},{"entryNumber":384,"speciesId":384},{"entryNumber":385,"speciesId":385},{"entryNumber":386,"speciesId":386},{"entryNumber":387,"speciesId":387},{"entryNumber":388,"speciesId":388},{"entryNumber":389,"speciesId":389},{"entryNumber":390,"speciesId":390},{"entryNumber":391,"speciesId":391},{"entryNumber":392,"speciesId":392},{"entryNumber":393,"speciesId":393},{"entryNumber":394,"speciesId":394},{"entryNumber":395,"speciesId":395},{"entryNumber":396,"speciesId":396},{"entryNumber":397,"speciesId":397},{"entryNumber":398,"speciesId":398},{"entryNumber":399,"speciesId":399},{"entryNumber":400,"speciesId":400},{"entryNumber":401,"speciesId":401},{"entryNumber":402,"speciesId":402},{"entryNumber":403,"speciesId":403},{"entryNumber":404,"speciesId":404},{"entryNumber":405,"speciesId":405},{"entryNumber":406,"speciesId":406},{"entryNumber":407,"speciesId":407},{"entryNumber":408,"speciesId":408},{"entryNumber":409,"speciesId":409},{"entryNumber":410,"speciesId":410},{"entryNumber":411,"speciesId":411},{"entryNumber":412,"speciesId":412},{"entryNumber":413,"speciesId":413},{"entryNumber":414,"speciesId":414},{"entryNumber":415,"speciesId":415},{"entryNumber":416,"speciesId":416},{"entryNumber":417,"speciesId":417},{"entryNumber":418,"speciesId":418},{"entryNumber":419,"speciesId":419},{"entryNumber":420,"speciesId":420},{"entryNumber":421,"speciesId":421},{"entryNumber":422,"speciesId":422},{"entryNumber":423,"speciesId":423},{"entryNumber":424,"speciesId":424},{"entryNumber":425,"speciesId":425},{"entryNumber":426,"speciesId":426},{"entryNumber":427,"speciesId":427},{"entryNumber":428,"speciesId":428},{"entryNumber":429,"speciesId":429},{"entryNumber":430,"speciesId":430},{"entryNumber":431,"speciesId":431},{"entryNumber":432,"speciesId":432},{"entryNumber":433,"speciesId":433},{"entryNumber":434,"speciesId":434},{"entryNumber":435,"speciesId":435},{"entryNumber":436,"speciesId":436},{"entryNumber":437,"speciesId":437},{"entryNumber":438,"speciesId":438},{"entryNumber":439,"speciesId":439},{"entryNumber":440,"speciesId":440},{"entryNumber":441,"speciesId":441},{"entryNumber":442,"speciesId":442},{"entryNumber":443,"speciesId":443},{"entryNumber":444,"speciesId":444},{"entryNumber":445,"speciesId":445},{"entryNumber":446,"speciesId":446},{"entryNumber":447,"speciesId":447},{"entryNumber":448,"speciesId":448},{"entryNumber":449,"speciesId":449},{"entryNumber":450,"speciesId":450},{"entryNumber":451,"speciesId":451},{"entryNumber":452,"speciesId":452},{"entryNumber":453,"speciesId":453},{"entryNumber":454,"speciesId":454},{"entryNumber":455,"speciesId":455},{"entryNumber":456,"speciesId":456},{"entryNumber":457,"speciesId":457},{"entryNumber":458,"speciesId":458},{"entryNumber":459,"speciesId":459},{"entryNumber":460,"speciesId":460},{"entryNumber":461,"speciesId":461},{"entryNumber":462,"speciesId":462},{"entryNumber":463,"speciesId":463},{"entryNumber":464,"speciesId":464},{"entryNumber":465,"speciesId":465},{"entryNumber":466,"speciesId":466},{"entryNumber":467,"speciesId":467},{"entryNumber":468,"speciesId":468},{"entryNumber":469,"speciesId":469},{"entryNumber":470,"speciesId":470},{"entryNumber":471,"speciesId":471},{"entryNumber":472,"speciesId":472},{"entryNumber":473,"speciesId":473},{"entryNumber":474,"speciesId":474},{"entryNumber":475,"speciesId":475},{"entryNumber":476,"speciesId":476},{"entryNumber":477,"speciesId":477},{"entryNumber":478,"speciesId":478},{"entryNumber":479,"speciesId":479},{"entryNumber":480,"speciesId":480},{"entryNumber":481,"speciesId":481},{"entryNumber":482,"speciesId":482},{"entryNumber":483,"speciesId":483},{"entryNumber":484,"speciesId":484},{"entryNumber":485,"speciesId":485},{"entryNumber":486,"speciesId":486},{"entryNumber":487,"speciesId":487},{"entryNumber":488,"speciesId":488},{"entryNumber":491,"speciesId":491},{"entryNumber":492,"speciesId":492},{"entryNumber":494,"speciesId":494},{"entryNumber":495,"speciesId":495},{"entryNumber":496,"speciesId":496},{"entryNumber":497,"speciesId":497},{"entryNumber":498,"speciesId":498},{"entryNumber":499,"speciesId":499},{"entryNumber":500,"speciesId":500},{"entryNumber":501,"speciesId":501},{"entryNumber":502,"speciesId":502},{"entryNumber":503,"speciesId":503},{"entryNumber":504,"speciesId":504},{"entryNumber":505,"speciesId":505},{"entryNumber":506,"speciesId":506},{"entryNumber":507,"speciesId":507},{"entryNumber":508,"speciesId":508},{"entryNumber":509,"speciesId":509},{"entryNumber":510,"speciesId":510},{"entryNumber":511,"speciesId":511},{"entryNumber":512,"speciesId":512},{"entryNumber":513,"speciesId":513},{"entryNumber":514,"speciesId":514},{"entryNumber":515,"speciesId":515},{"entryNumber":516,"speciesId":516},{"entryNumber":517,"speciesId":517},{"entryNumber":518,"speciesId":518},{"entryNumber":519,"speciesId":519},{"entryNumber":520,"speciesId":520},{"entryNumber":521,"speciesId":521},{"entryNumber":522,"speciesId":522},{"entryNumber":523,"speciesId":523},{"entryNumber":524,"speciesId":524},{"entryNumber":525,"speciesId":525},{"entryNumber":526,"speciesId":526},{"entryNumber":527,"speciesId":527},{"entryNumber":528,"speciesId":528},{"entryNumber":529,"speciesId":529},{"entryNumber":530,"speciesId":530},{"entryNumber":531,"speciesId":531},{"entryNumber":532,"speciesId":532},{"entryNumber":533,"speciesId":533},{"entryNumber":534,"speciesId":534},{"entryNumber":535,"speciesId":535},{"entryNumber":536,"speciesId":536},{"entryNumber":537,"speciesId":537},{"entryNumber":538,"speciesId":538},{"entryNumber":539,"speciesId":539},{"entryNumber":540,"speciesId":540},{"entryNumber":541,"speciesId":541},{"entryNumber":542,"speciesId":542},{"entryNumber":543,"speciesId":543},{"entryNumber":544,"speciesId":544},{"entryNumber":545,"speciesId":545},{"entryNumber":546,"speciesId":546},{"entryNumber":547,"speciesId":547},{"entryNumber":548,"speciesId":548},{"entryNumber":549,"speciesId":549},{"entryNumber":550,"speciesId":550},{"entryNumber":551,"speciesId":551},{"entryNumber":552,"speciesId":552},{"entryNumber":553,"speciesId":553},{"entryNumber":554,"speciesId":554},{"entryNumber":555,"speciesId":555},{"entryNumber":556,"speciesId":556},{"entryNumber":557,"speciesId":557},{"entryNumber":558,"speciesId":558},{"entryNumber":559,"speciesId":559},{"entryNumber":560,"speciesId":560},{"entryNumber":561,"speciesId":561},{"entryNumber":562,"speciesId":562},{"entryNumber":563,"speciesId":563},{"entryNumber":564,"speciesId":564},{"entryNumber":565,"speciesId":565},{"entryNumber":566,"speciesId":566},{"entryNumber":567,"speciesId":567},{"entryNumber":568,"speciesId":568},{"entryNumber":569,"speciesId":569},{"entryNumber":570,"speciesId":570},{"entryNumber":571,"speciesId":571},{"entryNumber":572,"speciesId":572},{"entryNumber":573,"speciesId":573},{"entryNumber":574,"speciesId":574},{"entryNumber":575,"speciesId":575},{"entryNumber":576,"speciesId":576},{"entryNumber":577,"speciesId":577},{"entryNumber":578,"speciesId":578},{"entryNumber":579,"speciesId":579},{"entryNumber":580,"speciesId":580},{"entryNumber":581,"speciesId":581},{"entryNumber":582,"speciesId":582},{"entryNumber":583,"speciesId":583},{"entryNumber":584,"speciesId":584},{"entryNumber":585,"speciesId":585},{"entryNumber":586,"speciesId":586},{"entryNumber":587,"speciesId":587},{"entryNumber":588,"speciesId":588},{"entryNumber":589,"speciesId":589},{"entryNumber":590,"speciesId":590},{"entryNumber":591,"speciesId":591},{"entryNumber":592,"speciesId":592},{"entryNumber":593,"speciesId":593},{"entryNumber":594,"speciesId":594},{"entryNumber":595,"speciesId":595},{"entryNumber":596,"speciesId":596},{"entryNumber":597,"speciesId":597},{"entryNumber":598,"speciesId":598},{"entryNumber":599,"speciesId":599},{"entryNumber":600,"speciesId":600},{"entryNumber":601,"speciesId":601},{"entryNumber":602,"speciesId":602},{"entryNumber":603,"speciesId":603},{"entryNumber":604,"speciesId":604},{"entryNumber":605,"speciesId":605},{"entryNumber":606,"speciesId":606},{"entryNumber":607,"speciesId":607},{"entryNumber":608,"speciesId":608},{"entryNumber":609,"speciesId":609},{"entryNumber":610,"speciesId":610},{"entryNumber":611,"speciesId":611},{"entryNumber":612,"speciesId":612},{"entryNumber":613,"speciesId":613},{"entryNumber":614,"speciesId":614},{"entryNumber":615,"speciesId":615},{"entryNumber":616,"speciesId":616},{"entryNumber":617,"speciesId":617},{"entryNumber":618,"speciesId":618},{"entryNumber":619,"speciesId":619},{"entryNumber":620,"speciesId":620},{"entryNumber":621,"speciesId":621},{"entryNumber":622,"speciesId":622},{"entryNumber":623,"speciesId":623},{"entryNumber":624,"speciesId":624},{"entryNumber":625,"speciesId":625},{"entryNumber":626,"speciesId":626},{"entryNumber":627,"speciesId":627},{"entryNumber":628,"speciesId":628},{"entryNumber":629,"speciesId":629},{"entryNumber":630,"speciesId":630},{"entryNumber":631,"speciesId":631},{"entryNumber":632,"speciesId":632},{"entryNumber":633,"speciesId":633},{"entryNumber":634,"speciesId":634},{"entryNumber":635,"speciesId":635},{"entryNumber":636,"speciesId":636},{"entryNumber":637,"speciesId":637},{"entryNumber":638,"speciesId":638},{"entryNumber":639,"speciesId":639},{"entryNumber":640,"speciesId":640},{"entryNumber":641,"speciesId":641},{"entryNumber":642,"speciesId":642},{"entryNumber":643,"speciesId":643},{"entryNumber":644,"speciesId":644},{"entryNumber":645,"speciesId":645},{"entryNumber":646,"speciesId":646},{"entryNumber":647,"speciesId":647},{"entryNumber":648,"speciesId":648},{"entryNumber":649,"speciesId":649},{"entryNumber":650,"speciesId":650},{"entryNumber":651,"speciesId":651},{"entryNumber":652,"speciesId":652},{"entryNumber":653,"speciesId":653},{"entryNumber":654,"speciesId":654},{"entryNumber":655,"speciesId":655},{"entryNumber":656,"speciesId":656},{"entryNumber":657,"speciesId":657},{"entryNumber":658,"speciesId":658},{"entryNumber":659,"speciesId":659},{"entryNumber":660,"speciesId":660},{"entryNumber":661,"speciesId":661},{"entryNumber":662,"speciesId":662},{"entryNumber":663,"speciesId":663},{"entryNumber":664,"speciesId":664},{"entryNumber":665,"speciesId":665},{"entryNumber":666,"speciesId":666},{"entryNumber":667,"speciesId":667},{"entryNumber":668,"speciesId":668},{"entryNumber":669,"speciesId":669},{"entryNumber":670,"speciesId":670},{"entryNumber":671,"speciesId":671},{"entryNumber":672,"speciesId":672},{"entryNumber":673,"speciesId":673},{"entryNumber":674,"speciesId":674},{"entryNumber":675,"speciesId":675},{"entryNumber":676,"speciesId":676},{"entryNumber":677,"speciesId":677},{"entryNumber":678,"speciesId":678},{"entryNumber":679,"speciesId":679},{"entryNumber":680,"speciesId":680},{"entryNumber":681,"speciesId":681},{"entryNumber":682,"speciesId":682},{"entryNumber":683,"speciesId":683},{"entryNumber":684,"speciesId":684},{"entryNumber":685,"speciesId":685},{"entryNumber":686,"speciesId":686},{"entryNumber":687,"speciesId":687},{"entryNumber":688,"speciesId":688},{"entryNumber":689,"speciesId":689},{"entryNumber":690,"speciesId":690},{"entryNumber":691,"speciesId":691},{"entryNumber":692,"speciesId":692},{"entryNumber":693,"speciesId":693},{"entryNumber":694,"speciesId":694},{"entryNumber":695,"speciesId":695},{"entryNumber":696,"speciesId":696},{"entryNumber":697,"speciesId":697},{"entryNumber":698,"speciesId":698},{"entryNumber":699,"speciesId":699},{"entryNumber":700,"speciesId":700},{"entryNumber":701,"speciesId":701},{"entryNumber":702,"speciesId":702},{"entryNumber":703,"speciesId":703},{"entryNumber":704,"speciesId":704},{"entryNumber":705,"speciesId":705},{"entryNumber":706,"speciesId":706},{"entryNumber":707,"speciesId":707},{"entryNumber":708,"speciesId":708},{"entryNumber":709,"speciesId":709},{"entryNumber":710,"speciesId":710},{"entryNumber":711,"speciesId":711},{"entryNumber":712,"speciesId":712},{"entryNumber":713,"speciesId":713},{"entryNumber":714,"speciesId":714},{"entryNumber":715,"speciesId":715},{"entryNumber":716,"speciesId":716},{"entryNumber":717,"speciesId":717},{"entryNumber":718,"speciesId":718},{"entryNumber":719,"speciesId":719},{"entryNumber":720,"speciesId":720},{"entryNumber":721,"speciesId":721},{"entryNumber":722,"speciesId":722},{"entryNumber":723,"speciesId":723},{"entryNumber":724,"speciesId":724},{"entryNumber":725,"speciesId":725},{"entryNumber":726,"speciesId":726},{"entryNumber":727,"speciesId":727},{"entryNumber":728,"speciesId":728},{"entryNumber":729,"speciesId":729},{"entryNumber":730,"speciesId":730},{"entryNumber":731,"speciesId":731},{"entryNumber":732,"speciesId":732},{"entryNumber":733,"speciesId":733},{"entryNumber":734,"speciesId":734},{"entryNumber":735,"speciesId":735},{"entryNumber":736,"speciesId":736},{"entryNumber":737,"speciesId":737},{"entryNumber":738,"speciesId":738},{"entryNumber":739,"speciesId":739},{"entryNumber":740,"speciesId":740},{"entryNumber":741,"speciesId":741},{"entryNumber":742,"speciesId":742},{"entryNumber":743,"speciesId":743},{"entryNumber":744,"speciesId":744},{"entryNumber":745,"speciesId":745},{"entryNumber":746,"speciesId":746},{"entryNumber":747,"speciesId":747},{"entryNumber":748,"speciesId":748},{"entryNumber":749,"speciesId":749},{"entryNumber":750,"speciesId":750},{"entryNumber":751,"speciesId":751},{"entryNumber":752,"speciesId":752},{"entryNumber":753,"speciesId":753},{"entryNumber":754,"speciesId":754},{"entryNumber":755,"speciesId":755},{"entryNumber":756,"speciesId":756},{"entryNumber":757,"speciesId":757},{"entryNumber":758,"speciesId":758},{"entryNumber":759,"speciesId":759},{"entryNumber":760,"speciesId":760},{"entryNumber":761,"speciesId":761},{"entryNumber":762,"speciesId":762},{"entryNumber":763,"speciesId":763},{"entryNumber":765,"speciesId":765},{"entryNumber":766,"speciesId":766},{"entryNumber":767,"speciesId":767},{"entryNumber":768,"speciesId":768},{"entryNumber":769,"speciesId":769},{"entryNumber":770,"speciesId":770},{"entryNumber":771,"speciesId":771},{"entryNumber":774,"speciesId":774},{"entryNumber":775,"speciesId":775},{"entryNumber":776,"speciesId":776},{"entryNumber":777,"speciesId":777},{"entryNumber":778,"speciesId":778},{"entryNumber":779,"speciesId":779},{"entryNumber":780,"speciesId":780},{"entryNumber":781,"speciesId":781},{"entryNumber":785,"speciesId":785},{"entryNumber":786,"speciesId":786},{"entryNumber":787,"speciesId":787},{"entryNumber":788,"speciesId":788},{"entryNumber":789,"speciesId":789},{"entryNumber":790,"speciesId":790},{"entryNumber":791,"speciesId":791},{"entryNumber":792,"speciesId":792},{"entryNumber":793,"speciesId":793},{"entryNumber":794,"speciesId":794},{"entryNumber":795,"speciesId":795},{"entryNumber":796,"speciesId":796},{"entryNumber":797,"speciesId":797},{"entryNumber":798,"speciesId":798},{"entryNumber":799,"speciesId":799},{"entryNumber":801,"speciesId":801},{"entryNumber":802,"speciesId":802},{"entryNumber":803,"speciesId":803},{"entryNumber":804,"speciesId":804},{"entryNumber":805,"speciesId":805},{"entryNumber":806,"speciesId":806},{"entryNumber":807,"speciesId":807},{"entryNumber":808,"speciesId":808},{"entryNumber":809,"speciesId":809},{"entryNumber":810,"speciesId":810},{"entryNumber":811,"speciesId":811},{"entryNumber":812,"speciesId":812},{"entryNumber":813,"speciesId":813},{"entryNumber":814,"speciesId":814},{"entryNumber":815,"speciesId":815},{"entryNumber":816,"speciesId":816},{"entryNumber":817,"speciesId":817},{"entryNumber":818,"speciesId":818},{"entryNumber":819,"speciesId":819},{"entryNumber":820,"speciesId":820},{"entryNumber":821,"speciesId":821},{"entryNumber":822,"speciesId":822},{"entryNumber":823,"speciesId":823},{"entryNumber":827,"speciesId":827},{"entryNumber":828,"speciesId":828},{"entryNumber":831,"speciesId":831},{"entryNumber":833,"speciesId":833},{"entryNumber":834,"speciesId":834},{"entryNumber":835,"speciesId":835},{"entryNumber":836,"speciesId":836},{"entryNumber":837,"speciesId":837},{"entryNumber":838,"speciesId":838},{"entryNumber":839,"speciesId":839},{"entryNumber":840,"speciesId":840},{"entryNumber":841,"speciesId":841},{"entryNumber":842,"speciesId":842},{"entryNumber":843,"speciesId":843},{"entryNumber":844,"speciesId":844},{"entryNumber":845,"speciesId":845},{"entryNumber":846,"speciesId":846},{"entryNumber":847,"speciesId":847},{"entryNumber":848,"speciesId":848},{"entryNumber":849,"speciesId":849},{"entryNumber":850,"speciesId":850},{"entryNumber":851,"speciesId":851},{"entryNumber":852,"speciesId":852},{"entryNumber":853,"speciesId":853},{"entryNumber":854,"speciesId":854},{"entryNumber":855,"speciesId":855},{"entryNumber":856,"speciesId":856},{"entryNumber":857,"speciesId":857},{"entryNumber":858,"speciesId":858},{"entryNumber":859,"speciesId":859},{"entryNumber":860,"speciesId":860},{"entryNumber":861,"speciesId":861},{"entryNumber":862,"speciesId":862},{"entryNumber":863,"speciesId":863},{"entryNumber":864,"speciesId":864},{"entryNumber":865,"speciesId":865},{"entryNumber":866,"speciesId":866},{"entryNumber":867,"speciesId":867},{"entryNumber":868,"speciesId":868},{"entryNumber":869,"speciesId":869},{"entryNumber":870,"speciesId":870},{"entryNumber":871,"speciesId":871},{"entryNumber":872,"speciesId":872},{"entryNumber":873,"speciesId":873},{"entryNumber":874,"speciesId":874},{"entryNumber":875,"speciesId":875},{"entryNumber":876,"speciesId":876},{"entryNumber":877,"speciesId":877},{"entryNumber":878,"speciesId":878},{"entryNumber":879,"speciesId":879},{"entryNumber":884,"speciesId":884},{"entryNumber":885,"speciesId":885},{"entryNumber":886,"speciesId":886},{"entryNumber":887,"speciesId":887},{"entryNumber":888,"speciesId":888},{"entryNumber":889,"speciesId":889},{"entryNumber":894,"speciesId":894},{"entryNumber":895,"speciesId":895},{"entryNumber":906,"speciesId":906},{"entryNumber":907,"speciesId":907},{"entryNumber":908,"speciesId":908},{"entryNumber":909,"speciesId":909},{"entryNumber":910,"speciesId":910},{"entryNumber":911,"speciesId":911},{"entryNumber":912,"speciesId":912},{"entryNumber":913,"speciesId":913},{"entryNumber":914,"speciesId":914},{"entryNumber":915,"speciesId":915},{"entryNumber":916,"speciesId":916},{"entryNumber":919,"speciesId":919},{"entryNumber":920,"speciesId":920},{"entryNumber":921,"speciesId":921},{"entryNumber":922,"speciesId":922},{"entryNumber":923,"speciesId":923},{"entryNumber":924,"speciesId":924},{"entryNumber":925,"speciesId":925},{"entryNumber":926,"speciesId":926},{"entryNumber":927,"speciesId":927},{"entryNumber":928,"speciesId":928},{"entryNumber":929,"speciesId":929},{"entryNumber":930,"speciesId":930},{"entryNumber":931,"speciesId":931},{"entryNumber":932,"speciesId":932},{"entryNumber":933,"speciesId":933},{"entryNumber":934,"speciesId":934},{"entryNumber":935,"speciesId":935},{"entryNumber":936,"speciesId":936},{"entryNumber":937,"speciesId":937},{"entryNumber":938,"speciesId":938},{"entryNumber":939,"speciesId":939},{"entryNumber":940,"speciesId":940},{"entryNumber":941,"speciesId":941},{"entryNumber":942,"speciesId":942},{"entryNumber":943,"speciesId":943},{"entryNumber":944,"speciesId":944},{"entryNumber":945,"speciesId":945},{"entryNumber":950,"speciesId":950},{"entryNumber":951,"speciesId":951},{"entryNumber":952,"speciesId":952},{"entryNumber":957,"speciesId":957},{"entryNumber":958,"speciesId":958},{"entryNumber":959,"speciesId":959},{"entryNumber":960,"speciesId":960},{"entryNumber":961,"speciesId":961},{"entryNumber":963,"speciesId":963},{"entryNumber":964,"speciesId":964},{"entryNumber":967,"speciesId":967},{"entryNumber":969,"speciesId":969},{"entryNumber":970,"speciesId":970},{"entryNumber":971,"speciesId":971},{"entryNumber":972,"speciesId":972},{"entryNumber":973,"speciesId":973},{"entryNumber":977,"speciesId":977},{"entryNumber":978,"speciesId":978},{"entryNumber":979,"speciesId":979},{"entryNumber":980,"speciesId":980},{"entryNumber":981,"speciesId":981},{"entryNumber":982,"speciesId":982},{"entryNumber":983,"speciesId":983},{"entryNumber":996,"speciesId":996},{"entryNumber":997,"speciesId":997},{"entryNumber":998,"speciesId":998},{"entryNumber":999,"speciesId":999},{"entryNumber":1000,"speciesId":1000},{"entryNumber":1011,"speciesId":1011},{"entryNumber":1017,"speciesId":1017},{"entryNumber":1018,"speciesId":1018},{"entryNumber":1019,"speciesId":1019}]}
+{
+  "apiName": "go",
+  "pokedexId": "pokémon_go",
+  "displayName": "Pokémon GO",
+  "entries": [
+    {
+      "entryNumber": 1,
+      "speciesId": 1
+    },
+    {
+      "entryNumber": 2,
+      "speciesId": 2
+    },
+    {
+      "entryNumber": 3,
+      "speciesId": 3
+    },
+    {
+      "entryNumber": 4,
+      "speciesId": 4
+    },
+    {
+      "entryNumber": 5,
+      "speciesId": 5
+    },
+    {
+      "entryNumber": 6,
+      "speciesId": 6
+    },
+    {
+      "entryNumber": 7,
+      "speciesId": 7
+    },
+    {
+      "entryNumber": 8,
+      "speciesId": 8
+    },
+    {
+      "entryNumber": 9,
+      "speciesId": 9
+    },
+    {
+      "entryNumber": 10,
+      "speciesId": 10
+    },
+    {
+      "entryNumber": 11,
+      "speciesId": 11
+    },
+    {
+      "entryNumber": 12,
+      "speciesId": 12
+    },
+    {
+      "entryNumber": 13,
+      "speciesId": 13
+    },
+    {
+      "entryNumber": 14,
+      "speciesId": 14
+    },
+    {
+      "entryNumber": 15,
+      "speciesId": 15
+    },
+    {
+      "entryNumber": 16,
+      "speciesId": 16
+    },
+    {
+      "entryNumber": 17,
+      "speciesId": 17
+    },
+    {
+      "entryNumber": 18,
+      "speciesId": 18
+    },
+    {
+      "entryNumber": 19,
+      "speciesId": 19
+    },
+    {
+      "entryNumber": 20,
+      "speciesId": 20
+    },
+    {
+      "entryNumber": 21,
+      "speciesId": 21
+    },
+    {
+      "entryNumber": 22,
+      "speciesId": 22
+    },
+    {
+      "entryNumber": 23,
+      "speciesId": 23
+    },
+    {
+      "entryNumber": 24,
+      "speciesId": 24
+    },
+    {
+      "entryNumber": 25,
+      "speciesId": 25
+    },
+    {
+      "entryNumber": 26,
+      "speciesId": 26
+    },
+    {
+      "entryNumber": 26,
+      "speciesId": 26,
+      "formaKey": "26_ALOLA"
+    },
+    {
+      "entryNumber": 27,
+      "speciesId": 27
+    },
+    {
+      "entryNumber": 27,
+      "speciesId": 27,
+      "formaKey": "27_ALOLA"
+    },
+    {
+      "entryNumber": 28,
+      "speciesId": 28
+    },
+    {
+      "entryNumber": 28,
+      "speciesId": 28,
+      "formaKey": "28_ALOLA"
+    },
+    {
+      "entryNumber": 29,
+      "speciesId": 29
+    },
+    {
+      "entryNumber": 30,
+      "speciesId": 30
+    },
+    {
+      "entryNumber": 31,
+      "speciesId": 31
+    },
+    {
+      "entryNumber": 32,
+      "speciesId": 32
+    },
+    {
+      "entryNumber": 33,
+      "speciesId": 33
+    },
+    {
+      "entryNumber": 34,
+      "speciesId": 34
+    },
+    {
+      "entryNumber": 35,
+      "speciesId": 35
+    },
+    {
+      "entryNumber": 36,
+      "speciesId": 36
+    },
+    {
+      "entryNumber": 37,
+      "speciesId": 37
+    },
+    {
+      "entryNumber": 37,
+      "speciesId": 37,
+      "formaKey": "37_ALOLA"
+    },
+    {
+      "entryNumber": 38,
+      "speciesId": 38
+    },
+    {
+      "entryNumber": 38,
+      "speciesId": 38,
+      "formaKey": "38_ALOLA"
+    },
+    {
+      "entryNumber": 39,
+      "speciesId": 39
+    },
+    {
+      "entryNumber": 40,
+      "speciesId": 40
+    },
+    {
+      "entryNumber": 41,
+      "speciesId": 41
+    },
+    {
+      "entryNumber": 42,
+      "speciesId": 42
+    },
+    {
+      "entryNumber": 43,
+      "speciesId": 43
+    },
+    {
+      "entryNumber": 44,
+      "speciesId": 44
+    },
+    {
+      "entryNumber": 45,
+      "speciesId": 45
+    },
+    {
+      "entryNumber": 46,
+      "speciesId": 46
+    },
+    {
+      "entryNumber": 47,
+      "speciesId": 47
+    },
+    {
+      "entryNumber": 48,
+      "speciesId": 48
+    },
+    {
+      "entryNumber": 49,
+      "speciesId": 49
+    },
+    {
+      "entryNumber": 50,
+      "speciesId": 50
+    },
+    {
+      "entryNumber": 50,
+      "speciesId": 50,
+      "formaKey": "50_ALOLA"
+    },
+    {
+      "entryNumber": 51,
+      "speciesId": 51
+    },
+    {
+      "entryNumber": 51,
+      "speciesId": 51,
+      "formaKey": "51_ALOLA"
+    },
+    {
+      "entryNumber": 52,
+      "speciesId": 52
+    },
+    {
+      "entryNumber": 52,
+      "speciesId": 52,
+      "formaKey": "52_ALOLA"
+    },
+    {
+      "entryNumber": 52,
+      "speciesId": 52,
+      "formaKey": "52_GALARIAN"
+    },
+    {
+      "entryNumber": 53,
+      "speciesId": 53
+    },
+    {
+      "entryNumber": 53,
+      "speciesId": 53,
+      "formaKey": "53_ALOLA"
+    },
+    {
+      "entryNumber": 54,
+      "speciesId": 54
+    },
+    {
+      "entryNumber": 55,
+      "speciesId": 55
+    },
+    {
+      "entryNumber": 56,
+      "speciesId": 56
+    },
+    {
+      "entryNumber": 57,
+      "speciesId": 57
+    },
+    {
+      "entryNumber": 58,
+      "speciesId": 58
+    },
+    {
+      "entryNumber": 58,
+      "speciesId": 58,
+      "formaKey": "58_HISUI"
+    },
+    {
+      "entryNumber": 59,
+      "speciesId": 59
+    },
+    {
+      "entryNumber": 59,
+      "speciesId": 59,
+      "formaKey": "59_HISUI"
+    },
+    {
+      "entryNumber": 60,
+      "speciesId": 60
+    },
+    {
+      "entryNumber": 61,
+      "speciesId": 61
+    },
+    {
+      "entryNumber": 62,
+      "speciesId": 62
+    },
+    {
+      "entryNumber": 63,
+      "speciesId": 63
+    },
+    {
+      "entryNumber": 64,
+      "speciesId": 64
+    },
+    {
+      "entryNumber": 65,
+      "speciesId": 65
+    },
+    {
+      "entryNumber": 66,
+      "speciesId": 66
+    },
+    {
+      "entryNumber": 67,
+      "speciesId": 67
+    },
+    {
+      "entryNumber": 68,
+      "speciesId": 68
+    },
+    {
+      "entryNumber": 69,
+      "speciesId": 69
+    },
+    {
+      "entryNumber": 70,
+      "speciesId": 70
+    },
+    {
+      "entryNumber": 71,
+      "speciesId": 71
+    },
+    {
+      "entryNumber": 72,
+      "speciesId": 72
+    },
+    {
+      "entryNumber": 73,
+      "speciesId": 73
+    },
+    {
+      "entryNumber": 74,
+      "speciesId": 74
+    },
+    {
+      "entryNumber": 74,
+      "speciesId": 74,
+      "formaKey": "74_ALOLA"
+    },
+    {
+      "entryNumber": 75,
+      "speciesId": 75
+    },
+    {
+      "entryNumber": 75,
+      "speciesId": 75,
+      "formaKey": "75_ALOLA"
+    },
+    {
+      "entryNumber": 76,
+      "speciesId": 76
+    },
+    {
+      "entryNumber": 76,
+      "speciesId": 76,
+      "formaKey": "76_ALOLA"
+    },
+    {
+      "entryNumber": 77,
+      "speciesId": 77
+    },
+    {
+      "entryNumber": 77,
+      "speciesId": 77,
+      "formaKey": "77_GALARIAN"
+    },
+    {
+      "entryNumber": 78,
+      "speciesId": 78
+    },
+    {
+      "entryNumber": 78,
+      "speciesId": 78,
+      "formaKey": "78_GALARIAN"
+    },
+    {
+      "entryNumber": 79,
+      "speciesId": 79
+    },
+    {
+      "entryNumber": 79,
+      "speciesId": 79,
+      "formaKey": "79_GALARIAN"
+    },
+    {
+      "entryNumber": 80,
+      "speciesId": 80
+    },
+    {
+      "entryNumber": 80,
+      "speciesId": 80,
+      "formaKey": "80_GALARIAN"
+    },
+    {
+      "entryNumber": 81,
+      "speciesId": 81
+    },
+    {
+      "entryNumber": 82,
+      "speciesId": 82
+    },
+    {
+      "entryNumber": 83,
+      "speciesId": 83
+    },
+    {
+      "entryNumber": 83,
+      "speciesId": 83,
+      "formaKey": "83_GALARIAN"
+    },
+    {
+      "entryNumber": 84,
+      "speciesId": 84
+    },
+    {
+      "entryNumber": 85,
+      "speciesId": 85
+    },
+    {
+      "entryNumber": 86,
+      "speciesId": 86
+    },
+    {
+      "entryNumber": 87,
+      "speciesId": 87
+    },
+    {
+      "entryNumber": 88,
+      "speciesId": 88
+    },
+    {
+      "entryNumber": 88,
+      "speciesId": 88,
+      "formaKey": "88_ALOLA"
+    },
+    {
+      "entryNumber": 89,
+      "speciesId": 89
+    },
+    {
+      "entryNumber": 89,
+      "speciesId": 89,
+      "formaKey": "89_ALOLA"
+    },
+    {
+      "entryNumber": 90,
+      "speciesId": 90
+    },
+    {
+      "entryNumber": 91,
+      "speciesId": 91
+    },
+    {
+      "entryNumber": 92,
+      "speciesId": 92
+    },
+    {
+      "entryNumber": 93,
+      "speciesId": 93
+    },
+    {
+      "entryNumber": 94,
+      "speciesId": 94
+    },
+    {
+      "entryNumber": 95,
+      "speciesId": 95
+    },
+    {
+      "entryNumber": 96,
+      "speciesId": 96
+    },
+    {
+      "entryNumber": 97,
+      "speciesId": 97
+    },
+    {
+      "entryNumber": 98,
+      "speciesId": 98
+    },
+    {
+      "entryNumber": 99,
+      "speciesId": 99
+    },
+    {
+      "entryNumber": 100,
+      "speciesId": 100
+    },
+    {
+      "entryNumber": 100,
+      "speciesId": 100,
+      "formaKey": "100_HISUI"
+    },
+    {
+      "entryNumber": 101,
+      "speciesId": 101
+    },
+    {
+      "entryNumber": 101,
+      "speciesId": 101,
+      "formaKey": "101_HISUI"
+    },
+    {
+      "entryNumber": 102,
+      "speciesId": 102
+    },
+    {
+      "entryNumber": 103,
+      "speciesId": 103
+    },
+    {
+      "entryNumber": 103,
+      "speciesId": 103,
+      "formaKey": "103_ALOLA"
+    },
+    {
+      "entryNumber": 104,
+      "speciesId": 104
+    },
+    {
+      "entryNumber": 105,
+      "speciesId": 105
+    },
+    {
+      "entryNumber": 105,
+      "speciesId": 105,
+      "formaKey": "105_ALOLA"
+    },
+    {
+      "entryNumber": 106,
+      "speciesId": 106
+    },
+    {
+      "entryNumber": 107,
+      "speciesId": 107
+    },
+    {
+      "entryNumber": 108,
+      "speciesId": 108
+    },
+    {
+      "entryNumber": 109,
+      "speciesId": 109
+    },
+    {
+      "entryNumber": 110,
+      "speciesId": 110
+    },
+    {
+      "entryNumber": 110,
+      "speciesId": 110,
+      "formaKey": "110_GALARIAN"
+    },
+    {
+      "entryNumber": 111,
+      "speciesId": 111
+    },
+    {
+      "entryNumber": 112,
+      "speciesId": 112
+    },
+    {
+      "entryNumber": 113,
+      "speciesId": 113
+    },
+    {
+      "entryNumber": 114,
+      "speciesId": 114
+    },
+    {
+      "entryNumber": 115,
+      "speciesId": 115
+    },
+    {
+      "entryNumber": 116,
+      "speciesId": 116
+    },
+    {
+      "entryNumber": 117,
+      "speciesId": 117
+    },
+    {
+      "entryNumber": 118,
+      "speciesId": 118
+    },
+    {
+      "entryNumber": 119,
+      "speciesId": 119
+    },
+    {
+      "entryNumber": 120,
+      "speciesId": 120
+    },
+    {
+      "entryNumber": 121,
+      "speciesId": 121
+    },
+    {
+      "entryNumber": 122,
+      "speciesId": 122
+    },
+    {
+      "entryNumber": 122,
+      "speciesId": 122,
+      "formaKey": "122_GALARIAN"
+    },
+    {
+      "entryNumber": 123,
+      "speciesId": 123
+    },
+    {
+      "entryNumber": 124,
+      "speciesId": 124
+    },
+    {
+      "entryNumber": 125,
+      "speciesId": 125
+    },
+    {
+      "entryNumber": 126,
+      "speciesId": 126
+    },
+    {
+      "entryNumber": 127,
+      "speciesId": 127
+    },
+    {
+      "entryNumber": 128,
+      "speciesId": 128
+    },
+    {
+      "entryNumber": 128,
+      "speciesId": 128,
+      "formaKey": "128_PALDEA_COMBAT"
+    },
+    {
+      "entryNumber": 128,
+      "speciesId": 128,
+      "formaKey": "128_PALDEA_BLAZE"
+    },
+    {
+      "entryNumber": 128,
+      "speciesId": 128,
+      "formaKey": "128_PALDEA_AQUA"
+    },
+    {
+      "entryNumber": 129,
+      "speciesId": 129
+    },
+    {
+      "entryNumber": 130,
+      "speciesId": 130
+    },
+    {
+      "entryNumber": 131,
+      "speciesId": 131
+    },
+    {
+      "entryNumber": 132,
+      "speciesId": 132
+    },
+    {
+      "entryNumber": 133,
+      "speciesId": 133
+    },
+    {
+      "entryNumber": 134,
+      "speciesId": 134
+    },
+    {
+      "entryNumber": 135,
+      "speciesId": 135
+    },
+    {
+      "entryNumber": 136,
+      "speciesId": 136
+    },
+    {
+      "entryNumber": 137,
+      "speciesId": 137
+    },
+    {
+      "entryNumber": 138,
+      "speciesId": 138
+    },
+    {
+      "entryNumber": 139,
+      "speciesId": 139
+    },
+    {
+      "entryNumber": 140,
+      "speciesId": 140
+    },
+    {
+      "entryNumber": 141,
+      "speciesId": 141
+    },
+    {
+      "entryNumber": 142,
+      "speciesId": 142
+    },
+    {
+      "entryNumber": 143,
+      "speciesId": 143
+    },
+    {
+      "entryNumber": 144,
+      "speciesId": 144
+    },
+    {
+      "entryNumber": 144,
+      "speciesId": 144,
+      "formaKey": "144_GALARIAN"
+    },
+    {
+      "entryNumber": 145,
+      "speciesId": 145
+    },
+    {
+      "entryNumber": 145,
+      "speciesId": 145,
+      "formaKey": "145_GALARIAN"
+    },
+    {
+      "entryNumber": 146,
+      "speciesId": 146
+    },
+    {
+      "entryNumber": 146,
+      "speciesId": 146,
+      "formaKey": "146_GALARIAN"
+    },
+    {
+      "entryNumber": 147,
+      "speciesId": 147
+    },
+    {
+      "entryNumber": 148,
+      "speciesId": 148
+    },
+    {
+      "entryNumber": 149,
+      "speciesId": 149
+    },
+    {
+      "entryNumber": 150,
+      "speciesId": 150
+    },
+    {
+      "entryNumber": 151,
+      "speciesId": 151
+    },
+    {
+      "entryNumber": 152,
+      "speciesId": 152
+    },
+    {
+      "entryNumber": 153,
+      "speciesId": 153
+    },
+    {
+      "entryNumber": 154,
+      "speciesId": 154
+    },
+    {
+      "entryNumber": 155,
+      "speciesId": 155
+    },
+    {
+      "entryNumber": 156,
+      "speciesId": 156
+    },
+    {
+      "entryNumber": 157,
+      "speciesId": 157
+    },
+    {
+      "entryNumber": 157,
+      "speciesId": 157,
+      "formaKey": "157_HISUI"
+    },
+    {
+      "entryNumber": 158,
+      "speciesId": 158
+    },
+    {
+      "entryNumber": 159,
+      "speciesId": 159
+    },
+    {
+      "entryNumber": 160,
+      "speciesId": 160
+    },
+    {
+      "entryNumber": 161,
+      "speciesId": 161
+    },
+    {
+      "entryNumber": 162,
+      "speciesId": 162
+    },
+    {
+      "entryNumber": 163,
+      "speciesId": 163
+    },
+    {
+      "entryNumber": 164,
+      "speciesId": 164
+    },
+    {
+      "entryNumber": 165,
+      "speciesId": 165
+    },
+    {
+      "entryNumber": 166,
+      "speciesId": 166
+    },
+    {
+      "entryNumber": 167,
+      "speciesId": 167
+    },
+    {
+      "entryNumber": 168,
+      "speciesId": 168
+    },
+    {
+      "entryNumber": 169,
+      "speciesId": 169
+    },
+    {
+      "entryNumber": 170,
+      "speciesId": 170
+    },
+    {
+      "entryNumber": 171,
+      "speciesId": 171
+    },
+    {
+      "entryNumber": 172,
+      "speciesId": 172
+    },
+    {
+      "entryNumber": 173,
+      "speciesId": 173
+    },
+    {
+      "entryNumber": 174,
+      "speciesId": 174
+    },
+    {
+      "entryNumber": 175,
+      "speciesId": 175
+    },
+    {
+      "entryNumber": 176,
+      "speciesId": 176
+    },
+    {
+      "entryNumber": 177,
+      "speciesId": 177
+    },
+    {
+      "entryNumber": 178,
+      "speciesId": 178
+    },
+    {
+      "entryNumber": 179,
+      "speciesId": 179
+    },
+    {
+      "entryNumber": 180,
+      "speciesId": 180
+    },
+    {
+      "entryNumber": 181,
+      "speciesId": 181
+    },
+    {
+      "entryNumber": 182,
+      "speciesId": 182
+    },
+    {
+      "entryNumber": 183,
+      "speciesId": 183
+    },
+    {
+      "entryNumber": 184,
+      "speciesId": 184
+    },
+    {
+      "entryNumber": 185,
+      "speciesId": 185
+    },
+    {
+      "entryNumber": 186,
+      "speciesId": 186
+    },
+    {
+      "entryNumber": 187,
+      "speciesId": 187
+    },
+    {
+      "entryNumber": 188,
+      "speciesId": 188
+    },
+    {
+      "entryNumber": 189,
+      "speciesId": 189
+    },
+    {
+      "entryNumber": 190,
+      "speciesId": 190
+    },
+    {
+      "entryNumber": 191,
+      "speciesId": 191
+    },
+    {
+      "entryNumber": 192,
+      "speciesId": 192
+    },
+    {
+      "entryNumber": 193,
+      "speciesId": 193
+    },
+    {
+      "entryNumber": 194,
+      "speciesId": 194
+    },
+    {
+      "entryNumber": 194,
+      "speciesId": 194,
+      "formaKey": "194_PALDEA"
+    },
+    {
+      "entryNumber": 195,
+      "speciesId": 195
+    },
+    {
+      "entryNumber": 196,
+      "speciesId": 196
+    },
+    {
+      "entryNumber": 197,
+      "speciesId": 197
+    },
+    {
+      "entryNumber": 198,
+      "speciesId": 198
+    },
+    {
+      "entryNumber": 199,
+      "speciesId": 199
+    },
+    {
+      "entryNumber": 199,
+      "speciesId": 199,
+      "formaKey": "199_GALARIAN"
+    },
+    {
+      "entryNumber": 200,
+      "speciesId": 200
+    },
+    {
+      "entryNumber": 201,
+      "speciesId": 201
+    },
+    {
+      "entryNumber": 202,
+      "speciesId": 202
+    },
+    {
+      "entryNumber": 203,
+      "speciesId": 203
+    },
+    {
+      "entryNumber": 204,
+      "speciesId": 204
+    },
+    {
+      "entryNumber": 205,
+      "speciesId": 205
+    },
+    {
+      "entryNumber": 206,
+      "speciesId": 206
+    },
+    {
+      "entryNumber": 207,
+      "speciesId": 207
+    },
+    {
+      "entryNumber": 208,
+      "speciesId": 208
+    },
+    {
+      "entryNumber": 209,
+      "speciesId": 209
+    },
+    {
+      "entryNumber": 210,
+      "speciesId": 210
+    },
+    {
+      "entryNumber": 211,
+      "speciesId": 211
+    },
+    {
+      "entryNumber": 211,
+      "speciesId": 211,
+      "formaKey": "211_HISUI"
+    },
+    {
+      "entryNumber": 212,
+      "speciesId": 212
+    },
+    {
+      "entryNumber": 213,
+      "speciesId": 213
+    },
+    {
+      "entryNumber": 214,
+      "speciesId": 214
+    },
+    {
+      "entryNumber": 215,
+      "speciesId": 215
+    },
+    {
+      "entryNumber": 215,
+      "speciesId": 215,
+      "formaKey": "215_HISUI"
+    },
+    {
+      "entryNumber": 216,
+      "speciesId": 216
+    },
+    {
+      "entryNumber": 217,
+      "speciesId": 217
+    },
+    {
+      "entryNumber": 218,
+      "speciesId": 218
+    },
+    {
+      "entryNumber": 219,
+      "speciesId": 219
+    },
+    {
+      "entryNumber": 220,
+      "speciesId": 220
+    },
+    {
+      "entryNumber": 221,
+      "speciesId": 221
+    },
+    {
+      "entryNumber": 222,
+      "speciesId": 222
+    },
+    {
+      "entryNumber": 222,
+      "speciesId": 222,
+      "formaKey": "222_GALARIAN"
+    },
+    {
+      "entryNumber": 223,
+      "speciesId": 223
+    },
+    {
+      "entryNumber": 224,
+      "speciesId": 224
+    },
+    {
+      "entryNumber": 225,
+      "speciesId": 225
+    },
+    {
+      "entryNumber": 226,
+      "speciesId": 226
+    },
+    {
+      "entryNumber": 227,
+      "speciesId": 227
+    },
+    {
+      "entryNumber": 228,
+      "speciesId": 228
+    },
+    {
+      "entryNumber": 229,
+      "speciesId": 229
+    },
+    {
+      "entryNumber": 230,
+      "speciesId": 230
+    },
+    {
+      "entryNumber": 231,
+      "speciesId": 231
+    },
+    {
+      "entryNumber": 232,
+      "speciesId": 232
+    },
+    {
+      "entryNumber": 233,
+      "speciesId": 233
+    },
+    {
+      "entryNumber": 234,
+      "speciesId": 234
+    },
+    {
+      "entryNumber": 235,
+      "speciesId": 235
+    },
+    {
+      "entryNumber": 236,
+      "speciesId": 236
+    },
+    {
+      "entryNumber": 237,
+      "speciesId": 237
+    },
+    {
+      "entryNumber": 238,
+      "speciesId": 238
+    },
+    {
+      "entryNumber": 239,
+      "speciesId": 239
+    },
+    {
+      "entryNumber": 240,
+      "speciesId": 240
+    },
+    {
+      "entryNumber": 241,
+      "speciesId": 241
+    },
+    {
+      "entryNumber": 242,
+      "speciesId": 242
+    },
+    {
+      "entryNumber": 243,
+      "speciesId": 243
+    },
+    {
+      "entryNumber": 244,
+      "speciesId": 244
+    },
+    {
+      "entryNumber": 245,
+      "speciesId": 245
+    },
+    {
+      "entryNumber": 246,
+      "speciesId": 246
+    },
+    {
+      "entryNumber": 247,
+      "speciesId": 247
+    },
+    {
+      "entryNumber": 248,
+      "speciesId": 248
+    },
+    {
+      "entryNumber": 249,
+      "speciesId": 249
+    },
+    {
+      "entryNumber": 250,
+      "speciesId": 250
+    },
+    {
+      "entryNumber": 251,
+      "speciesId": 251
+    },
+    {
+      "entryNumber": 252,
+      "speciesId": 252
+    },
+    {
+      "entryNumber": 253,
+      "speciesId": 253
+    },
+    {
+      "entryNumber": 254,
+      "speciesId": 254
+    },
+    {
+      "entryNumber": 255,
+      "speciesId": 255
+    },
+    {
+      "entryNumber": 256,
+      "speciesId": 256
+    },
+    {
+      "entryNumber": 257,
+      "speciesId": 257
+    },
+    {
+      "entryNumber": 258,
+      "speciesId": 258
+    },
+    {
+      "entryNumber": 259,
+      "speciesId": 259
+    },
+    {
+      "entryNumber": 260,
+      "speciesId": 260
+    },
+    {
+      "entryNumber": 261,
+      "speciesId": 261
+    },
+    {
+      "entryNumber": 262,
+      "speciesId": 262
+    },
+    {
+      "entryNumber": 263,
+      "speciesId": 263
+    },
+    {
+      "entryNumber": 263,
+      "speciesId": 263,
+      "formaKey": "263_GALARIAN"
+    },
+    {
+      "entryNumber": 264,
+      "speciesId": 264
+    },
+    {
+      "entryNumber": 264,
+      "speciesId": 264,
+      "formaKey": "264_GALARIAN"
+    },
+    {
+      "entryNumber": 265,
+      "speciesId": 265
+    },
+    {
+      "entryNumber": 266,
+      "speciesId": 266
+    },
+    {
+      "entryNumber": 267,
+      "speciesId": 267
+    },
+    {
+      "entryNumber": 268,
+      "speciesId": 268
+    },
+    {
+      "entryNumber": 269,
+      "speciesId": 269
+    },
+    {
+      "entryNumber": 270,
+      "speciesId": 270
+    },
+    {
+      "entryNumber": 271,
+      "speciesId": 271
+    },
+    {
+      "entryNumber": 272,
+      "speciesId": 272
+    },
+    {
+      "entryNumber": 273,
+      "speciesId": 273
+    },
+    {
+      "entryNumber": 274,
+      "speciesId": 274
+    },
+    {
+      "entryNumber": 275,
+      "speciesId": 275
+    },
+    {
+      "entryNumber": 276,
+      "speciesId": 276
+    },
+    {
+      "entryNumber": 277,
+      "speciesId": 277
+    },
+    {
+      "entryNumber": 278,
+      "speciesId": 278
+    },
+    {
+      "entryNumber": 279,
+      "speciesId": 279
+    },
+    {
+      "entryNumber": 280,
+      "speciesId": 280
+    },
+    {
+      "entryNumber": 281,
+      "speciesId": 281
+    },
+    {
+      "entryNumber": 282,
+      "speciesId": 282
+    },
+    {
+      "entryNumber": 283,
+      "speciesId": 283
+    },
+    {
+      "entryNumber": 284,
+      "speciesId": 284
+    },
+    {
+      "entryNumber": 285,
+      "speciesId": 285
+    },
+    {
+      "entryNumber": 286,
+      "speciesId": 286
+    },
+    {
+      "entryNumber": 287,
+      "speciesId": 287
+    },
+    {
+      "entryNumber": 288,
+      "speciesId": 288
+    },
+    {
+      "entryNumber": 289,
+      "speciesId": 289
+    },
+    {
+      "entryNumber": 290,
+      "speciesId": 290
+    },
+    {
+      "entryNumber": 291,
+      "speciesId": 291
+    },
+    {
+      "entryNumber": 292,
+      "speciesId": 292
+    },
+    {
+      "entryNumber": 293,
+      "speciesId": 293
+    },
+    {
+      "entryNumber": 294,
+      "speciesId": 294
+    },
+    {
+      "entryNumber": 295,
+      "speciesId": 295
+    },
+    {
+      "entryNumber": 296,
+      "speciesId": 296
+    },
+    {
+      "entryNumber": 297,
+      "speciesId": 297
+    },
+    {
+      "entryNumber": 298,
+      "speciesId": 298
+    },
+    {
+      "entryNumber": 299,
+      "speciesId": 299
+    },
+    {
+      "entryNumber": 300,
+      "speciesId": 300
+    },
+    {
+      "entryNumber": 301,
+      "speciesId": 301
+    },
+    {
+      "entryNumber": 302,
+      "speciesId": 302
+    },
+    {
+      "entryNumber": 303,
+      "speciesId": 303
+    },
+    {
+      "entryNumber": 304,
+      "speciesId": 304
+    },
+    {
+      "entryNumber": 305,
+      "speciesId": 305
+    },
+    {
+      "entryNumber": 306,
+      "speciesId": 306
+    },
+    {
+      "entryNumber": 307,
+      "speciesId": 307
+    },
+    {
+      "entryNumber": 308,
+      "speciesId": 308
+    },
+    {
+      "entryNumber": 309,
+      "speciesId": 309
+    },
+    {
+      "entryNumber": 310,
+      "speciesId": 310
+    },
+    {
+      "entryNumber": 311,
+      "speciesId": 311
+    },
+    {
+      "entryNumber": 312,
+      "speciesId": 312
+    },
+    {
+      "entryNumber": 313,
+      "speciesId": 313
+    },
+    {
+      "entryNumber": 314,
+      "speciesId": 314
+    },
+    {
+      "entryNumber": 315,
+      "speciesId": 315
+    },
+    {
+      "entryNumber": 316,
+      "speciesId": 316
+    },
+    {
+      "entryNumber": 317,
+      "speciesId": 317
+    },
+    {
+      "entryNumber": 318,
+      "speciesId": 318
+    },
+    {
+      "entryNumber": 319,
+      "speciesId": 319
+    },
+    {
+      "entryNumber": 320,
+      "speciesId": 320
+    },
+    {
+      "entryNumber": 321,
+      "speciesId": 321
+    },
+    {
+      "entryNumber": 322,
+      "speciesId": 322
+    },
+    {
+      "entryNumber": 323,
+      "speciesId": 323
+    },
+    {
+      "entryNumber": 324,
+      "speciesId": 324
+    },
+    {
+      "entryNumber": 325,
+      "speciesId": 325
+    },
+    {
+      "entryNumber": 326,
+      "speciesId": 326
+    },
+    {
+      "entryNumber": 327,
+      "speciesId": 327
+    },
+    {
+      "entryNumber": 328,
+      "speciesId": 328
+    },
+    {
+      "entryNumber": 329,
+      "speciesId": 329
+    },
+    {
+      "entryNumber": 330,
+      "speciesId": 330
+    },
+    {
+      "entryNumber": 331,
+      "speciesId": 331
+    },
+    {
+      "entryNumber": 332,
+      "speciesId": 332
+    },
+    {
+      "entryNumber": 333,
+      "speciesId": 333
+    },
+    {
+      "entryNumber": 334,
+      "speciesId": 334
+    },
+    {
+      "entryNumber": 335,
+      "speciesId": 335
+    },
+    {
+      "entryNumber": 336,
+      "speciesId": 336
+    },
+    {
+      "entryNumber": 337,
+      "speciesId": 337
+    },
+    {
+      "entryNumber": 338,
+      "speciesId": 338
+    },
+    {
+      "entryNumber": 339,
+      "speciesId": 339
+    },
+    {
+      "entryNumber": 340,
+      "speciesId": 340
+    },
+    {
+      "entryNumber": 341,
+      "speciesId": 341
+    },
+    {
+      "entryNumber": 342,
+      "speciesId": 342
+    },
+    {
+      "entryNumber": 343,
+      "speciesId": 343
+    },
+    {
+      "entryNumber": 344,
+      "speciesId": 344
+    },
+    {
+      "entryNumber": 345,
+      "speciesId": 345
+    },
+    {
+      "entryNumber": 346,
+      "speciesId": 346
+    },
+    {
+      "entryNumber": 347,
+      "speciesId": 347
+    },
+    {
+      "entryNumber": 348,
+      "speciesId": 348
+    },
+    {
+      "entryNumber": 349,
+      "speciesId": 349
+    },
+    {
+      "entryNumber": 350,
+      "speciesId": 350
+    },
+    {
+      "entryNumber": 351,
+      "speciesId": 351
+    },
+    {
+      "entryNumber": 352,
+      "speciesId": 352
+    },
+    {
+      "entryNumber": 353,
+      "speciesId": 353
+    },
+    {
+      "entryNumber": 354,
+      "speciesId": 354
+    },
+    {
+      "entryNumber": 355,
+      "speciesId": 355
+    },
+    {
+      "entryNumber": 356,
+      "speciesId": 356
+    },
+    {
+      "entryNumber": 357,
+      "speciesId": 357
+    },
+    {
+      "entryNumber": 358,
+      "speciesId": 358
+    },
+    {
+      "entryNumber": 359,
+      "speciesId": 359
+    },
+    {
+      "entryNumber": 360,
+      "speciesId": 360
+    },
+    {
+      "entryNumber": 361,
+      "speciesId": 361
+    },
+    {
+      "entryNumber": 362,
+      "speciesId": 362
+    },
+    {
+      "entryNumber": 363,
+      "speciesId": 363
+    },
+    {
+      "entryNumber": 364,
+      "speciesId": 364
+    },
+    {
+      "entryNumber": 365,
+      "speciesId": 365
+    },
+    {
+      "entryNumber": 366,
+      "speciesId": 366
+    },
+    {
+      "entryNumber": 367,
+      "speciesId": 367
+    },
+    {
+      "entryNumber": 368,
+      "speciesId": 368
+    },
+    {
+      "entryNumber": 369,
+      "speciesId": 369
+    },
+    {
+      "entryNumber": 370,
+      "speciesId": 370
+    },
+    {
+      "entryNumber": 371,
+      "speciesId": 371
+    },
+    {
+      "entryNumber": 372,
+      "speciesId": 372
+    },
+    {
+      "entryNumber": 373,
+      "speciesId": 373
+    },
+    {
+      "entryNumber": 374,
+      "speciesId": 374
+    },
+    {
+      "entryNumber": 375,
+      "speciesId": 375
+    },
+    {
+      "entryNumber": 376,
+      "speciesId": 376
+    },
+    {
+      "entryNumber": 377,
+      "speciesId": 377
+    },
+    {
+      "entryNumber": 378,
+      "speciesId": 378
+    },
+    {
+      "entryNumber": 379,
+      "speciesId": 379
+    },
+    {
+      "entryNumber": 380,
+      "speciesId": 380
+    },
+    {
+      "entryNumber": 381,
+      "speciesId": 381
+    },
+    {
+      "entryNumber": 382,
+      "speciesId": 382
+    },
+    {
+      "entryNumber": 383,
+      "speciesId": 383
+    },
+    {
+      "entryNumber": 384,
+      "speciesId": 384
+    },
+    {
+      "entryNumber": 385,
+      "speciesId": 385
+    },
+    {
+      "entryNumber": 386,
+      "speciesId": 386
+    },
+    {
+      "entryNumber": 387,
+      "speciesId": 387
+    },
+    {
+      "entryNumber": 388,
+      "speciesId": 388
+    },
+    {
+      "entryNumber": 389,
+      "speciesId": 389
+    },
+    {
+      "entryNumber": 390,
+      "speciesId": 390
+    },
+    {
+      "entryNumber": 391,
+      "speciesId": 391
+    },
+    {
+      "entryNumber": 392,
+      "speciesId": 392
+    },
+    {
+      "entryNumber": 393,
+      "speciesId": 393
+    },
+    {
+      "entryNumber": 394,
+      "speciesId": 394
+    },
+    {
+      "entryNumber": 395,
+      "speciesId": 395
+    },
+    {
+      "entryNumber": 396,
+      "speciesId": 396
+    },
+    {
+      "entryNumber": 397,
+      "speciesId": 397
+    },
+    {
+      "entryNumber": 398,
+      "speciesId": 398
+    },
+    {
+      "entryNumber": 399,
+      "speciesId": 399
+    },
+    {
+      "entryNumber": 400,
+      "speciesId": 400
+    },
+    {
+      "entryNumber": 401,
+      "speciesId": 401
+    },
+    {
+      "entryNumber": 402,
+      "speciesId": 402
+    },
+    {
+      "entryNumber": 403,
+      "speciesId": 403
+    },
+    {
+      "entryNumber": 404,
+      "speciesId": 404
+    },
+    {
+      "entryNumber": 405,
+      "speciesId": 405
+    },
+    {
+      "entryNumber": 406,
+      "speciesId": 406
+    },
+    {
+      "entryNumber": 407,
+      "speciesId": 407
+    },
+    {
+      "entryNumber": 408,
+      "speciesId": 408
+    },
+    {
+      "entryNumber": 409,
+      "speciesId": 409
+    },
+    {
+      "entryNumber": 410,
+      "speciesId": 410
+    },
+    {
+      "entryNumber": 411,
+      "speciesId": 411
+    },
+    {
+      "entryNumber": 412,
+      "speciesId": 412
+    },
+    {
+      "entryNumber": 413,
+      "speciesId": 413
+    },
+    {
+      "entryNumber": 414,
+      "speciesId": 414
+    },
+    {
+      "entryNumber": 415,
+      "speciesId": 415
+    },
+    {
+      "entryNumber": 416,
+      "speciesId": 416
+    },
+    {
+      "entryNumber": 417,
+      "speciesId": 417
+    },
+    {
+      "entryNumber": 418,
+      "speciesId": 418
+    },
+    {
+      "entryNumber": 419,
+      "speciesId": 419
+    },
+    {
+      "entryNumber": 420,
+      "speciesId": 420
+    },
+    {
+      "entryNumber": 421,
+      "speciesId": 421
+    },
+    {
+      "entryNumber": 422,
+      "speciesId": 422
+    },
+    {
+      "entryNumber": 423,
+      "speciesId": 423
+    },
+    {
+      "entryNumber": 424,
+      "speciesId": 424
+    },
+    {
+      "entryNumber": 425,
+      "speciesId": 425
+    },
+    {
+      "entryNumber": 426,
+      "speciesId": 426
+    },
+    {
+      "entryNumber": 427,
+      "speciesId": 427
+    },
+    {
+      "entryNumber": 428,
+      "speciesId": 428
+    },
+    {
+      "entryNumber": 429,
+      "speciesId": 429
+    },
+    {
+      "entryNumber": 430,
+      "speciesId": 430
+    },
+    {
+      "entryNumber": 431,
+      "speciesId": 431
+    },
+    {
+      "entryNumber": 432,
+      "speciesId": 432
+    },
+    {
+      "entryNumber": 433,
+      "speciesId": 433
+    },
+    {
+      "entryNumber": 434,
+      "speciesId": 434
+    },
+    {
+      "entryNumber": 435,
+      "speciesId": 435
+    },
+    {
+      "entryNumber": 436,
+      "speciesId": 436
+    },
+    {
+      "entryNumber": 437,
+      "speciesId": 437
+    },
+    {
+      "entryNumber": 438,
+      "speciesId": 438
+    },
+    {
+      "entryNumber": 439,
+      "speciesId": 439
+    },
+    {
+      "entryNumber": 440,
+      "speciesId": 440
+    },
+    {
+      "entryNumber": 441,
+      "speciesId": 441
+    },
+    {
+      "entryNumber": 442,
+      "speciesId": 442
+    },
+    {
+      "entryNumber": 443,
+      "speciesId": 443
+    },
+    {
+      "entryNumber": 444,
+      "speciesId": 444
+    },
+    {
+      "entryNumber": 445,
+      "speciesId": 445
+    },
+    {
+      "entryNumber": 446,
+      "speciesId": 446
+    },
+    {
+      "entryNumber": 447,
+      "speciesId": 447
+    },
+    {
+      "entryNumber": 448,
+      "speciesId": 448
+    },
+    {
+      "entryNumber": 449,
+      "speciesId": 449
+    },
+    {
+      "entryNumber": 450,
+      "speciesId": 450
+    },
+    {
+      "entryNumber": 451,
+      "speciesId": 451
+    },
+    {
+      "entryNumber": 452,
+      "speciesId": 452
+    },
+    {
+      "entryNumber": 453,
+      "speciesId": 453
+    },
+    {
+      "entryNumber": 454,
+      "speciesId": 454
+    },
+    {
+      "entryNumber": 455,
+      "speciesId": 455
+    },
+    {
+      "entryNumber": 456,
+      "speciesId": 456
+    },
+    {
+      "entryNumber": 457,
+      "speciesId": 457
+    },
+    {
+      "entryNumber": 458,
+      "speciesId": 458
+    },
+    {
+      "entryNumber": 459,
+      "speciesId": 459
+    },
+    {
+      "entryNumber": 460,
+      "speciesId": 460
+    },
+    {
+      "entryNumber": 461,
+      "speciesId": 461
+    },
+    {
+      "entryNumber": 462,
+      "speciesId": 462
+    },
+    {
+      "entryNumber": 463,
+      "speciesId": 463
+    },
+    {
+      "entryNumber": 464,
+      "speciesId": 464
+    },
+    {
+      "entryNumber": 465,
+      "speciesId": 465
+    },
+    {
+      "entryNumber": 466,
+      "speciesId": 466
+    },
+    {
+      "entryNumber": 467,
+      "speciesId": 467
+    },
+    {
+      "entryNumber": 468,
+      "speciesId": 468
+    },
+    {
+      "entryNumber": 469,
+      "speciesId": 469
+    },
+    {
+      "entryNumber": 470,
+      "speciesId": 470
+    },
+    {
+      "entryNumber": 471,
+      "speciesId": 471
+    },
+    {
+      "entryNumber": 472,
+      "speciesId": 472
+    },
+    {
+      "entryNumber": 473,
+      "speciesId": 473
+    },
+    {
+      "entryNumber": 474,
+      "speciesId": 474
+    },
+    {
+      "entryNumber": 475,
+      "speciesId": 475
+    },
+    {
+      "entryNumber": 476,
+      "speciesId": 476
+    },
+    {
+      "entryNumber": 477,
+      "speciesId": 477
+    },
+    {
+      "entryNumber": 478,
+      "speciesId": 478
+    },
+    {
+      "entryNumber": 479,
+      "speciesId": 479
+    },
+    {
+      "entryNumber": 480,
+      "speciesId": 480
+    },
+    {
+      "entryNumber": 481,
+      "speciesId": 481
+    },
+    {
+      "entryNumber": 482,
+      "speciesId": 482
+    },
+    {
+      "entryNumber": 483,
+      "speciesId": 483
+    },
+    {
+      "entryNumber": 484,
+      "speciesId": 484
+    },
+    {
+      "entryNumber": 485,
+      "speciesId": 485
+    },
+    {
+      "entryNumber": 486,
+      "speciesId": 486
+    },
+    {
+      "entryNumber": 487,
+      "speciesId": 487
+    },
+    {
+      "entryNumber": 488,
+      "speciesId": 488
+    },
+    {
+      "entryNumber": 491,
+      "speciesId": 491
+    },
+    {
+      "entryNumber": 492,
+      "speciesId": 492
+    },
+    {
+      "entryNumber": 494,
+      "speciesId": 494
+    },
+    {
+      "entryNumber": 495,
+      "speciesId": 495
+    },
+    {
+      "entryNumber": 496,
+      "speciesId": 496
+    },
+    {
+      "entryNumber": 497,
+      "speciesId": 497
+    },
+    {
+      "entryNumber": 498,
+      "speciesId": 498
+    },
+    {
+      "entryNumber": 499,
+      "speciesId": 499
+    },
+    {
+      "entryNumber": 500,
+      "speciesId": 500
+    },
+    {
+      "entryNumber": 501,
+      "speciesId": 501
+    },
+    {
+      "entryNumber": 502,
+      "speciesId": 502
+    },
+    {
+      "entryNumber": 503,
+      "speciesId": 503
+    },
+    {
+      "entryNumber": 503,
+      "speciesId": 503,
+      "formaKey": "503_HISUI"
+    },
+    {
+      "entryNumber": 504,
+      "speciesId": 504
+    },
+    {
+      "entryNumber": 505,
+      "speciesId": 505
+    },
+    {
+      "entryNumber": 506,
+      "speciesId": 506
+    },
+    {
+      "entryNumber": 507,
+      "speciesId": 507
+    },
+    {
+      "entryNumber": 508,
+      "speciesId": 508
+    },
+    {
+      "entryNumber": 509,
+      "speciesId": 509
+    },
+    {
+      "entryNumber": 510,
+      "speciesId": 510
+    },
+    {
+      "entryNumber": 511,
+      "speciesId": 511
+    },
+    {
+      "entryNumber": 512,
+      "speciesId": 512
+    },
+    {
+      "entryNumber": 513,
+      "speciesId": 513
+    },
+    {
+      "entryNumber": 514,
+      "speciesId": 514
+    },
+    {
+      "entryNumber": 515,
+      "speciesId": 515
+    },
+    {
+      "entryNumber": 516,
+      "speciesId": 516
+    },
+    {
+      "entryNumber": 517,
+      "speciesId": 517
+    },
+    {
+      "entryNumber": 518,
+      "speciesId": 518
+    },
+    {
+      "entryNumber": 519,
+      "speciesId": 519
+    },
+    {
+      "entryNumber": 520,
+      "speciesId": 520
+    },
+    {
+      "entryNumber": 521,
+      "speciesId": 521
+    },
+    {
+      "entryNumber": 522,
+      "speciesId": 522
+    },
+    {
+      "entryNumber": 523,
+      "speciesId": 523
+    },
+    {
+      "entryNumber": 524,
+      "speciesId": 524
+    },
+    {
+      "entryNumber": 525,
+      "speciesId": 525
+    },
+    {
+      "entryNumber": 526,
+      "speciesId": 526
+    },
+    {
+      "entryNumber": 527,
+      "speciesId": 527
+    },
+    {
+      "entryNumber": 528,
+      "speciesId": 528
+    },
+    {
+      "entryNumber": 529,
+      "speciesId": 529
+    },
+    {
+      "entryNumber": 530,
+      "speciesId": 530
+    },
+    {
+      "entryNumber": 531,
+      "speciesId": 531
+    },
+    {
+      "entryNumber": 532,
+      "speciesId": 532
+    },
+    {
+      "entryNumber": 533,
+      "speciesId": 533
+    },
+    {
+      "entryNumber": 534,
+      "speciesId": 534
+    },
+    {
+      "entryNumber": 535,
+      "speciesId": 535
+    },
+    {
+      "entryNumber": 536,
+      "speciesId": 536
+    },
+    {
+      "entryNumber": 537,
+      "speciesId": 537
+    },
+    {
+      "entryNumber": 538,
+      "speciesId": 538
+    },
+    {
+      "entryNumber": 539,
+      "speciesId": 539
+    },
+    {
+      "entryNumber": 540,
+      "speciesId": 540
+    },
+    {
+      "entryNumber": 541,
+      "speciesId": 541
+    },
+    {
+      "entryNumber": 542,
+      "speciesId": 542
+    },
+    {
+      "entryNumber": 543,
+      "speciesId": 543
+    },
+    {
+      "entryNumber": 544,
+      "speciesId": 544
+    },
+    {
+      "entryNumber": 545,
+      "speciesId": 545
+    },
+    {
+      "entryNumber": 546,
+      "speciesId": 546
+    },
+    {
+      "entryNumber": 547,
+      "speciesId": 547
+    },
+    {
+      "entryNumber": 548,
+      "speciesId": 548
+    },
+    {
+      "entryNumber": 549,
+      "speciesId": 549
+    },
+    {
+      "entryNumber": 549,
+      "speciesId": 549,
+      "formaKey": "549_HISUI"
+    },
+    {
+      "entryNumber": 550,
+      "speciesId": 550
+    },
+    {
+      "entryNumber": 551,
+      "speciesId": 551
+    },
+    {
+      "entryNumber": 552,
+      "speciesId": 552
+    },
+    {
+      "entryNumber": 553,
+      "speciesId": 553
+    },
+    {
+      "entryNumber": 554,
+      "speciesId": 554
+    },
+    {
+      "entryNumber": 555,
+      "speciesId": 555
+    },
+    {
+      "entryNumber": 556,
+      "speciesId": 556
+    },
+    {
+      "entryNumber": 557,
+      "speciesId": 557
+    },
+    {
+      "entryNumber": 558,
+      "speciesId": 558
+    },
+    {
+      "entryNumber": 559,
+      "speciesId": 559
+    },
+    {
+      "entryNumber": 560,
+      "speciesId": 560
+    },
+    {
+      "entryNumber": 561,
+      "speciesId": 561
+    },
+    {
+      "entryNumber": 562,
+      "speciesId": 562
+    },
+    {
+      "entryNumber": 563,
+      "speciesId": 563
+    },
+    {
+      "entryNumber": 564,
+      "speciesId": 564
+    },
+    {
+      "entryNumber": 565,
+      "speciesId": 565
+    },
+    {
+      "entryNumber": 566,
+      "speciesId": 566
+    },
+    {
+      "entryNumber": 567,
+      "speciesId": 567
+    },
+    {
+      "entryNumber": 568,
+      "speciesId": 568
+    },
+    {
+      "entryNumber": 569,
+      "speciesId": 569
+    },
+    {
+      "entryNumber": 570,
+      "speciesId": 570
+    },
+    {
+      "entryNumber": 570,
+      "speciesId": 570,
+      "formaKey": "570_HISUI"
+    },
+    {
+      "entryNumber": 571,
+      "speciesId": 571
+    },
+    {
+      "entryNumber": 571,
+      "speciesId": 571,
+      "formaKey": "571_HISUI"
+    },
+    {
+      "entryNumber": 572,
+      "speciesId": 572
+    },
+    {
+      "entryNumber": 573,
+      "speciesId": 573
+    },
+    {
+      "entryNumber": 574,
+      "speciesId": 574
+    },
+    {
+      "entryNumber": 575,
+      "speciesId": 575
+    },
+    {
+      "entryNumber": 576,
+      "speciesId": 576
+    },
+    {
+      "entryNumber": 577,
+      "speciesId": 577
+    },
+    {
+      "entryNumber": 578,
+      "speciesId": 578
+    },
+    {
+      "entryNumber": 579,
+      "speciesId": 579
+    },
+    {
+      "entryNumber": 580,
+      "speciesId": 580
+    },
+    {
+      "entryNumber": 581,
+      "speciesId": 581
+    },
+    {
+      "entryNumber": 582,
+      "speciesId": 582
+    },
+    {
+      "entryNumber": 583,
+      "speciesId": 583
+    },
+    {
+      "entryNumber": 584,
+      "speciesId": 584
+    },
+    {
+      "entryNumber": 585,
+      "speciesId": 585
+    },
+    {
+      "entryNumber": 586,
+      "speciesId": 586
+    },
+    {
+      "entryNumber": 587,
+      "speciesId": 587
+    },
+    {
+      "entryNumber": 588,
+      "speciesId": 588
+    },
+    {
+      "entryNumber": 589,
+      "speciesId": 589
+    },
+    {
+      "entryNumber": 590,
+      "speciesId": 590
+    },
+    {
+      "entryNumber": 591,
+      "speciesId": 591
+    },
+    {
+      "entryNumber": 592,
+      "speciesId": 592
+    },
+    {
+      "entryNumber": 593,
+      "speciesId": 593
+    },
+    {
+      "entryNumber": 594,
+      "speciesId": 594
+    },
+    {
+      "entryNumber": 595,
+      "speciesId": 595
+    },
+    {
+      "entryNumber": 596,
+      "speciesId": 596
+    },
+    {
+      "entryNumber": 597,
+      "speciesId": 597
+    },
+    {
+      "entryNumber": 598,
+      "speciesId": 598
+    },
+    {
+      "entryNumber": 599,
+      "speciesId": 599
+    },
+    {
+      "entryNumber": 600,
+      "speciesId": 600
+    },
+    {
+      "entryNumber": 601,
+      "speciesId": 601
+    },
+    {
+      "entryNumber": 602,
+      "speciesId": 602
+    },
+    {
+      "entryNumber": 603,
+      "speciesId": 603
+    },
+    {
+      "entryNumber": 604,
+      "speciesId": 604
+    },
+    {
+      "entryNumber": 605,
+      "speciesId": 605
+    },
+    {
+      "entryNumber": 606,
+      "speciesId": 606
+    },
+    {
+      "entryNumber": 607,
+      "speciesId": 607
+    },
+    {
+      "entryNumber": 608,
+      "speciesId": 608
+    },
+    {
+      "entryNumber": 609,
+      "speciesId": 609
+    },
+    {
+      "entryNumber": 610,
+      "speciesId": 610
+    },
+    {
+      "entryNumber": 611,
+      "speciesId": 611
+    },
+    {
+      "entryNumber": 612,
+      "speciesId": 612
+    },
+    {
+      "entryNumber": 613,
+      "speciesId": 613
+    },
+    {
+      "entryNumber": 614,
+      "speciesId": 614
+    },
+    {
+      "entryNumber": 615,
+      "speciesId": 615
+    },
+    {
+      "entryNumber": 616,
+      "speciesId": 616
+    },
+    {
+      "entryNumber": 617,
+      "speciesId": 617
+    },
+    {
+      "entryNumber": 618,
+      "speciesId": 618
+    },
+    {
+      "entryNumber": 618,
+      "speciesId": 618,
+      "formaKey": "618_GALARIAN"
+    },
+    {
+      "entryNumber": 619,
+      "speciesId": 619
+    },
+    {
+      "entryNumber": 620,
+      "speciesId": 620
+    },
+    {
+      "entryNumber": 621,
+      "speciesId": 621
+    },
+    {
+      "entryNumber": 622,
+      "speciesId": 622
+    },
+    {
+      "entryNumber": 623,
+      "speciesId": 623
+    },
+    {
+      "entryNumber": 624,
+      "speciesId": 624
+    },
+    {
+      "entryNumber": 625,
+      "speciesId": 625
+    },
+    {
+      "entryNumber": 626,
+      "speciesId": 626
+    },
+    {
+      "entryNumber": 627,
+      "speciesId": 627
+    },
+    {
+      "entryNumber": 628,
+      "speciesId": 628
+    },
+    {
+      "entryNumber": 628,
+      "speciesId": 628,
+      "formaKey": "628_HISUI"
+    },
+    {
+      "entryNumber": 629,
+      "speciesId": 629
+    },
+    {
+      "entryNumber": 630,
+      "speciesId": 630
+    },
+    {
+      "entryNumber": 631,
+      "speciesId": 631
+    },
+    {
+      "entryNumber": 632,
+      "speciesId": 632
+    },
+    {
+      "entryNumber": 633,
+      "speciesId": 633
+    },
+    {
+      "entryNumber": 634,
+      "speciesId": 634
+    },
+    {
+      "entryNumber": 635,
+      "speciesId": 635
+    },
+    {
+      "entryNumber": 636,
+      "speciesId": 636
+    },
+    {
+      "entryNumber": 637,
+      "speciesId": 637
+    },
+    {
+      "entryNumber": 638,
+      "speciesId": 638
+    },
+    {
+      "entryNumber": 639,
+      "speciesId": 639
+    },
+    {
+      "entryNumber": 640,
+      "speciesId": 640
+    },
+    {
+      "entryNumber": 641,
+      "speciesId": 641
+    },
+    {
+      "entryNumber": 642,
+      "speciesId": 642
+    },
+    {
+      "entryNumber": 643,
+      "speciesId": 643
+    },
+    {
+      "entryNumber": 644,
+      "speciesId": 644
+    },
+    {
+      "entryNumber": 645,
+      "speciesId": 645
+    },
+    {
+      "entryNumber": 646,
+      "speciesId": 646
+    },
+    {
+      "entryNumber": 647,
+      "speciesId": 647
+    },
+    {
+      "entryNumber": 648,
+      "speciesId": 648
+    },
+    {
+      "entryNumber": 649,
+      "speciesId": 649
+    },
+    {
+      "entryNumber": 650,
+      "speciesId": 650
+    },
+    {
+      "entryNumber": 651,
+      "speciesId": 651
+    },
+    {
+      "entryNumber": 652,
+      "speciesId": 652
+    },
+    {
+      "entryNumber": 653,
+      "speciesId": 653
+    },
+    {
+      "entryNumber": 654,
+      "speciesId": 654
+    },
+    {
+      "entryNumber": 655,
+      "speciesId": 655
+    },
+    {
+      "entryNumber": 656,
+      "speciesId": 656
+    },
+    {
+      "entryNumber": 657,
+      "speciesId": 657
+    },
+    {
+      "entryNumber": 658,
+      "speciesId": 658
+    },
+    {
+      "entryNumber": 659,
+      "speciesId": 659
+    },
+    {
+      "entryNumber": 660,
+      "speciesId": 660
+    },
+    {
+      "entryNumber": 661,
+      "speciesId": 661
+    },
+    {
+      "entryNumber": 662,
+      "speciesId": 662
+    },
+    {
+      "entryNumber": 663,
+      "speciesId": 663
+    },
+    {
+      "entryNumber": 664,
+      "speciesId": 664
+    },
+    {
+      "entryNumber": 665,
+      "speciesId": 665
+    },
+    {
+      "entryNumber": 666,
+      "speciesId": 666
+    },
+    {
+      "entryNumber": 667,
+      "speciesId": 667
+    },
+    {
+      "entryNumber": 668,
+      "speciesId": 668
+    },
+    {
+      "entryNumber": 669,
+      "speciesId": 669
+    },
+    {
+      "entryNumber": 670,
+      "speciesId": 670
+    },
+    {
+      "entryNumber": 671,
+      "speciesId": 671
+    },
+    {
+      "entryNumber": 672,
+      "speciesId": 672
+    },
+    {
+      "entryNumber": 673,
+      "speciesId": 673
+    },
+    {
+      "entryNumber": 674,
+      "speciesId": 674
+    },
+    {
+      "entryNumber": 675,
+      "speciesId": 675
+    },
+    {
+      "entryNumber": 676,
+      "speciesId": 676
+    },
+    {
+      "entryNumber": 677,
+      "speciesId": 677
+    },
+    {
+      "entryNumber": 678,
+      "speciesId": 678
+    },
+    {
+      "entryNumber": 679,
+      "speciesId": 679
+    },
+    {
+      "entryNumber": 680,
+      "speciesId": 680
+    },
+    {
+      "entryNumber": 681,
+      "speciesId": 681
+    },
+    {
+      "entryNumber": 682,
+      "speciesId": 682
+    },
+    {
+      "entryNumber": 683,
+      "speciesId": 683
+    },
+    {
+      "entryNumber": 684,
+      "speciesId": 684
+    },
+    {
+      "entryNumber": 685,
+      "speciesId": 685
+    },
+    {
+      "entryNumber": 686,
+      "speciesId": 686
+    },
+    {
+      "entryNumber": 687,
+      "speciesId": 687
+    },
+    {
+      "entryNumber": 688,
+      "speciesId": 688
+    },
+    {
+      "entryNumber": 689,
+      "speciesId": 689
+    },
+    {
+      "entryNumber": 690,
+      "speciesId": 690
+    },
+    {
+      "entryNumber": 691,
+      "speciesId": 691
+    },
+    {
+      "entryNumber": 692,
+      "speciesId": 692
+    },
+    {
+      "entryNumber": 693,
+      "speciesId": 693
+    },
+    {
+      "entryNumber": 694,
+      "speciesId": 694
+    },
+    {
+      "entryNumber": 695,
+      "speciesId": 695
+    },
+    {
+      "entryNumber": 696,
+      "speciesId": 696
+    },
+    {
+      "entryNumber": 697,
+      "speciesId": 697
+    },
+    {
+      "entryNumber": 698,
+      "speciesId": 698
+    },
+    {
+      "entryNumber": 699,
+      "speciesId": 699
+    },
+    {
+      "entryNumber": 700,
+      "speciesId": 700
+    },
+    {
+      "entryNumber": 701,
+      "speciesId": 701
+    },
+    {
+      "entryNumber": 702,
+      "speciesId": 702
+    },
+    {
+      "entryNumber": 703,
+      "speciesId": 703
+    },
+    {
+      "entryNumber": 704,
+      "speciesId": 704
+    },
+    {
+      "entryNumber": 705,
+      "speciesId": 705
+    },
+    {
+      "entryNumber": 705,
+      "speciesId": 705,
+      "formaKey": "705_HISUI"
+    },
+    {
+      "entryNumber": 706,
+      "speciesId": 706
+    },
+    {
+      "entryNumber": 706,
+      "speciesId": 706,
+      "formaKey": "706_HISUI"
+    },
+    {
+      "entryNumber": 707,
+      "speciesId": 707
+    },
+    {
+      "entryNumber": 708,
+      "speciesId": 708
+    },
+    {
+      "entryNumber": 709,
+      "speciesId": 709
+    },
+    {
+      "entryNumber": 710,
+      "speciesId": 710
+    },
+    {
+      "entryNumber": 711,
+      "speciesId": 711
+    },
+    {
+      "entryNumber": 712,
+      "speciesId": 712
+    },
+    {
+      "entryNumber": 713,
+      "speciesId": 713
+    },
+    {
+      "entryNumber": 714,
+      "speciesId": 714
+    },
+    {
+      "entryNumber": 715,
+      "speciesId": 715
+    },
+    {
+      "entryNumber": 716,
+      "speciesId": 716
+    },
+    {
+      "entryNumber": 717,
+      "speciesId": 717
+    },
+    {
+      "entryNumber": 718,
+      "speciesId": 718
+    },
+    {
+      "entryNumber": 719,
+      "speciesId": 719
+    },
+    {
+      "entryNumber": 720,
+      "speciesId": 720
+    },
+    {
+      "entryNumber": 721,
+      "speciesId": 721
+    },
+    {
+      "entryNumber": 722,
+      "speciesId": 722
+    },
+    {
+      "entryNumber": 723,
+      "speciesId": 723
+    },
+    {
+      "entryNumber": 724,
+      "speciesId": 724
+    },
+    {
+      "entryNumber": 724,
+      "speciesId": 724,
+      "formaKey": "724_HISUI"
+    },
+    {
+      "entryNumber": 725,
+      "speciesId": 725
+    },
+    {
+      "entryNumber": 726,
+      "speciesId": 726
+    },
+    {
+      "entryNumber": 727,
+      "speciesId": 727
+    },
+    {
+      "entryNumber": 728,
+      "speciesId": 728
+    },
+    {
+      "entryNumber": 729,
+      "speciesId": 729
+    },
+    {
+      "entryNumber": 730,
+      "speciesId": 730
+    },
+    {
+      "entryNumber": 731,
+      "speciesId": 731
+    },
+    {
+      "entryNumber": 732,
+      "speciesId": 732
+    },
+    {
+      "entryNumber": 733,
+      "speciesId": 733
+    },
+    {
+      "entryNumber": 734,
+      "speciesId": 734
+    },
+    {
+      "entryNumber": 735,
+      "speciesId": 735
+    },
+    {
+      "entryNumber": 736,
+      "speciesId": 736
+    },
+    {
+      "entryNumber": 737,
+      "speciesId": 737
+    },
+    {
+      "entryNumber": 738,
+      "speciesId": 738
+    },
+    {
+      "entryNumber": 739,
+      "speciesId": 739
+    },
+    {
+      "entryNumber": 740,
+      "speciesId": 740
+    },
+    {
+      "entryNumber": 741,
+      "speciesId": 741
+    },
+    {
+      "entryNumber": 742,
+      "speciesId": 742
+    },
+    {
+      "entryNumber": 743,
+      "speciesId": 743
+    },
+    {
+      "entryNumber": 744,
+      "speciesId": 744
+    },
+    {
+      "entryNumber": 745,
+      "speciesId": 745
+    },
+    {
+      "entryNumber": 746,
+      "speciesId": 746
+    },
+    {
+      "entryNumber": 747,
+      "speciesId": 747
+    },
+    {
+      "entryNumber": 748,
+      "speciesId": 748
+    },
+    {
+      "entryNumber": 749,
+      "speciesId": 749
+    },
+    {
+      "entryNumber": 750,
+      "speciesId": 750
+    },
+    {
+      "entryNumber": 751,
+      "speciesId": 751
+    },
+    {
+      "entryNumber": 752,
+      "speciesId": 752
+    },
+    {
+      "entryNumber": 753,
+      "speciesId": 753
+    },
+    {
+      "entryNumber": 754,
+      "speciesId": 754
+    },
+    {
+      "entryNumber": 755,
+      "speciesId": 755
+    },
+    {
+      "entryNumber": 756,
+      "speciesId": 756
+    },
+    {
+      "entryNumber": 757,
+      "speciesId": 757
+    },
+    {
+      "entryNumber": 758,
+      "speciesId": 758
+    },
+    {
+      "entryNumber": 759,
+      "speciesId": 759
+    },
+    {
+      "entryNumber": 760,
+      "speciesId": 760
+    },
+    {
+      "entryNumber": 761,
+      "speciesId": 761
+    },
+    {
+      "entryNumber": 762,
+      "speciesId": 762
+    },
+    {
+      "entryNumber": 763,
+      "speciesId": 763
+    },
+    {
+      "entryNumber": 765,
+      "speciesId": 765
+    },
+    {
+      "entryNumber": 766,
+      "speciesId": 766
+    },
+    {
+      "entryNumber": 767,
+      "speciesId": 767
+    },
+    {
+      "entryNumber": 768,
+      "speciesId": 768
+    },
+    {
+      "entryNumber": 769,
+      "speciesId": 769
+    },
+    {
+      "entryNumber": 770,
+      "speciesId": 770
+    },
+    {
+      "entryNumber": 771,
+      "speciesId": 771
+    },
+    {
+      "entryNumber": 774,
+      "speciesId": 774
+    },
+    {
+      "entryNumber": 775,
+      "speciesId": 775
+    },
+    {
+      "entryNumber": 776,
+      "speciesId": 776
+    },
+    {
+      "entryNumber": 777,
+      "speciesId": 777
+    },
+    {
+      "entryNumber": 778,
+      "speciesId": 778
+    },
+    {
+      "entryNumber": 779,
+      "speciesId": 779
+    },
+    {
+      "entryNumber": 780,
+      "speciesId": 780
+    },
+    {
+      "entryNumber": 781,
+      "speciesId": 781
+    },
+    {
+      "entryNumber": 785,
+      "speciesId": 785
+    },
+    {
+      "entryNumber": 786,
+      "speciesId": 786
+    },
+    {
+      "entryNumber": 787,
+      "speciesId": 787
+    },
+    {
+      "entryNumber": 788,
+      "speciesId": 788
+    },
+    {
+      "entryNumber": 789,
+      "speciesId": 789
+    },
+    {
+      "entryNumber": 790,
+      "speciesId": 790
+    },
+    {
+      "entryNumber": 791,
+      "speciesId": 791
+    },
+    {
+      "entryNumber": 792,
+      "speciesId": 792
+    },
+    {
+      "entryNumber": 793,
+      "speciesId": 793
+    },
+    {
+      "entryNumber": 794,
+      "speciesId": 794
+    },
+    {
+      "entryNumber": 795,
+      "speciesId": 795
+    },
+    {
+      "entryNumber": 796,
+      "speciesId": 796
+    },
+    {
+      "entryNumber": 797,
+      "speciesId": 797
+    },
+    {
+      "entryNumber": 798,
+      "speciesId": 798
+    },
+    {
+      "entryNumber": 799,
+      "speciesId": 799
+    },
+    {
+      "entryNumber": 801,
+      "speciesId": 801
+    },
+    {
+      "entryNumber": 802,
+      "speciesId": 802
+    },
+    {
+      "entryNumber": 803,
+      "speciesId": 803
+    },
+    {
+      "entryNumber": 804,
+      "speciesId": 804
+    },
+    {
+      "entryNumber": 805,
+      "speciesId": 805
+    },
+    {
+      "entryNumber": 806,
+      "speciesId": 806
+    },
+    {
+      "entryNumber": 807,
+      "speciesId": 807
+    },
+    {
+      "entryNumber": 808,
+      "speciesId": 808
+    },
+    {
+      "entryNumber": 809,
+      "speciesId": 809
+    },
+    {
+      "entryNumber": 810,
+      "speciesId": 810
+    },
+    {
+      "entryNumber": 811,
+      "speciesId": 811
+    },
+    {
+      "entryNumber": 812,
+      "speciesId": 812
+    },
+    {
+      "entryNumber": 813,
+      "speciesId": 813
+    },
+    {
+      "entryNumber": 814,
+      "speciesId": 814
+    },
+    {
+      "entryNumber": 815,
+      "speciesId": 815
+    },
+    {
+      "entryNumber": 816,
+      "speciesId": 816
+    },
+    {
+      "entryNumber": 817,
+      "speciesId": 817
+    },
+    {
+      "entryNumber": 818,
+      "speciesId": 818
+    },
+    {
+      "entryNumber": 819,
+      "speciesId": 819
+    },
+    {
+      "entryNumber": 820,
+      "speciesId": 820
+    },
+    {
+      "entryNumber": 821,
+      "speciesId": 821
+    },
+    {
+      "entryNumber": 822,
+      "speciesId": 822
+    },
+    {
+      "entryNumber": 823,
+      "speciesId": 823
+    },
+    {
+      "entryNumber": 827,
+      "speciesId": 827
+    },
+    {
+      "entryNumber": 828,
+      "speciesId": 828
+    },
+    {
+      "entryNumber": 831,
+      "speciesId": 831
+    },
+    {
+      "entryNumber": 833,
+      "speciesId": 833
+    },
+    {
+      "entryNumber": 834,
+      "speciesId": 834
+    },
+    {
+      "entryNumber": 835,
+      "speciesId": 835
+    },
+    {
+      "entryNumber": 836,
+      "speciesId": 836
+    },
+    {
+      "entryNumber": 837,
+      "speciesId": 837
+    },
+    {
+      "entryNumber": 838,
+      "speciesId": 838
+    },
+    {
+      "entryNumber": 839,
+      "speciesId": 839
+    },
+    {
+      "entryNumber": 840,
+      "speciesId": 840
+    },
+    {
+      "entryNumber": 841,
+      "speciesId": 841
+    },
+    {
+      "entryNumber": 842,
+      "speciesId": 842
+    },
+    {
+      "entryNumber": 843,
+      "speciesId": 843
+    },
+    {
+      "entryNumber": 844,
+      "speciesId": 844
+    },
+    {
+      "entryNumber": 845,
+      "speciesId": 845
+    },
+    {
+      "entryNumber": 846,
+      "speciesId": 846
+    },
+    {
+      "entryNumber": 847,
+      "speciesId": 847
+    },
+    {
+      "entryNumber": 848,
+      "speciesId": 848
+    },
+    {
+      "entryNumber": 849,
+      "speciesId": 849
+    },
+    {
+      "entryNumber": 850,
+      "speciesId": 850
+    },
+    {
+      "entryNumber": 851,
+      "speciesId": 851
+    },
+    {
+      "entryNumber": 852,
+      "speciesId": 852
+    },
+    {
+      "entryNumber": 853,
+      "speciesId": 853
+    },
+    {
+      "entryNumber": 854,
+      "speciesId": 854
+    },
+    {
+      "entryNumber": 855,
+      "speciesId": 855
+    },
+    {
+      "entryNumber": 856,
+      "speciesId": 856
+    },
+    {
+      "entryNumber": 857,
+      "speciesId": 857
+    },
+    {
+      "entryNumber": 858,
+      "speciesId": 858
+    },
+    {
+      "entryNumber": 859,
+      "speciesId": 859
+    },
+    {
+      "entryNumber": 860,
+      "speciesId": 860
+    },
+    {
+      "entryNumber": 861,
+      "speciesId": 861
+    },
+    {
+      "entryNumber": 862,
+      "speciesId": 862
+    },
+    {
+      "entryNumber": 863,
+      "speciesId": 863
+    },
+    {
+      "entryNumber": 864,
+      "speciesId": 864
+    },
+    {
+      "entryNumber": 865,
+      "speciesId": 865
+    },
+    {
+      "entryNumber": 866,
+      "speciesId": 866
+    },
+    {
+      "entryNumber": 867,
+      "speciesId": 867
+    },
+    {
+      "entryNumber": 868,
+      "speciesId": 868
+    },
+    {
+      "entryNumber": 869,
+      "speciesId": 869
+    },
+    {
+      "entryNumber": 870,
+      "speciesId": 870
+    },
+    {
+      "entryNumber": 871,
+      "speciesId": 871
+    },
+    {
+      "entryNumber": 872,
+      "speciesId": 872
+    },
+    {
+      "entryNumber": 873,
+      "speciesId": 873
+    },
+    {
+      "entryNumber": 874,
+      "speciesId": 874
+    },
+    {
+      "entryNumber": 875,
+      "speciesId": 875
+    },
+    {
+      "entryNumber": 876,
+      "speciesId": 876
+    },
+    {
+      "entryNumber": 877,
+      "speciesId": 877
+    },
+    {
+      "entryNumber": 878,
+      "speciesId": 878
+    },
+    {
+      "entryNumber": 879,
+      "speciesId": 879
+    },
+    {
+      "entryNumber": 884,
+      "speciesId": 884
+    },
+    {
+      "entryNumber": 885,
+      "speciesId": 885
+    },
+    {
+      "entryNumber": 886,
+      "speciesId": 886
+    },
+    {
+      "entryNumber": 887,
+      "speciesId": 887
+    },
+    {
+      "entryNumber": 888,
+      "speciesId": 888
+    },
+    {
+      "entryNumber": 889,
+      "speciesId": 889
+    },
+    {
+      "entryNumber": 894,
+      "speciesId": 894
+    },
+    {
+      "entryNumber": 895,
+      "speciesId": 895
+    },
+    {
+      "entryNumber": 906,
+      "speciesId": 906
+    },
+    {
+      "entryNumber": 907,
+      "speciesId": 907
+    },
+    {
+      "entryNumber": 908,
+      "speciesId": 908
+    },
+    {
+      "entryNumber": 909,
+      "speciesId": 909
+    },
+    {
+      "entryNumber": 910,
+      "speciesId": 910
+    },
+    {
+      "entryNumber": 911,
+      "speciesId": 911
+    },
+    {
+      "entryNumber": 912,
+      "speciesId": 912
+    },
+    {
+      "entryNumber": 913,
+      "speciesId": 913
+    },
+    {
+      "entryNumber": 914,
+      "speciesId": 914
+    },
+    {
+      "entryNumber": 915,
+      "speciesId": 915
+    },
+    {
+      "entryNumber": 916,
+      "speciesId": 916
+    },
+    {
+      "entryNumber": 919,
+      "speciesId": 919
+    },
+    {
+      "entryNumber": 920,
+      "speciesId": 920
+    },
+    {
+      "entryNumber": 921,
+      "speciesId": 921
+    },
+    {
+      "entryNumber": 922,
+      "speciesId": 922
+    },
+    {
+      "entryNumber": 923,
+      "speciesId": 923
+    },
+    {
+      "entryNumber": 924,
+      "speciesId": 924
+    },
+    {
+      "entryNumber": 925,
+      "speciesId": 925
+    },
+    {
+      "entryNumber": 926,
+      "speciesId": 926
+    },
+    {
+      "entryNumber": 927,
+      "speciesId": 927
+    },
+    {
+      "entryNumber": 928,
+      "speciesId": 928
+    },
+    {
+      "entryNumber": 929,
+      "speciesId": 929
+    },
+    {
+      "entryNumber": 930,
+      "speciesId": 930
+    },
+    {
+      "entryNumber": 931,
+      "speciesId": 931
+    },
+    {
+      "entryNumber": 932,
+      "speciesId": 932
+    },
+    {
+      "entryNumber": 933,
+      "speciesId": 933
+    },
+    {
+      "entryNumber": 934,
+      "speciesId": 934
+    },
+    {
+      "entryNumber": 935,
+      "speciesId": 935
+    },
+    {
+      "entryNumber": 936,
+      "speciesId": 936
+    },
+    {
+      "entryNumber": 937,
+      "speciesId": 937
+    },
+    {
+      "entryNumber": 938,
+      "speciesId": 938
+    },
+    {
+      "entryNumber": 939,
+      "speciesId": 939
+    },
+    {
+      "entryNumber": 940,
+      "speciesId": 940
+    },
+    {
+      "entryNumber": 941,
+      "speciesId": 941
+    },
+    {
+      "entryNumber": 942,
+      "speciesId": 942
+    },
+    {
+      "entryNumber": 943,
+      "speciesId": 943
+    },
+    {
+      "entryNumber": 944,
+      "speciesId": 944
+    },
+    {
+      "entryNumber": 945,
+      "speciesId": 945
+    },
+    {
+      "entryNumber": 950,
+      "speciesId": 950
+    },
+    {
+      "entryNumber": 951,
+      "speciesId": 951
+    },
+    {
+      "entryNumber": 952,
+      "speciesId": 952
+    },
+    {
+      "entryNumber": 957,
+      "speciesId": 957
+    },
+    {
+      "entryNumber": 958,
+      "speciesId": 958
+    },
+    {
+      "entryNumber": 959,
+      "speciesId": 959
+    },
+    {
+      "entryNumber": 960,
+      "speciesId": 960
+    },
+    {
+      "entryNumber": 961,
+      "speciesId": 961
+    },
+    {
+      "entryNumber": 963,
+      "speciesId": 963
+    },
+    {
+      "entryNumber": 964,
+      "speciesId": 964
+    },
+    {
+      "entryNumber": 967,
+      "speciesId": 967
+    },
+    {
+      "entryNumber": 969,
+      "speciesId": 969
+    },
+    {
+      "entryNumber": 970,
+      "speciesId": 970
+    },
+    {
+      "entryNumber": 971,
+      "speciesId": 971
+    },
+    {
+      "entryNumber": 972,
+      "speciesId": 972
+    },
+    {
+      "entryNumber": 973,
+      "speciesId": 973
+    },
+    {
+      "entryNumber": 977,
+      "speciesId": 977
+    },
+    {
+      "entryNumber": 978,
+      "speciesId": 978
+    },
+    {
+      "entryNumber": 979,
+      "speciesId": 979
+    },
+    {
+      "entryNumber": 980,
+      "speciesId": 980
+    },
+    {
+      "entryNumber": 981,
+      "speciesId": 981
+    },
+    {
+      "entryNumber": 982,
+      "speciesId": 982
+    },
+    {
+      "entryNumber": 983,
+      "speciesId": 983
+    },
+    {
+      "entryNumber": 996,
+      "speciesId": 996
+    },
+    {
+      "entryNumber": 997,
+      "speciesId": 997
+    },
+    {
+      "entryNumber": 998,
+      "speciesId": 998
+    },
+    {
+      "entryNumber": 999,
+      "speciesId": 999
+    },
+    {
+      "entryNumber": 1000,
+      "speciesId": 1000
+    },
+    {
+      "entryNumber": 1011,
+      "speciesId": 1011
+    },
+    {
+      "entryNumber": 1017,
+      "speciesId": 1017
+    },
+    {
+      "entryNumber": 1018,
+      "speciesId": 1018
+    },
+    {
+      "entryNumber": 1019,
+      "speciesId": 1019
+    }
+  ]
+}

@@ -37,10 +37,135 @@ String _pt(String en) => _typesPt[en.toLowerCase()] ?? en;
 
 // ─── MODELO INTERNO ────────────────────────────────────────────
 
+// Mapa de tipos por formaKey — necessário porque o pokedex_data.json
+// só tem tipos da espécie base. Inclui todas as formas regionais do GO
+// e pode ser expandido futuramente para jogos mainline.
+// Fonte: Bulbapedia (mar/2026).
+const Map<String, List<String>> _formaKeyTypes = {
+  // Alola
+  '26_ALOLA':  ['electric','psychic'],
+  '27_ALOLA':  ['ice','steel'],
+  '28_ALOLA':  ['ice','steel'],
+  '37_ALOLA':  ['ice'],
+  '38_ALOLA':  ['ice','fairy'],
+  '50_ALOLA':  ['ground','steel'],
+  '51_ALOLA':  ['ground','steel'],
+  '52_ALOLA':  ['dark'],
+  '53_ALOLA':  ['dark'],
+  '74_ALOLA':  ['rock','electric'],
+  '75_ALOLA':  ['rock','electric'],
+  '76_ALOLA':  ['rock','electric'],
+  '88_ALOLA':  ['poison','dark'],
+  '89_ALOLA':  ['poison','dark'],
+  '103_ALOLA': ['grass','dragon'],
+  '105_ALOLA': ['fire','ghost'],
+  // Galar
+  '52_GALARIAN':  ['steel'],
+  '77_GALARIAN':  ['psychic'],
+  '78_GALARIAN':  ['psychic','fairy'],
+  '79_GALARIAN':  ['psychic'],
+  '80_GALARIAN':  ['poison','psychic'],
+  '83_GALARIAN':  ['fighting'],
+  '110_GALARIAN': ['poison','fairy'],
+  '122_GALARIAN': ['ice','psychic'],
+  '144_GALARIAN': ['psychic','flying'],
+  '145_GALARIAN': ['fighting','flying'],
+  '146_GALARIAN': ['dark','flying'],
+  '199_GALARIAN': ['poison','psychic'],
+  '222_GALARIAN': ['ghost'],
+  '263_GALARIAN': ['dark','normal'],
+  '264_GALARIAN': ['dark','normal'],
+  '618_GALARIAN': ['ground','steel'],
+  // Hisui
+  '58_HISUI':  ['fire','rock'],
+  '59_HISUI':  ['fire','rock'],
+  '100_HISUI': ['electric','grass'],
+  '101_HISUI': ['electric','grass'],
+  '157_HISUI': ['fire','ghost'],
+  '211_HISUI': ['dark','poison'],
+  '215_HISUI': ['fighting','poison'],
+  '503_HISUI': ['water','dark'],
+  '549_HISUI': ['grass','fighting'],
+  '570_HISUI': ['normal','ghost'],
+  '571_HISUI': ['normal','ghost'],
+  '628_HISUI': ['psychic','flying'],
+  '705_HISUI': ['steel','dragon'],
+  '706_HISUI': ['steel','dragon'],
+  '724_HISUI': ['grass','fighting'],
+  // Paldea
+  '128_PALDEA_COMBAT': ['fighting'],
+  '128_PALDEA_BLAZE':  ['fighting','fire'],
+  '128_PALDEA_AQUA':   ['fighting','water'],
+  '194_PALDEA':        ['poison','ground'],
+  '195_PALDEA':        ['poison','ground'],
+};
+
+// Nomes exibíveis por formaKey
+const Map<String, String> _formaKeyNames = {
+  '26_ALOLA':  'Raichu de Alola',
+  '27_ALOLA':  'Sandshrew de Alola',
+  '28_ALOLA':  'Sandslash de Alola',
+  '37_ALOLA':  'Vulpix de Alola',
+  '38_ALOLA':  'Ninetales de Alola',
+  '50_ALOLA':  'Diglett de Alola',
+  '51_ALOLA':  'Dugtrio de Alola',
+  '52_ALOLA':  'Meowth de Alola',
+  '53_ALOLA':  'Persian de Alola',
+  '74_ALOLA':  'Geodude de Alola',
+  '75_ALOLA':  'Graveler de Alola',
+  '76_ALOLA':  'Golem de Alola',
+  '88_ALOLA':  'Grimer de Alola',
+  '89_ALOLA':  'Muk de Alola',
+  '103_ALOLA': 'Exeggutor de Alola',
+  '105_ALOLA': 'Marowak de Alola',
+  '52_GALARIAN':  'Meowth de Galar',
+  '77_GALARIAN':  'Ponyta de Galar',
+  '78_GALARIAN':  'Rapidash de Galar',
+  '79_GALARIAN':  'Slowpoke de Galar',
+  '80_GALARIAN':  'Slowbro de Galar',
+  '83_GALARIAN':  "Farfetch'd de Galar",
+  '110_GALARIAN': 'Weezing de Galar',
+  '122_GALARIAN': 'Mr. Mime de Galar',
+  '144_GALARIAN': 'Articuno de Galar',
+  '145_GALARIAN': 'Zapdos de Galar',
+  '146_GALARIAN': 'Moltres de Galar',
+  '199_GALARIAN': 'Slowking de Galar',
+  '222_GALARIAN': 'Corsola de Galar',
+  '263_GALARIAN': 'Zigzagoon de Galar',
+  '264_GALARIAN': 'Linoone de Galar',
+  '618_GALARIAN': 'Stunfisk de Galar',
+  '58_HISUI':  'Growlithe de Hisui',
+  '59_HISUI':  'Arcanine de Hisui',
+  '100_HISUI': 'Voltorb de Hisui',
+  '101_HISUI': 'Electrode de Hisui',
+  '157_HISUI': 'Typhlosion de Hisui',
+  '211_HISUI': 'Qwilfish de Hisui',
+  '215_HISUI': 'Sneasel de Hisui',
+  '503_HISUI': 'Samurott de Hisui',
+  '549_HISUI': 'Lilligant de Hisui',
+  '570_HISUI': 'Zorua de Hisui',
+  '571_HISUI': 'Zoroark de Hisui',
+  '628_HISUI': 'Braviary de Hisui',
+  '705_HISUI': 'Sliggoo de Hisui',
+  '706_HISUI': 'Goodra de Hisui',
+  '724_HISUI': 'Decidueye de Hisui',
+  '128_PALDEA_COMBAT': 'Tauros de Paldea',
+  '128_PALDEA_BLAZE':  'Tauros de Paldea (Blaze)',
+  '128_PALDEA_AQUA':   'Tauros de Paldea (Aqua)',
+  '194_PALDEA': 'Wooper de Paldea',
+  '195_PALDEA': 'Quagsire',
+};
+
 class _Entry {
-  final int entryNumber; // número dentro da dex
-  final int speciesId;   // ID nacional
-  _Entry({required this.entryNumber, required this.speciesId});
+  final int entryNumber;  // número dentro da dex
+  final int speciesId;    // ID nacional da espécie
+  final String? formaKey; // ex: '26_ALOLA' — null = forma base
+
+  _Entry({required this.entryNumber, required this.speciesId, this.formaKey});
+
+  /// Chave única para captura — diferencia forma base de regional.
+  /// Ex: speciesId=26, formaKey='26_ALOLA' → catchKey='26_26_ALOLA'
+  String get catchKey => formaKey != null ? '${speciesId}_$formaKey' : '$speciesId';
 }
 
 // ─── SCREEN ───────────────────────────────────────────────────────
@@ -70,10 +195,11 @@ class _PokedexScreenState extends State<PokedexScreen>
 
   // Entries por seção: apiName → lista de _Entry
   Map<String, List<_Entry>> _entriesBySection = {};
-  // Dados dos Pokémon: speciesId → Map da API
-  final Map<int, Map<String, dynamic>> _pokemonData = {};
-  // Capturados: speciesId → bool
-  final Map<int, bool> _caughtMap = {};
+  // Dados dos Pokémon: catchKey → Map da API
+  // catchKey = formaKey presente ? '${speciesId}_${formaKey}' : '$speciesId'
+  final Map<String, Map<String, dynamic>> _pokemonData = {};
+  // Capturados: catchKey → bool
+  final Map<String, bool> _caughtMap = {};
 
   bool _loadingIds = true;
   bool _loadingPage = false;
@@ -179,7 +305,11 @@ class _PokedexScreenState extends State<PokedexScreen>
         final cached = await _storage.getSectionEntries(_effectivePokedexId, section.apiName);
         if (cached != null) {
           bySection[section.apiName] = cached
-              .map((e) => _Entry(entryNumber: e['entryNumber']!, speciesId: e['speciesId']!))
+              .map((e) => _Entry(
+                    entryNumber: e['entryNumber'] as int,
+                    speciesId:   e['speciesId']   as int,
+                    formaKey:    e['formaKey']    as String?,
+                  ))
               .toList();
           continue;
         }
@@ -188,7 +318,11 @@ class _PokedexScreenState extends State<PokedexScreen>
         final bundle = await DexBundleService.instance.loadSection(section.apiName);
         if (bundle != null) {
           final entries = bundle
-              .map((e) => _Entry(entryNumber: e['entryNumber']!, speciesId: e['speciesId']!))
+              .map((e) => _Entry(
+                    entryNumber: e['entryNumber'] as int,
+                    speciesId:   e['speciesId']   as int,
+                    formaKey:    e['formaKey']    as String?,
+                  ))
               .toList();
           bySection[section.apiName] = entries;
           // Persiste no cache para uso futuro sem releitura do bundle
@@ -223,11 +357,15 @@ class _PokedexScreenState extends State<PokedexScreen>
         final isGo           = _effectivePokedexId == 'pokémon_go';
 
         if (isGo) {
-          // Lê do bundle local
+          // Lê do bundle local — já inclui formaKey para regionais
           final bundle = await DexBundleService.instance.loadSection('go');
           if (bundle != null) {
             bySection['go'] = bundle
-                .map((e) => _Entry(entryNumber: e['entryNumber']!, speciesId: e['speciesId']!))
+                .map((e) => _Entry(
+                      entryNumber: e['entryNumber'] as int,
+                      speciesId:   e['speciesId']   as int,
+                      formaKey:    e['formaKey']    as String?,
+                    ))
                 .toList();
           }
         }
@@ -381,28 +519,39 @@ class _PokedexScreenState extends State<PokedexScreen>
 
   /// Monta o mapa local de dados de um pokémon sem chamada de rede.
   /// Substitui a resposta da PokeAPI com dados do bundle + URL de sprite gerada.
-  Map<String, dynamic> _localPokemonData(int id) {
-    final svc    = PokedexDataService.instance;
-    final types  = svc.getTypes(id);
-    final name   = _pokemonNameFromId(id);
+  /// Quando formaKey está presente (forma regional), usa nome, tipos e sprite da forma.
+  Map<String, dynamic> _localPokemonData(int id, {String? formaKey}) {
+    final svc   = PokedexDataService.instance;
+    // Tipos: usa o mapa de formaKey se disponível, senão tipos da espécie base
+    final types = formaKey != null && _formaKeyTypes.containsKey(formaKey)
+        ? _formaKeyTypes[formaKey]!
+        : svc.getTypes(id);
+    // Nome: usa o nome da forma se disponível
+    final name = formaKey != null && _formaKeyNames.containsKey(formaKey)
+        ? _formaKeyNames[formaKey]!
+        : _pokemonNameFromId(id);
     return {
       'id':    id,
       'name':  name,
       'types': types.map((t) => {'type': {'name': t}}).toList(),
       'sprites': {
-        'front_default': _buildSpriteUrl(id, 'pixel'),
+        'front_default': _buildSpriteUrl(id, 'pixel', formaKey: formaKey),
         'other': {
-          'official-artwork': {'front_default': _buildSpriteUrl(id, 'artwork')},
-          'home':             {'front_default': _buildSpriteUrl(id, 'home')},
+          'official-artwork': {'front_default': _buildSpriteUrl(id, 'artwork', formaKey: formaKey)},
+          'home':             {'front_default': _buildSpriteUrl(id, 'home',    formaKey: formaKey)},
         },
       },
     };
   }
 
-  /// Monta a URL do sprite a partir do ID e do tipo preferido.
-  /// Retorna o path do asset local para o sprite do pokémon.
-  /// Shiny ainda vem da rede pois não está bundlado localmente.
-  String _buildSpriteUrl(int id, String type) {
+  /// Monta o path do sprite a partir do ID, tipo preferido e formaKey opcional.
+  /// Quando formaKey está presente, usa assets/sprites/artwork/{formaKey}.webp.
+  /// Fallback automático para sprite base via errorBuilder no Image.asset.
+  String _buildSpriteUrl(int id, String type, {String? formaKey}) {
+    final folder = type == 'pixel' ? 'pixel' : type == 'home' ? 'home' : 'artwork';
+    if (formaKey != null) {
+      return 'assets/sprites/$folder/$formaKey.webp';
+    }
     switch (type) {
       case 'pixel':   return 'assets/sprites/pixel/$id.webp';
       case 'home':    return 'assets/sprites/home/$id.webp';

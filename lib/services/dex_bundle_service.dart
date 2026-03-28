@@ -7,10 +7,16 @@ import 'package:flutter/services.dart';
 /// Formato dos arquivos:
 /// {
 ///   "apiName": "galar",
-///   "pokedexId": "sword___shield",
-///   "displayName": "Sword / Shield",
-///   "entries": [{"entryNumber": 1, "speciesId": 810}, ...]
+///   "entries": [
+///     {"entryNumber": 1, "speciesId": 810},
+///     {"entryNumber": 26, "speciesId": 26, "formaKey": "26_ALOLA"}  // opcional
+///   ]
 /// }
+///
+/// O campo "formaKey" é opcional e identifica formas alternativas que devem
+/// ser tratadas como entradas distintas na pokédex (ex: regionais no GO).
+/// Quando presente, o sprite e os tipos devem ser buscados pela formaKey,
+/// não pelo speciesId da espécie base.
 class DexBundleService {
   static const String _basePath = 'assets/data/dex';
 
@@ -20,11 +26,12 @@ class DexBundleService {
   DexBundleService._();
 
   // Cache em memória: apiName → lista de entries
-  final Map<String, List<Map<String, int>>> _cache = {};
+  // Usa Map<String, dynamic> para suportar formaKey opcional (String)
+  final Map<String, List<Map<String, dynamic>>> _cache = {};
 
   /// Tenta carregar a dex do bundle para um dado apiName.
   /// Retorna null se o arquivo não existir no bundle.
-  Future<List<Map<String, int>>?> loadSection(String apiName) async {
+  Future<List<Map<String, dynamic>>?> loadSection(String apiName) async {
     if (_cache.containsKey(apiName)) return _cache[apiName];
 
     try {
@@ -33,9 +40,10 @@ class DexBundleService {
       final rawEntries = decoded['entries'] as List<dynamic>;
       final entries = rawEntries.map((e) {
         final m = Map<String, dynamic>.from(e as Map);
-        return {
+        return <String, dynamic>{
           'entryNumber': m['entryNumber'] as int,
           'speciesId':   m['speciesId']   as int,
+          if (m['formaKey'] != null) 'formaKey': m['formaKey'] as String,
         };
       }).toList();
       _cache[apiName] = entries;
