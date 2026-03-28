@@ -673,10 +673,12 @@ class _GoMovesHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(children: [
-        const SizedBox(width: 36), // espaço do ícone
+        SizedBox(width: 36, child: Text('Tipo',
+          textAlign: TextAlign.center, style: style)),
+        const SizedBox(width: 8),
         Expanded(child: Text('Nome', style: style)),
         SizedBox(width: 36, child: Text('Dano',
-          textAlign: TextAlign.right, style: style)),
+          textAlign: TextAlign.center, style: style)),
       ]),
     );
   }
@@ -701,7 +703,7 @@ class _GoMoveRow extends StatelessWidget {
         // Ícone de tipo
         if (type.isNotEmpty)
           Container(
-            width: 28, height: 28,
+            width: 36, height: 28,
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
               color: typeColor.withOpacity(0.15),
@@ -722,7 +724,7 @@ class _GoMoveRow extends StatelessWidget {
           width: 36,
           child: Text(
             power > 0 ? '$power' : '—',
-            textAlign: TextAlign.right,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -753,9 +755,9 @@ class _GoEvoSection extends StatelessWidget {
     );
 
     return SectionCard(
-      title: 'EVOLUÇÃO NO GO',
+      title: 'EVOLUÇÃO',
       pokemonTypes: pokemon.types,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
         // Cadeia visual
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -955,44 +957,55 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     final qurt = eff.entries.where((e) => e.value == .391).toList()..sort((a,b) => a.key.compareTo(b.key));
 
 
-    return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-
-        SectionCard(
-          title: 'STATUS',
-          pokemonTypes: types,
-          child: _goAtk == 0
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: PokeballLoader.small()))
-              : Row(children: [
-                  _statBox(context, 'PS',     '$_goSta', typeColor),
-                  Container(width: 0.5, height: 56, color: neutralBorder(context)),
-                  _statBox(context, 'Ataque', '$_goAtk', typeColor),
-                  Container(width: 0.5, height: 56, color: neutralBorder(context)),
-                  _statBox(context, 'Defesa', '$_goDef', typeColor),
-                ]),
-        ),
-
-        const SizedBox(height: 20),
-
-        SectionCard(
-          title: 'EFETIVIDADE DE TIPOS',
-          pokemonTypes: types,
+    // Sem scroll: Align(topLeft) + Column(mainAxisSize.min)
+    // O conteúdo cresce de cima para baixo e não cria área rolável
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
-              if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
-              if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
-              if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
+
+              SectionCard(
+                title: 'STATUS',
+                pokemonTypes: types,
+                child: _goAtk == 0
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(child: PokeballLoader.small()))
+                    : Row(children: [
+                        _statBox(context, 'PS',     '$_goSta', typeColor),
+                        Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                        _statBox(context, 'Ataque', '$_goAtk', typeColor),
+                        Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                        _statBox(context, 'Defesa', '$_goDef', typeColor),
+                      ]),
+              ),
+
+              const SizedBox(height: 20),
+
+              SectionCard(
+                title: 'EFETIVIDADE DE TIPOS',
+                pokemonTypes: types,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
+                    if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
+                    if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
+                    if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
+                  ],
+                ),
+              ),
+
             ],
           ),
         ),
-
-      ]),
+      ),
     );
   }
 
