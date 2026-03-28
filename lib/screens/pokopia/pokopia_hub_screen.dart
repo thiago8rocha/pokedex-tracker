@@ -4,6 +4,14 @@ import 'package:pokedex_tracker/screens/pokopia/pokopia_specialties_screen.dart'
 import 'package:pokedex_tracker/screens/pokopia/pokopia_flavors_screen.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_relics_screen.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_habitats_screen.dart';
+import 'package:pokedex_tracker/screens/go/go_hub_screen.dart';
+import 'package:pokedex_tracker/screens/pocket/pocket_hub_screen.dart';
+import 'package:pokedex_tracker/screens/menu/moves_list_screen.dart';
+import 'package:pokedex_tracker/screens/menu/abilities_list_screen.dart';
+import 'package:pokedex_tracker/screens/menu/natures_list_screen.dart';
+import 'package:pokedex_tracker/screens/menu/teams_screen.dart';
+import 'package:pokedex_tracker/screens/menu/items_list_screen.dart';
+import 'package:pokedex_tracker/screens/settings_screen.dart';
 
 class PokopiaHubScreen extends StatelessWidget {
   const PokopiaHubScreen({super.key});
@@ -86,6 +94,8 @@ class PokopiaHubScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
+      endDrawer: _buildDrawer(context),
+      bottomNavigationBar: _PokopiaBottomNav(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -129,7 +139,127 @@ class PokopiaHubScreen extends StatelessWidget {
   }
 }
 
-// ─── Tipos de imagem de fundo ─────────────────────────────────────
+// ─── Drawer lateral ───────────────────────────────────────────────
+
+Widget _buildDrawer(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
+  return Drawer(child: SafeArea(child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+        child: Text('Menu', style: Theme.of(context).textTheme.titleMedium
+            ?.copyWith(fontWeight: FontWeight.w700, fontSize: 18)),
+      ),
+      Divider(color: scheme.outlineVariant),
+      ListTile(
+        leading: const Icon(Icons.sports_martial_arts_outlined, size: 22),
+        title: const Text('Golpes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+        onTap: () { Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const MovesListScreen())); }),
+      ListTile(
+        leading: const Icon(Icons.auto_awesome_outlined, size: 22),
+        title: const Text('Habilidades', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+        onTap: () { Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const AbilitiesListScreen())); }),
+      ListTile(
+        leading: const Icon(Icons.psychology_outlined, size: 22),
+        title: const Text('Naturezas', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+        onTap: () { Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const NaturesListScreen())); }),
+      Divider(color: scheme.outlineVariant),
+      ListTile(
+        leading: const Icon(Icons.groups_2_outlined, size: 22),
+        title: const Text('Times', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+        onTap: () { Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const TeamsScreen())); }),
+      ListTile(
+        leading: const Icon(Icons.inventory_2_outlined, size: 22),
+        title: const Text('Itens', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+        onTap: () { Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemsListScreen())); }),
+      const Spacer(),
+      Divider(color: scheme.outlineVariant),
+      ListTile(
+        leading: const Icon(Icons.settings_outlined, size: 22),
+        title: const Text('Configurações', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20), dense: true,
+        onTap: () async { Navigator.pop(context);
+          await Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())); }),
+      const SizedBox(height: 8),
+    ],
+  )));
+}
+
+// ─── Bottom Nav ───────────────────────────────────────────────────
+
+class _PokopiaBottomNav extends StatelessWidget {
+  const _PokopiaBottomNav();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SafeArea(child: Container(
+      height: 62,
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        border: Border(top: BorderSide(color: scheme.outlineVariant, width: 0.5)),
+      ),
+      child: Row(children: [
+        // Início
+        Expanded(child: InkWell(
+          onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(Icons.home_outlined, size: 22, color: scheme.onSurfaceVariant),
+            const SizedBox(height: 2),
+            Text('Início', style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant)),
+          ]),
+        )),
+        // Pocket
+        Expanded(child: InkWell(
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const PocketHubScreen())),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(Icons.style_outlined, size: 22, color: scheme.onSurfaceVariant),
+            const SizedBox(height: 2),
+            Text('Pocket', style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant)),
+          ]),
+        )),
+        // GO
+        Expanded(child: InkWell(
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const GoHubScreen())),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(Icons.public_outlined, size: 22, color: scheme.onSurfaceVariant),
+            const SizedBox(height: 2),
+            Text('GO', style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant)),
+          ]),
+        )),
+        // Pokopia — ativo
+        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(Icons.nature_people_outlined, size: 22, color: scheme.primary),
+          const SizedBox(height: 2),
+          Text('Pokopia', style: TextStyle(fontSize: 10,
+              fontWeight: FontWeight.w600, color: scheme.primary)),
+        ])),
+        // Menu
+        Expanded(child: Builder(builder: (ctx) => InkWell(
+          onTap: () => Scaffold.of(ctx).openEndDrawer(),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(Icons.menu, size: 22, color: scheme.onSurfaceVariant),
+            const SizedBox(height: 2),
+            Text('Menu', style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant)),
+          ]),
+        ))),
+      ]),
+    ));
+  }
+}
 
 class _SpriteAsset {
   final String path;

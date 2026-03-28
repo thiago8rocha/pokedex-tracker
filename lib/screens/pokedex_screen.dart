@@ -1040,8 +1040,8 @@ class _PokedexScreenState extends State<PokedexScreen>
       child: TabBar(
         controller: _pokopiaTabController,
         tabs: const [
-          Tab(text: 'Standard'),
-          Tab(text: 'Event'),
+          Tab(text: 'Padrão'),
+          Tab(text: 'Evento'),
         ],
         labelColor: scheme.primary,
         unselectedLabelColor: scheme.onSurfaceVariant,
@@ -1543,33 +1543,68 @@ class _PokedexScreenState extends State<PokedexScreen>
           ),
           const SizedBox(width: 6),
         ],
-        // ── Filtro de Geração ──
-        Expanded(
-          flex: 3,
-          child: _FilterDropBtn(
-            label: genLabel, active: hasGen,
-            onTap: _showGenPicker,
-            onClear: hasGen ? () {
-              setState(() { _selectedGens.clear(); _currentPage = 0; _visibleEntries = []; });
-              _loadPage(0);
-            } : null,
+        // ── Pokopia: filtro de Especialidades ──
+        if (_isPokopia) ...[ 
+          Expanded(
+            child: _FilterDropBtn(
+              label: _filterSpecialties.isEmpty
+                  ? 'Especialidade'
+                  : _filterSpecialties.length == 1
+                      ? _filterSpecialties.first
+                      : '${_filterSpecialties.length} especialidades',
+              active: _filterSpecialties.isNotEmpty,
+              onTap: _showSpecialtyPicker,
+              onClear: _filterSpecialties.isNotEmpty ? () {
+                setState(() { _filterSpecialties.clear(); _currentPage = 0; _visibleEntries = []; });
+                _loadPage(0);
+              } : null,
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
-        // ── Filtro de Tipo ──
-        Expanded(
-          flex: 3,
-          child: _FilterDropBtn(
-            label: typeLabel, active: hasType,
-            onTap: _showTypePicker,
-            onClear: hasType ? () {
-              setState(() { _filterTypes.clear(); _currentPage = 0; _visibleEntries = []; });
-              _loadPage(0);
-            } : null,
+        // ── Mainline/GO: filtros de Geração + Tipo ──
+        ] else ...[ 
+          Expanded(
+            flex: 3,
+            child: _FilterDropBtn(
+              label: genLabel, active: hasGen,
+              onTap: _showGenPicker,
+              onClear: hasGen ? () {
+                setState(() { _selectedGens.clear(); _currentPage = 0; _visibleEntries = []; });
+                _loadPage(0);
+              } : null,
+            ),
           ),
-        ),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 3,
+            child: _FilterDropBtn(
+              label: typeLabel, active: hasType,
+              onTap: _showTypePicker,
+              onClear: hasType ? () {
+                setState(() { _filterTypes.clear(); _currentPage = 0; _visibleEntries = []; });
+                _loadPage(0);
+              } : null,
+            ),
+          ),
+        ],
       ]),
     );
+  }
+
+  void _showSpecialtyPicker() async {
+    final result = await showModalBottomSheet<Set<String>>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (_) => _SpecialtyDropSheet(selected: Set.from(_filterSpecialties)),
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      _filterSpecialties = result;
+      _currentPage = 0;
+      _visibleEntries = [];
+    });
+    _loadPage(0);
   }
 
   void _showGamePicker() async {
@@ -2311,6 +2346,106 @@ const _gamesByGen = <int, List<Map<String, dynamic>>>{
     {'name': 'FireRed / LeafGreen',   'c1': 0xFFEF5350, 'c2': 0xFF43A047},
   ],
 };
+
+// ─── SPECIALTY DROP SHEET ─────────────────────────────────────────────────────
+
+class _SpecialtyDropSheet extends StatefulWidget {
+  final Set<String> selected;
+  const _SpecialtyDropSheet({required this.selected});
+  @override
+  State<_SpecialtyDropSheet> createState() => _SpecialtyDropSheetState();
+}
+
+class _SpecialtyDropSheetState extends State<_SpecialtyDropSheet> {
+  late Set<String> _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = Set.from(widget.selected);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Expanded(child: Text('Especialidade',
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600))),
+              if (_selected.isNotEmpty)
+                TextButton(
+                  onPressed: () => setState(() => _selected = {}),
+                  child: const Text('Limpar'),
+                ),
+            ]),
+            const SizedBox(height: 12),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: _allSpecialties.map((sp) {
+                    final isSelected = _selected.contains(sp);
+                    return GestureDetector(
+                      onTap: () => setState(() {
+                        if (isSelected) {
+                          _selected.remove(sp);
+                        } else {
+                          _selected.add(sp);
+                        }
+                      }),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? scheme.primary
+                              : scheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: isSelected ? scheme.primary : scheme.outlineVariant,
+                            width: isSelected ? 0 : 1,
+                          ),
+                        ),
+                        child: Text(sp,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: isSelected
+                                ? scheme.onPrimary
+                                : scheme.onSurfaceVariant,
+                          )),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                ),
+                onPressed: () => Navigator.pop(context, _selected),
+                child: const Text('Aplicar'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 const _specialGames = <Map<String, dynamic>>[
   {'name': 'National',   'c1': 0xFFE8524A, 'c2': 0xFFB71C1C},
