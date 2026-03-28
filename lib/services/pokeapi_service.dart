@@ -615,166 +615,425 @@ const List<int> pokopiaSpeciesIds = [
   243, 244, 245, 249, 250, 144, 145, 146, 150, 151,
 ];
 
-// Mapa de especialidades por speciesId para filtro na Pokédex Pokopia
-// speciesId → lista de especialidades que esse Pokémon tem
+// Mapa de especialidades por speciesId — Fonte: Nintendo Life, VGC, RankedBoost (Março 2026)
+// speciesId → lista de especialidades que esse Pokémon tem no jogo
 const Map<int, List<String>> pokopiaSpecialtyMap = {
-  1:   ['Grow'],       // Bulbasaur
-  3:   ['Grow'],       // Venusaur
-  4:   ['Burn'],       // Charmander
-  6:   ['Burn', 'Fly'],// Charizard
-  7:   ['Water'],      // Squirtle
-  8:   ['Water'],      // Wartortle
-  9:   ['Water', 'Bulldoze'], // Blastoise
-  16:  ['Fly'],        // Pidgey
-  18:  ['Fly'],        // Pidgeot
-  23:  ['Litter'],     // Ekans
-  25:  ['Generate'],   // Pikachu
-  26:  ['Generate'],   // Raichu
-  35:  ['Hype'],       // Clefairy
-  37:  ['Burn'],       // Vulpix
-  39:  ['Hype'],       // Jigglypuff
-  43:  ['Grow'],       // Oddish
-  46:  ['Gather Honey'],// Paras
-  47:  ['Gather Honey'],// Parasect
-  48:  ['Gather'],     // Venonat
-  49:  ['Gather'],     // Venomoth
-  50:  ['Search'],     // Diglett
-  51:  ['Search'],     // Dugtrio
-  52:  ['Collect'],    // Meowth
-  53:  ['Collect'],    // Persian
-  54:  ['Water'],      // Psyduck
-  58:  ['Burn'],       // Growlithe
-  59:  ['Burn'],       // Arcanine
-  60:  ['Water'],      // Poliwag
-  63:  ['Teleport'],   // Abra
-  65:  ['Teleport'],   // Alakazam
-  66:  ['Build'],      // Machop
-  69:  ['Grow'],       // Bellsprout
-  70:  ['Grow'],       // Weepinbell
-  74:  ['Crush'],      // Geodude
-  75:  ['Crush'],      // Graveler
-  79:  ['Yawn'],       // Slowpoke
-  80:  ['Yawn'],       // Slowbro
-  81:  ['Generate'],   // Magnemite
-  83:  ['Gather'],     // Farfetch'd
-  95:  ['Build', 'Bulldoze'], // Onix
-  100: ['Explode'],    // Voltorb
-  103: ['Grow'],       // Exeggutor
-  104: ['Search'],     // Cubone
-  106: ['Build'],      // Hitmonlee
-  107: ['Build'],      // Hitmonchan
-  113: ['Hype'],       // Chansey
-  123: ['Chop'],       // Scyther
-  126: ['Burn'],       // Magmar
-  127: ['Chop'],       // Pinsir
-  129: ['Gather'],     // Magikarp
-  131: ['Water', 'Storage'], // Lapras
-  132: ['Transform'],  // Ditto
-  133: ['Gather'],     // Eevee
-  134: ['Water'],      // Vaporeon
-  135: ['Generate'],   // Jolteon
-  136: ['Burn'],       // Flareon
-  143: ['Yawn', 'Bulldoze'], // Snorlax
-  147: ['Water'],      // Dratini
-  148: ['Water'],      // Dragonair
-  149: ['Fly'],        // Dragonite
-  156: ['Burn'],       // Quilava
-  163: ['Fly'],        // Hoothoot
-  164: ['Fly'],        // Noctowl
-  167: ['Search'],     // Spinarak
-  172: ['Generate'],   // Pichu
-  175: ['Hype'],       // Togepi
-  176: ['Fly', 'Hype'],// Togetic
-  177: ['Fly'],        // Natu
-  183: ['Water'],      // Marill
-  185: ['Build'],      // Sudowoodo
-  186: ['Water'],      // Politoed
-  190: ['Gather'],     // Aipom
-  196: ['Teleport'],   // Espeon
-  197: ['Teleport'],   // Umbreon
-  202: ['Yawn'],       // Wobbuffet
-  208: ['Build', 'Bulldoze'], // Steelix
-  214: ['Build'],      // Heracross
-  233: ['Generate'],   // Porygon2
-  236: ['Build'],      // Tyrogue
-  240: ['Burn'],       // Magby
-  243: ['Generate'],   // Raikou
-  246: ['Crush'],      // Larvitar
-  249: ['Fly'],        // Lugia — Dream Island
-  250: ['Fly'],        // Ho-Oh — Sparkling Skylands
-  248: ['Bulldoze'],   // Tyranitar
-  255: ['Burn'],       // Torchic
-  270: ['Water', 'Grow'],    // Lotad
-  272: ['Water', 'Grow'],    // Ludicolo
-  278: ['Fly'],        // Wingull
-  282: ['Teleport'],   // Gardevoir
-  296: ['Build'],      // Makuhita
-  298: ['Water'],      // Azurill
-  303: ['Chop'],       // Mawile
-  312: ['Generate'],   // Minun
-  313: ['Hype'],       // Volbeat
-  316: ['Litter'],     // Gulpin
-  324: ['Burn'],       // Torkoal
-  331: ['Grow'],       // Cacnea
-  332: ['Grow'],       // Cacturne
-  333: ['Fly'],        // Swablu
-  393: ['Water'],      // Piplup
-  415: ['Gather Honey'], // Combee
-  416: ['Gather Honey', 'Rarify'], // Vespiquen
-  422: ['Water'],      // West Sea Shellos
-  423: ['Water'],      // West Sea Gastrodon
-  425: ['Fly', 'Dream Island'], // Drifloon
-  439: ['Hype'],       // Mime Jr.
-  440: ['Hype'],       // Happiny
-  446: ['Yawn', 'Storage'], // Munchlax
-  447: ['Build'],      // Riolu
-  448: ['Build'],      // Lucario
-  470: ['Grow'],       // Leafeon
-  471: ['Water'],      // Glaceon
-  478: ['Water'],      // Froslass
-  529: ['Search'],     // Drilbur
-  530: ['Search', 'Bulldoze'], // Excadrill
-  531: ['Hype'],       // Audino
-  532: ['Build'],      // Timburr
-  533: ['Build'],      // Gurdurr
-  568: ['Recycle', 'Litter'], // Trubbish
-  570: ['Search'],     // Zorua
-  572: ['Gather'],     // Minccino
-  573: ['Gather'],     // Cinccino
-  607: ['Burn'],       // Litwick
-  608: ['Burn'],       // Lampent
-  609: ['Burn'],       // Chandelure
-  610: ['Chop'],       // Axew
-  612: ['Chop', 'Bulldoze'], // Haxorus
-  637: ['Burn', 'Fly'],// Volcarona
-  658: ['Water'],      // Greninja
-  700: ['Hype'],       // Sylveon
-  702: ['Generate'],   // Dedenne
-  704: ['Water'],      // Goomy
-  706: ['Water'],      // Goodra
-  722: ['Fly'],        // Rowlet
-  738: ['Generate'],   // Vikavolt
-  778: ['Rarify'],     // Mimikyu
-  813: ['Build'],      // Scorbunny
-  814: ['Build'],      // Raboot
-  819: ['Gather'],     // Skwovet
-  821: ['Fly'],        // Rookidee
-  839: ['Burn'],       // Carkol
-  845: ['Fly'],        // Cramorant
-  848: ['Generate'],   // Toxel
-  885: ['Fly'],        // Dreepy
-  906: ['Grow'],       // Sprigatito
-  921: ['Generate'],   // Pawmi
-  940: ['Generate', 'Fly'], // Kilowattrel
-  970: ['Grow'],       // Glimmora
-  978: ['Water'],      // Tatsugiri
-  999: ['Collect'],    // Gimmighoul
-  151: ['Transform'],  // Mew
-  150: ['Teleport'],   // Mewtwo
-  144: ['Fly'],        // Articuno
-  145: ['Generate', 'Fly'], // Zapdos
-  146: ['Burn', 'Fly'],// Moltres
-  721: ['Burn'],       // Volcanion
+  // ── Bulbasaur line ──────────────────────────────────────────────
+  1:   ['Grow'],                       // Bulbasaur
+  2:   ['Grow'],                       // Ivysaur
+  3:   ['Grow', 'Litter'],             // Venusaur
+  // ── Charmander line ─────────────────────────────────────────────
+  4:   ['Burn'],                       // Charmander
+  5:   ['Burn'],                       // Charmeleon
+  6:   ['Burn', 'Fly'],                // Charizard
+  // ── Squirtle line ───────────────────────────────────────────────
+  7:   ['Water'],                      // Squirtle
+  8:   ['Water'],                      // Wartortle
+  9:   ['Water', 'Trade'],             // Blastoise
+  // ── Pidgey line ─────────────────────────────────────────────────
+  16:  ['Fly', 'Search'],              // Pidgey
+  17:  ['Fly', 'Search'],              // Pidgeotto
+  18:  ['Fly', 'Search'],              // Pidgeot
+  // ── Oddish line ─────────────────────────────────────────────────
+  43:  ['Grow'],                       // Oddish
+  44:  ['Grow'],                       // Gloom
+  45:  ['Grow', 'Litter'],             // Vileplume
+  182: ['Grow', 'Hype'],               // Bellossom
+  // ── Paras line ──────────────────────────────────────────────────
+  46:  ['Search'],                     // Paras
+  47:  ['Search'],                     // Parasect
+  // ── Venonat line ────────────────────────────────────────────────
+  48:  ['Search'],                     // Venonat
+  49:  ['Search'],                     // Venomoth
+  // ── Bellsprout line ─────────────────────────────────────────────
+  69:  ['Grow', 'Litter'],             // Bellsprout
+  70:  ['Grow', 'Litter'],             // Weepinbell
+  71:  ['Grow', 'Chop'],               // Victreebel
+  // ── Slowpoke line ───────────────────────────────────────────────
+  79:  ['Water', 'Yawn'],              // Slowpoke
+  80:  ['Water', 'Trade'],             // Slowbro
+  199: ['Water', 'Teleport'],          // Slowking
+  // ── Magnemite line ──────────────────────────────────────────────
+  81:  ['Generate'],                   // Magnemite
+  82:  ['Generate'],                   // Magneton
+  462: ['Generate', 'Recycle'],        // Magnezone
+  // ── Onix / Steelix ──────────────────────────────────────────────
+  95:  ['Crush', 'Bulldoze'],          // Onix
+  208: ['Crush', 'Bulldoze'],          // Steelix
+  // ── Cubone / Marowak ────────────────────────────────────────────
+  104: ['Build'],                      // Cubone
+  105: ['Build'],                      // Marowak
+  // ── Tyrogue / Hitmon line ────────────────────────────────────────
+  236: ['Trade'],                      // Tyrogue
+  106: ['Trade'],                      // Hitmonlee
+  107: ['Trade'],                      // Hitmonchan
+  237: ['Trade'],                      // Hitmontop
+  // ── Koffing / Weezing ───────────────────────────────────────────
+  109: ['Recycle'],                    // Koffing
+  110: ['Recycle'],                    // Weezing
+  // ── Tangela / Tangrowth ─────────────────────────────────────────
+  114: ['Grow', 'Litter'],             // Tangela
+  465: ['Grow', 'Litter'],             // Tangrowth (NPC Professor Tangrowth = Appraise)
+  // ── Scyther / Scizor / Pinsir ───────────────────────────────────
+  123: ['Chop'],                       // Scyther
+  212: ['Chop'],                       // Scizor
+  127: ['Chop', 'Build'],              // Pinsir
+  // ── Magikarp / Gyarados ─────────────────────────────────────────
+  129: [],                             // Magikarp — N/A
+  130: ['Water'],                      // Gyarados
+  // ── Ditto ───────────────────────────────────────────────────────
+  132: ['Transform'],                  // Ditto
+  // ── Hoothoot / Noctowl ──────────────────────────────────────────
+  163: ['Trade', 'Fly'],               // Hoothoot
+  164: ['Trade', 'Fly'],               // Noctowl
+  // ── Heracross ───────────────────────────────────────────────────
+  214: ['Chop', 'Build'],              // Heracross
+  // ── Volbeat / Illumise ──────────────────────────────────────────
+  313: ['Hype'],                       // Volbeat
+  314: ['Hype'],                       // Illumise
+  // ── Gulpin / Swalot ─────────────────────────────────────────────
+  316: ['Storage'],                    // Gulpin
+  317: ['Storage'],                    // Swalot
+  // ── Cacnea / Cacturne ───────────────────────────────────────────
+  331: ['Grow'],                       // Cacnea
+  332: ['Grow', 'Litter'],             // Cacturne
+  // ── Combee / Vespiquen ──────────────────────────────────────────
+  415: ['Litter'],                     // Combee
+  416: ['Gather Honey', 'Search'],     // Vespiquen
+  // ── Shellos / Gastrodon ─────────────────────────────────────────
+  422: ['Water'],                      // Shellos
+  423: ['Water', 'Trade'],             // Gastrodon
+  // ── Drifloon / Drifblim ─────────────────────────────────────────
+  425: ['Dream Island'],               // Drifloon
+  426: ['Fly', 'Gather'],              // Drifblim
+  // ── Drilbur / Excadrill ─────────────────────────────────────────
+  529: ['Search'],                     // Drilbur
+  530: ['Search', 'Chop'],             // Excadrill
+  // ── Timburr line ────────────────────────────────────────────────
+  532: ['Build'],                      // Timburr
+  533: ['Build'],                      // Gurdurr
+  534: ['Build', 'Crush'],             // Conkeldurr
+  // ── Litwick line ────────────────────────────────────────────────
+  607: ['Burn'],                       // Litwick
+  608: ['Burn'],                       // Lampent
+  609: ['Burn'],                       // Chandelure
+  // ── Axew line ───────────────────────────────────────────────────
+  610: ['Chop'],                       // Axew
+  611: ['Chop'],                       // Fraxure
+  612: ['Chop', 'Litter'],             // Haxorus
+  // ── Goomy line ──────────────────────────────────────────────────
+  704: ['Water'],                      // Goomy
+  705: ['Water'],                      // Sliggoo
+  706: ['Water'],                      // Goodra
+  // ── Cramorant ───────────────────────────────────────────────────
+  845: ['Fly', 'Water'],               // Cramorant
+  // ── Pichu / Pikachu / Raichu ────────────────────────────────────
+  172: ['Generate'],                   // Pichu
+  25:  ['Generate'],                   // Pikachu (NPC Peakychu = Illuminate)
+  26:  ['Generate', 'Hype'],           // Raichu
+  // ── Zubat line ──────────────────────────────────────────────────
+  41:  ['Search'],                     // Zubat
+  42:  ['Search'],                     // Golbat
+  169: ['Search', 'Chop'],             // Crobat
+  // ── Meowth / Persian ────────────────────────────────────────────
+  52:  ['Trade'],                      // Meowth
+  53:  ['Trade', 'Search'],            // Persian
+  // ── Psyduck / Golduck ───────────────────────────────────────────
+  54:  ['Search'],                     // Psyduck
+  55:  ['Search'],                     // Golduck
+  // ── Growlithe / Arcanine ────────────────────────────────────────
+  58:  ['Burn', 'Search'],             // Growlithe
+  59:  ['Burn', 'Search'],             // Arcanine
+  // ── Farfetch'd ──────────────────────────────────────────────────
+  83:  ['Chop', 'Build'],              // Farfetch'd
+  // ── Grimer / Muk ────────────────────────────────────────────────
+  88:  ['Litter'],                     // Grimer
+  89:  ['Litter'],                     // Muk
+  // ── Gastly line ─────────────────────────────────────────────────
+  92:  ['Gather', 'Trade'],            // Gastly
+  93:  ['Gather', 'Trade'],            // Haunter
+  94:  ['Gather', 'Trade'],            // Gengar
+  // ── Voltorb / Electrode ─────────────────────────────────────────
+  100: ['Generate', 'Explode'],        // Voltorb
+  101: ['Generate', 'Explode'],        // Electrode
+  // ── Exeggcute / Exeggutor ───────────────────────────────────────
+  102: ['Grow', 'Teleport'],           // Exeggcute
+  103: ['Grow', 'Teleport'],           // Exeggutor
+  // ── Happiny / Chansey / Blissey ─────────────────────────────────
+  440: ['Trade'],                      // Happiny
+  113: ['Trade'],                      // Chansey
+  242: ['Trade', 'Litter'],            // Blissey
+  // ── Elekid / Electabuzz / Electivire ────────────────────────────
+  239: ['Generate'],                   // Elekid
+  125: ['Generate'],                   // Electabuzz
+  466: ['Generate', 'Crush'],          // Electivire
+  // ── Lapras ──────────────────────────────────────────────────────
+  131: ['Water'],                      // Lapras
+  // ── Munchlax / Snorlax ──────────────────────────────────────────
+  446: ['Bulldoze'],                   // Munchlax
+  143: ['Trade', 'Bulldoze'],          // Snorlax (NPC Mosslax = Eat)
+  // ── Spinarak / Ariados ──────────────────────────────────────────
+  167: ['Litter'],                     // Spinarak
+  168: ['Litter'],                     // Ariados
+  // ── Mareep line ─────────────────────────────────────────────────
+  179: ['Generate', 'Litter'],         // Mareep
+  180: ['Generate', 'Litter'],         // Flaaffy
+  181: ['Generate', 'Trade'],          // Ampharos
+  // ── Azurill / Marill / Azumarill ────────────────────────────────
+  298: ['Water', 'Hype'],              // Azurill
+  183: ['Water', 'Hype'],              // Marill
+  184: ['Water', 'Build'],             // Azumarill
+  // ── Paldean Wooper / Clodsire ───────────────────────────────────
+  194: ['Litter'],                     // Paldean Wooper
+  980: ['Litter', 'Bulldoze'],         // Clodsire
+  // ── Smeargle ────────────────────────────────────────────────────
+  235: ['Paint'],                      // Smeargle (NPC Smearguru também = Paint)
+  // ── Torchic line ────────────────────────────────────────────────
+  255: ['Burn'],                       // Torchic
+  256: ['Burn', 'Build'],              // Combusken
+  257: ['Burn', 'Build'],              // Blaziken
+  // ── Wingull / Pelipper ──────────────────────────────────────────
+  278: ['Water', 'Fly'],               // Wingull
+  279: ['Water', 'Fly'],               // Pelipper
+  // ── Makuhita / Hariyama ─────────────────────────────────────────
+  296: ['Build', 'Bulldoze'],          // Makuhita
+  297: ['Build', 'Bulldoze'],          // Hariyama
+  // ── Absol ───────────────────────────────────────────────────────
+  359: ['Chop'],                       // Absol
+  // ── Piplup line ─────────────────────────────────────────────────
+  393: ['Water'],                      // Piplup
+  394: ['Water', 'Trade'],             // Prinplup
+  395: ['Water', 'Trade'],             // Empoleon
+  // ── Audino ──────────────────────────────────────────────────────
+  531: ['Trade'],                      // Audino
+  // ── Trubbish / Garbodor ─────────────────────────────────────────
+  568: ['Recycle'],                    // Trubbish
+  569: ['Recycle', 'Litter'],          // Garbodor
+  // ── Zorua / Zoroark ─────────────────────────────────────────────
+  570: ['Trade'],                      // Zorua
+  571: ['Trade', 'Chop'],              // Zoroark
+  // ── Minccino / Cinccino ─────────────────────────────────────────
+  572: ['Gather'],                     // Minccino
+  573: ['Gather', 'Recycle'],          // Cinccino
+  // ── Grubbin line ────────────────────────────────────────────────
+  736: ['Chop'],                       // Grubbin
+  737: ['Generate', 'Chop'],           // Charjabug
+  738: ['Generate', 'Chop'],           // Vikavolt
+  // ── Mimikyu ─────────────────────────────────────────────────────
+  778: ['Trade'],                      // Mimikyu
+  // ── Pawmi line ──────────────────────────────────────────────────
+  921: ['Generate'],                   // Pawmi
+  922: ['Generate', 'Crush'],          // Pawmo
+  923: ['Generate', 'Crush'],          // Pawmot
+  // ── Tatsugiri ───────────────────────────────────────────────────
+  978: ['Trade'],                      // Tatsugiri
+  // ── Ekans / Arbok ───────────────────────────────────────────────
+  23:  ['Search'],                     // Ekans
+  24:  ['Search'],                     // Arbok
+  // ── Cleffa line ─────────────────────────────────────────────────
+  173: ['Hype'],                       // Cleffa
+  35:  ['Hype'],                       // Clefairy
+  36:  ['Hype', 'Trade'],              // Clefable
+  // ── Igglybuff line ──────────────────────────────────────────────
+  174: ['Hype'],                       // Igglybuff
+  39:  ['Hype'],                       // Jigglypuff
+  40:  ['Hype'],                       // Wigglytuff
+  // ── Diglett / Dugtrio ───────────────────────────────────────────
+  50:  ['Hype'],                       // Diglett
+  51:  ['Hype', 'Crush'],              // Dugtrio
+  // ── Machop line ─────────────────────────────────────────────────
+  66:  ['Build', 'Gather'],            // Machop
+  67:  ['Build', 'Gather'],            // Machoke
+  68:  ['Build', 'Gather'],            // Machamp
+  // ── Geodude line ────────────────────────────────────────────────
+  74:  ['Crush'],                      // Geodude
+  75:  ['Crush'],                      // Graveler
+  76:  ['Crush', 'Trade'],             // Golem
+  // ── Magby line ──────────────────────────────────────────────────
+  240: ['Burn'],                       // Magby
+  126: ['Burn'],                       // Magmar
+  467: ['Burn'],                       // Magmortar
+  // ── Bonsly / Sudowoodo ──────────────────────────────────────────
+  438: ['Bulldoze'],                   // Bonsly
+  185: ['Trade'],                      // Sudowoodo
+  // ── Murkrow / Honchkrow ─────────────────────────────────────────
+  198: ['Fly', 'Trade'],               // Murkrow
+  430: ['Fly', 'Trade'],               // Honchkrow
+  // ── Larvitar line ───────────────────────────────────────────────
+  246: ['Crush', 'Bulldoze'],          // Larvitar
+  247: ['Crush', 'Bulldoze'],          // Pupitar
+  248: ['Crush', 'Bulldoze'],          // Tyranitar
+  // ── Lotad line ──────────────────────────────────────────────────
+  270: ['Water'],                      // Lotad
+  271: ['Water'],                      // Lombre
+  272: ['Water', 'Hype'],              // Ludicolo
+  // ── Mawile ──────────────────────────────────────────────────────
+  303: ['Trade', 'Build'],             // Mawile
+  // ── Torkoal ─────────────────────────────────────────────────────
+  324: ['Burn'],                       // Torkoal
+  // ── Kricketot / Kricketune ──────────────────────────────────────
+  401: ['Hype'],                       // Kricketot
+  402: ['Hype'],                       // Kricketune
+  // ── Chatot ──────────────────────────────────────────────────────
+  441: ['Fly', 'Hype'],                // Chatot
+  // ── Riolu / Lucario ─────────────────────────────────────────────
+  447: ['Build'],                      // Riolu
+  448: ['Build'],                      // Lucario
+  // ── Larvesta / Volcarona ────────────────────────────────────────
+  636: ['Burn'],                       // Larvesta
+  637: ['Burn', 'Fly'],                // Volcarona
+  // ── Rowlet line ─────────────────────────────────────────────────
+  722: ['Grow'],                       // Rowlet
+  723: ['Grow', 'Chop'],               // Dartrix
+  724: ['Grow', 'Chop'],               // Decidueye
+  // ── Scorbunny line ──────────────────────────────────────────────
+  813: ['Burn'],                       // Scorbunny
+  814: ['Burn'],                       // Raboot
+  815: ['Burn', 'Hype'],               // Cinderace
+  // ── Skwovet / Greedent ──────────────────────────────────────────
+  819: ['Gather'],                     // Skwovet
+  820: [],                             // Greedent (NPC Chef Dente = Party)
+  // ── Rolycoly line ───────────────────────────────────────────────
+  838: ['Burn', 'Gather'],             // Rolycoly
+  839: ['Burn', 'Gather'],             // Carkol
+  840: ['Burn'],                       // Coalossal
+  // ── Toxel / Toxtricity ──────────────────────────────────────────
+  848: ['Generate'],                   // Toxel
+  849: ['Generate'],                   // Toxtricity
+  // ── Fidough / Dachsbun ──────────────────────────────────────────
+  924: ['Search'],                     // Fidough
+  925: ['Search', 'Trade'],            // Dachsbun
+  // ── Charcadet line ──────────────────────────────────────────────
+  855: ['Burn'],                       // Charcadet
+  901: ['Burn', 'Trade'],              // Armarouge
+  902: ['Burn', 'Trade'],              // Ceruledge
+  // ── Glimmet / Glimmora ──────────────────────────────────────────
+  969: ['Litter'],                     // Glimmet
+  970: ['Litter'],                     // Glimmora
+  // ── Gimmighoul / Gholdengo ──────────────────────────────────────
+  999: ['Collect'],                    // Gimmighoul
+  1000:['Collect'],                    // Gholdengo
+  // ── Vulpix / Ninetales ──────────────────────────────────────────
+  37:  ['Burn'],                       // Vulpix
+  38:  ['Burn'],                       // Ninetales
+  // ── Poliwag line ────────────────────────────────────────────────
+  60:  ['Water'],                      // Poliwag
+  61:  ['Water'],                      // Poliwhirl
+  62:  ['Water', 'Build'],             // Poliwrath
+  186: ['Water', 'Hype', 'Build'],     // Politoed
+  // ── Abra line ───────────────────────────────────────────────────
+  63:  ['Teleport'],                   // Abra
+  64:  ['Teleport'],                   // Kadabra
+  65:  ['Teleport', 'Trade'],          // Alakazam
+  // ── Mime Jr. / Mr. Mime ─────────────────────────────────────────
+  439: ['Gather', 'Hype'],             // Mime Jr.
+  122: ['Gather', 'Build'],            // Mr. Mime
+  // ── Porygon line ────────────────────────────────────────────────
+  137: ['Recycle'],                    // Porygon
+  233: ['Rarify'],                     // Porygon2
+  474: ['Recycle'],                    // Porygon-Z
+  // ── Dratini line ────────────────────────────────────────────────
+  147: ['Water'],                      // Dratini
+  148: ['Water'],                      // Dragonair
+  149: ['Water', 'Fly'],               // Dragonite
+  // ── Cyndaquil line ──────────────────────────────────────────────
+  155: ['Burn'],                       // Cyndaquil
+  156: ['Burn'],                       // Quilava
+  157: ['Burn', 'Trade'],              // Typhlosion
+  // ── Misdreavus / Mismagius ──────────────────────────────────────
+  200: ['Trade'],                      // Misdreavus
+  429: ['Gather', 'Trade'],            // Mismagius
+  // ── Girafarig / Farigiraf ───────────────────────────────────────
+  203: ['Gather'],                     // Girafarig
+  981: ['Gather'],                     // Farigiraf
+  // ── Ralts line ──────────────────────────────────────────────────
+  280: ['Teleport'],                   // Ralts
+  281: ['Teleport', 'Build'],          // Kirlia
+  282: ['Teleport', 'Trade'],          // Gardevoir
+  475: ['Build', 'Teleport'],          // Gallade
+  // ── Plusle / Minun ──────────────────────────────────────────────
+  311: ['Generate'],                   // Plusle
+  312: ['Generate'],                   // Minun
+  // ── Trapinch line ───────────────────────────────────────────────
+  328: ['Litter', 'Bulldoze'],         // Trapinch
+  329: ['Fly', 'Bulldoze'],            // Vibrava
+  330: ['Fly', 'Bulldoze'],            // Flygon
+  // ── Swablu / Altaria ────────────────────────────────────────────
+  333: ['Fly', 'Litter'],              // Swablu
+  334: ['Fly', 'Litter'],              // Altaria
+  // ── Duskull line ────────────────────────────────────────────────
+  355: ['Gather'],                     // Duskull
+  356: ['Gather'],                     // Dusclops
+  477: ['Gather', 'Trade'],            // Dusknoir
+  // ── Beldum line ─────────────────────────────────────────────────
+  374: ['Generate'],                   // Beldum
+  375: ['Recycle'],                    // Metang
+  376: ['Crush'],                      // Metagross
+  // ── Snivy line ──────────────────────────────────────────────────
+  495: ['Grow', 'Litter'],             // Snivy
+  496: ['Grow', 'Litter'],             // Servine
+  497: ['Grow'],                       // Serperior
+  // ── Froakie line ────────────────────────────────────────────────
+  656: ['Water'],                      // Froakie
+  657: ['Water'],                      // Frogadier
+  658: ['Water', 'Chop'],              // Greninja
+  // ── Dedenne ─────────────────────────────────────────────────────
+  702: ['Generate'],                   // Dedenne
+  // ── Noibat / Noivern ────────────────────────────────────────────
+  714: ['Fly'],                        // Noibat
+  715: ['Fly'],                        // Noivern
+  // ── Rookidee line ───────────────────────────────────────────────
+  821: ['Fly'],                        // Rookidee
+  822: ['Fly', 'Chop'],                // Corvisquire
+  823: ['Fly', 'Chop'],                // Corviknight
+  // ── Dreepy line ─────────────────────────────────────────────────
+  885: ['Gather', 'Search'],           // Dreepy
+  886: ['Gather', 'Search'],           // Drakloak
+  887: ['Gather', 'Trade'],            // Dragapult
+  // ── Sprigatito line ─────────────────────────────────────────────
+  906: ['Grow'],                       // Sprigatito
+  907: ['Grow'],                       // Floragato
+  908: ['Grow', 'Hype'],               // Meowscarada
+  // ── Wattrel / Kilowattrel ───────────────────────────────────────
+  939: ['Fly'],                        // Wattrel
+  940: ['Generate', 'Fly'],            // Kilowattrel
+  // ── Tinkatink line ──────────────────────────────────────────────
+  957: ['Build'],                      // Tinkatink
+  958: ['Build'],                      // Tinkatuff
+  959: ['Build'],                      // Tinkaton (NPC Tinkmaster = Engineer)
+  // ── Fossil Pokémon ──────────────────────────────────────────────
+  142: ['Fly', 'Chop'],                // Aerodactyl
+  408: ['Crush'],                      // Cranidos
+  409: ['Crush'],                      // Rampardos
+  410: ['Build'],                      // Shieldon
+  411: ['Build'],                      // Bastiodon
+  696: ['Crush'],                      // Tyrunt
+  697: ['Crush', 'Litter'],            // Tyrantrum
+  698: ['Crush'],                      // Amaura
+  699: ['Crush'],                      // Aurorus
+  // ── Eevee / Eeveelutions ────────────────────────────────────────
+  133: ['Trade'],                      // Eevee
+  134: ['Water'],                      // Vaporeon
+  135: ['Generate'],                   // Jolteon
+  136: ['Burn'],                       // Flareon
+  196: ['Teleport', 'Gather'],         // Espeon
+  197: ['Search'],                     // Umbreon
+  470: ['Grow'],                       // Leafeon
+  471: ['Water', 'Trade'],             // Glaceon
+  700: ['Hype'],                       // Sylveon
+  // ── Legendários ─────────────────────────────────────────────────
+  382: ['Water'],                      // Kyogre
+  243: ['Generate'],                   // Raikou
+  244: ['Burn'],                       // Entei
+  245: ['Water'],                      // Suicune
+  721: ['Burn'],                       // Volcanion
+  144: ['Fly'],                        // Articuno
+  145: ['Generate', 'Fly'],            // Zapdos
+  146: ['Burn', 'Fly'],                // Moltres
+  249: ['Fly'],                        // Lugia
+  250: ['Fly'],                        // Ho-Oh
+  150: ['Teleport'],                   // Mewtwo
+  151: ['Teleport'],                   // Mew
 };
 
 // ─── POKOPIA EVENT POKÉDEX ────────────────────────────────────────────────────
