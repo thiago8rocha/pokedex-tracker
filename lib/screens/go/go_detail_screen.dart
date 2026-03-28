@@ -355,7 +355,7 @@ class _GoSobreTabState extends State<_GoSobreTab> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
         // ── Descrição (igual à aba Sobre das outras telas) ──────
@@ -652,7 +652,7 @@ class _GoMovesTabState extends State<_GoMovesTab> {
 
     return SingleChildScrollView(
       controller: widget.scrollCtrl,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
         if (_fast.isNotEmpty)
@@ -994,7 +994,7 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     // O NestedScrollView do pai captura qualquer ScrollView filho.
     // Padding + Column é completamente estático, sem área rolável.
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -1024,9 +1024,9 @@ class _GoStatusTabState extends State<_GoStatusTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
-                if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
-                if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
+                if (quad.isNotEmpty) ...[_DmgGroup('Muito fraco a',       quad), const SizedBox(height: 14)],
+                if (frac.isNotEmpty) ...[_DmgGroup('Fraco a',             frac), const SizedBox(height: 14)],
+                if (half.isNotEmpty) ...[_DmgGroup('Resistente a',        half), const SizedBox(height: 14)],
                 if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
               ],
             ),
@@ -1050,20 +1050,17 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     ));
 
   Widget _DmgGroup(String title, List<MapEntry<String, double>> entries) =>
-    Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(title, style: TextStyle(
-          fontSize: 12, fontWeight: FontWeight.w700,
-          color: Theme.of(context).colorScheme.onSurface)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 6, runSpacing: 6,
-          alignment: WrapAlignment.center,
-          children: entries.map((e) => TypeBadge(type: e.key)).toList(),
-        ),
-      ]),
-    );
+    Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Text(title, style: TextStyle(
+        fontSize: 12, fontWeight: FontWeight.w700,
+        color: Theme.of(context).colorScheme.onSurface)),
+      const SizedBox(height: 8),
+      Wrap(
+        spacing: 6, runSpacing: 6,
+        alignment: WrapAlignment.center,
+        children: entries.map((e) => TypeBadge(type: e.key)).toList(),
+      ),
+    ]);
 }
 
 // ─── WRAPPER DO FORMSAB COM SCROLL CONTROLLER EXPLÍCITO ──────────
