@@ -15,7 +15,7 @@ class _PokopiaRelicsScreenState extends State<PokopiaRelicsScreen>
   @override
   void initState() {
     super.initState();
-    _tab = TabController(length: 3, vsync: this);
+    _tab = TabController(length: 2, vsync: this);
     _tab.addListener(() => setState(() {}));
   }
 
@@ -31,7 +31,7 @@ class _PokopiaRelicsScreenState extends State<PokopiaRelicsScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Relíquias e Fósseis'),
+        title: const Text('Relíquias'),
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
@@ -39,9 +39,8 @@ class _PokopiaRelicsScreenState extends State<PokopiaRelicsScreen>
         TabBar(
           controller: _tab,
           tabs: const [
-            Tab(text: 'Relíquias Grandes'),
-            Tab(text: 'Relíquias Pequenas'),
-            Tab(text: 'Fósseis'),
+            Tab(text: 'Grandes'),
+            Tab(text: 'Pequenas'),
           ],
           labelColor: scheme.primary,
           unselectedLabelColor: scheme.onSurfaceVariant,
@@ -113,13 +112,6 @@ class _PokopiaRelicsScreenState extends State<PokopiaRelicsScreen>
                 icon: Icons.diamond_outlined,
                 emptyMessage: 'Nenhuma relíquia pequena encontrada.',
                 isSmall: true,
-              ),
-              _FossilList(
-                items: _fossils
-                    .where((f) =>
-                        f.name.toLowerCase().contains(_search.toLowerCase()) ||
-                        f.pokemon.toLowerCase().contains(_search.toLowerCase()))
-                    .toList(),
               ),
             ],
           ),

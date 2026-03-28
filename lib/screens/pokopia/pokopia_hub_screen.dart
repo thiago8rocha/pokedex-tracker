@@ -3,6 +3,7 @@ import 'package:pokedex_tracker/screens/pokedex_screen.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_specialties_screen.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_flavors_screen.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_relics_screen.dart';
+import 'package:pokedex_tracker/screens/pokopia/pokopia_fossils_screen.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_habitats_screen.dart';
 import 'package:pokedex_tracker/screens/go/go_hub_screen.dart';
 import 'package:pokedex_tracker/screens/pocket/pocket_hub_screen.dart';
@@ -78,12 +79,12 @@ class PokopiaHubScreen extends StatelessWidget {
       ),
       _CardDef(
         title:    'Fósseis',
-        subtitle: 'Fósseis encontrados em Pokopia',
+        subtitle: '9 Pokémon fósseis',
         // Aerodactyl (142) — ícone clássico de fóssil
         bgSprite: const _SpriteAsset.artwork(142),
         color: isDark ? const Color(0xFF2A1A1A) : const Color(0xFFFFEBEE),
         onTap: () => Navigator.push(context, MaterialPageRoute(
-          builder: (_) => const PokopiaRelicsScreen(),
+          builder: (_) => const PokopiaFossilsScreen(),
         )),
       ),
     ];
