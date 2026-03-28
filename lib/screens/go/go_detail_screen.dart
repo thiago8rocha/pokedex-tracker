@@ -273,13 +273,17 @@ class _GoDetailScreenState extends State<GoDetailScreen>
             controller: _tabController,
             children: [
               _GoSobreTab(pokemon: widget.pokemon),
-              // NotificationListener cancela scroll na aba Status
-              NotificationListener<ScrollNotification>(
-                onNotification: (_) => true,
+              // PrimaryScrollController.none() isola a aba Status
+              // do NestedScrollView — ela não participa do scroll do pai
+              PrimaryScrollController.none(
                 child: _GoStatusTab(pokemon: widget.pokemon),
               ),
-              _GoMovesTab(pokemon: widget.pokemon),
-              FormsTab(forms: _forms, loading: _loadingForms),
+              PrimaryScrollController.none(
+                child: _GoMovesTab(pokemon: widget.pokemon),
+              ),
+              PrimaryScrollController.none(
+                child: FormsTab(forms: _forms, loading: _loadingForms),
+              ),
             ],
           )),
         ]),
