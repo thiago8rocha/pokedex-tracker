@@ -258,27 +258,38 @@ class _GoDetailScreenState extends State<GoDetailScreen>
             onPrev: widget.onPrev, onNext: widget.onNext,
           ),
         ],
-        body: Column(children: [
-          Material(
-            elevation: 0,
-            child: TabBar(
-              controller: _tabController,
-              tabs: _tabs.map((t) => Tab(text: t)).toList(),
-              labelColor: Theme.of(context).colorScheme.primary,
-              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-              indicatorColor: Theme.of(context).colorScheme.primary,
+        body: CustomScrollView(
+          // O NestedScrollView precisa de um filho CustomScrollView/ScrollView.
+          // SliverFillRemaining(hasScrollBody: false) torna o conteúdo estático:
+          // o header colapsa normalmente mas as abas não rolam.
+          physics: const NeverScrollableScrollPhysics(),
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(children: [
+                Material(
+                  elevation: 0,
+                  child: TabBar(
+                    controller: _tabController,
+                    tabs: _tabs.map((t) => Tab(text: t)).toList(),
+                    labelColor: Theme.of(context).colorScheme.primary,
+                    unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                Expanded(child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _GoSobreTab(pokemon: widget.pokemon),
+                    _GoStatusTab(pokemon: widget.pokemon),
+                    _GoMovesTab(pokemon: widget.pokemon),
+                    FormsTab(forms: _forms, loading: _loadingForms),
+                  ],
+                )),
+              ]),
             ),
-          ),
-          Expanded(child: TabBarView(
-            controller: _tabController,
-            children: [
-              _GoSobreTab(pokemon: widget.pokemon),
-              _GoStatusTab(pokemon: widget.pokemon),
-              _GoMovesTab(pokemon: widget.pokemon),
-              FormsTab(forms: _forms, loading: _loadingForms),
-            ],
-          )),
-        ]),
+          ],
+        ),
       ),
     );
   }
