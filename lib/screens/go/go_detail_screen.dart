@@ -283,26 +283,76 @@ class _GoDetailScreenState extends State<GoDetailScreen>
 
 // ─── ABA SOBRE ───────────────────────────────────────────────────
 
-class _GoSobreTab extends StatelessWidget {
+class _GoSobreTab extends StatefulWidget {
   final Pokemon pokemon;
   const _GoSobreTab({required this.pokemon});
+  @override
+  State<_GoSobreTab> createState() => _GoSobreTabState();
+}
+
+class _GoSobreTabState extends State<_GoSobreTab> {
+  List<String> _fastMoves    = [];
+  List<String> _chargeMoves  = [];
+  bool         _loadingMoves = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMoves();
+  }
+
+  Future<void> _loadMoves() async {
+    try {
+      // pogoapi.net — moves disponíveis por Pokémon
+      final r = await http.get(Uri.parse(
+        'https://pogoapi.net/api/v1/pokemon_moves.json'
+      )).timeout(const Duration(seconds: 8));
+      if (r.statusCode == 200 && mounted) {
+        final body = json.decode(r.body) as Map<String, dynamic>;
+        final pid  = widget.pokemon.id.toString();
+        final data = body[pid] as Map<String, dynamic>?;
+        if (data != null) {
+          final fast   = (data['fast_moves']    as List<dynamic>? ?? []).cast<String>();
+          final charge = (data['charged_moves'] as List<dynamic>? ?? []).cast<String>();
+          setState(() {
+            _fastMoves   = fast;
+            _chargeMoves = charge;
+            _loadingMoves = false;
+          });
+          return;
+        }
+      }
+    } catch (_) {}
+    if (mounted) setState(() => _loadingMoves = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     final svc      = PokedexDataService.instance;
-    final id       = pokemon.id;
-    final types    = pokemon.types;
+    final id       = widget.pokemon.id;
+    final types    = widget.pokemon.types;
     final category = svc.getCategory(id);
     final flavors  = svc.getFlavorTexts(id);
     const rocketColor = Color(0xFF7B1FA2);
 
     String flavorText = '';
     if (flavors.isNotEmpty) {
-      final g = flavors.lastWhere(
-        (g) => (g['textPt'] as String? ?? '').isNotEmpty,
-        orElse: () => flavors.last,
+      // Preferir o grupo específico do Pokémon GO
+      final goGroup = flavors.firstWhere(
+        (g) => (g['games'] as List? ?? []).any(
+          (game) => game.toString().toLowerCase().contains('go')),
+        orElse: () => const <String, dynamic>{},
       );
-      flavorText = g['textPt'] as String? ?? g['textEn'] as String? ?? '';
+      if (goGroup.isNotEmpty && (goGroup['textPt'] as String? ?? '').isNotEmpty) {
+        flavorText = goGroup['textPt'] as String;
+      } else {
+        // Fallback: grupo mais recente com PT
+        final g = flavors.lastWhere(
+          (g) => (g['textPt'] as String? ?? '').isNotEmpty,
+          orElse: () => flavors.last,
+        );
+        flavorText = g['textPt'] as String? ?? g['textEn'] as String? ?? '';
+      }
     }
 
     return SingleChildScrollView(
@@ -407,8 +457,36 @@ class _GoSobreTab extends StatelessWidget {
           ),
         ),
 
+        // ── Moves no GO ──────────────────────────────────────
+        if (!_loadingMoves && (_fastMoves.isNotEmpty || _chargeMoves.isNotEmpty)) ...[
+          const SizedBox(height: 16),
+          SectionCard(
+            title: 'GOLPES NO GO',
+            pokemonTypes: types,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              if (_fastMoves.isNotEmpty) ...[
+                Text('Golpes Rápidos',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                const SizedBox(height: 6),
+                Wrap(spacing: 6, runSpacing: 6,
+                  children: _fastMoves.map((m) => _MoveChip(name: m, types: types)).toList()),
+              ],
+              if (_chargeMoves.isNotEmpty) ...[
+                if (_fastMoves.isNotEmpty) const SizedBox(height: 12),
+                Text('Golpes Carregados',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                const SizedBox(height: 6),
+                Wrap(spacing: 6, runSpacing: 6,
+                  children: _chargeMoves.map((m) => _MoveChip(name: m, types: types)).toList()),
+              ],
+            ]),
+          ),
+        ],
+
         const SizedBox(height: 16),
-        _GoEvoSection(pokemon: pokemon),
+        _GoEvoSection(pokemon: widget.pokemon),
 
       ]),
     );
@@ -434,6 +512,39 @@ class _GoSobreTab extends StatelessWidget {
     return _availCell(ctx, 'Regional',
       r ?? 'Global',
       r != null ? const Color(0xFFE65100) : const Color(0xFF34C759));
+  }
+}
+
+// ─── CHIP DE MOVE GO ─────────────────────────────────────────────
+
+class _MoveChip extends StatelessWidget {
+  final String name;
+  final List<String> types;
+  const _MoveChip({required this.name, required this.types});
+
+  // Formatar nome: VINE_WHIP → Vine Whip
+  String _fmt(String s) => s
+    .replaceAll('_', ' ')
+    .split(' ')
+    .map((w) => w.isEmpty ? '' : w[0].toUpperCase() + w.substring(1).toLowerCase())
+    .join(' ');
+
+  @override
+  Widget build(BuildContext context) {
+    final typeColor = types.isNotEmpty
+        ? TypeColors.fromType(ptType(types[0]))
+        : Theme.of(context).colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: typeColor.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: typeColor.withOpacity(0.35)),
+      ),
+      child: Text(_fmt(name),
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500,
+          color: typeColor)),
+    );
   }
 }
 
@@ -469,7 +580,11 @@ class _GoEvoSection extends StatelessWidget {
                 Column(mainAxisSize: MainAxisSize.min, children: [
                   const Icon(Icons.arrow_forward_ios,
                     size: 12, color: Colors.grey),
-                  _CandyChip(targetId: chain[i + 1]['id'] as int),
+                  _CandyChip(
+                targetId: chain[i + 1]['id'] as int,
+                typeColor: TypeColors.fromType(
+                  ptType(pokemon.types.isNotEmpty ? pokemon.types[0] : 'normal')),
+              ),
                 ]),
                 const SizedBox(width: 6),
               ],
@@ -511,24 +626,54 @@ class _EvoNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final id   = entry['id'] as int;
-    final name = _cap(entry['name'] as String? ?? '');
+    final id    = entry['id'] as int;
+    final name  = _cap(entry['name'] as String? ?? '');
+    final svc   = PokedexDataService.instance;
+    final types = svc.getTypes(id);
+
+    // Número na pokédex GO (entryNumber do bundle, ou '#NNN')
+    // Busca a entrada na dex GO para o ID
+    final entryNum = svc.get(id)?['id'] as int? ?? id;
+
     return Column(mainAxisSize: MainAxisSize.min, children: [
+      Text('#${entryNum.toString().padLeft(3, '0')}',
+        style: TextStyle(fontSize: 9,
+          color: Theme.of(context).colorScheme.onSurfaceVariant)),
+      const SizedBox(height: 2),
       Image.asset('assets/sprites/artwork/$id.webp',
         width: 56, height: 56, fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => const SizedBox(width: 56, height: 56)),
       const SizedBox(height: 4),
       SizedBox(width: 64, child: Text(name,
-        style: const TextStyle(fontSize: 10),
+        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
         textAlign: TextAlign.center, maxLines: 2,
         overflow: TextOverflow.ellipsis)),
+      const SizedBox(height: 4),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        for (final t in types)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: Container(
+              width: 28, height: 28,
+              decoration: BoxDecoration(
+                color: TypeColors.fromType(ptType(t)).withOpacity(0.15),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Image.asset(
+                'assets/types/$t.png',
+                width: 20, height: 20,
+                errorBuilder: (_, __, ___) => const SizedBox()),
+            ),
+          ),
+      ]),
     ]);
   }
 }
 
 class _CandyChip extends StatelessWidget {
   final int targetId;
-  const _CandyChip({required this.targetId});
+  final Color typeColor; // cor do tipo primário do Pokémon
+  const _CandyChip({required this.targetId, required this.typeColor});
 
   @override
   Widget build(BuildContext context) {
@@ -538,13 +683,13 @@ class _CandyChip extends StatelessWidget {
       margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFE91E63).withOpacity(0.12),
+        color: typeColor.withOpacity(0.12),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: const Color(0xFFE91E63).withOpacity(0.3)),
+        border: Border.all(color: typeColor.withOpacity(0.4)),
       ),
       child: Text('${req.candy} doces',
-        style: const TextStyle(fontSize: 9,
-          color: Color(0xFFE91E63), fontWeight: FontWeight.w600)),
+        style: TextStyle(fontSize: 9,
+          color: typeColor, fontWeight: FontWeight.w600)),
     );
   }
 }
@@ -623,7 +768,7 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     final qurt = eff.entries.where((e) => e.value == .391).toList()..sort((a,b) => a.key.compareTo(b.key));
 
 
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
@@ -634,10 +779,12 @@ class _GoStatusTabState extends State<_GoStatusTab> {
               ? const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
                   child: Center(child: PokeballLoader.small()))
-              : Column(children: [
-                  StatBar(label: 'Ataque GO',  value: _goAtk, color: const Color(0xFFE24B4A)),
-                  StatBar(label: 'Defesa GO',  value: _goDef, color: const Color(0xFF378ADD)),
-                  StatBar(label: 'Stamina GO', value: _goSta, color: const Color(0xFF5a9e5a)),
+              : Row(children: [
+                  _statBox(context, 'Ataque', '$_goAtk', typeColor),
+                  Container(width: 0.5, height: 48, color: neutralBorder(context)),
+                  _statBox(context, 'Defesa', '$_goDef', typeColor),
+                  Container(width: 0.5, height: 48, color: neutralBorder(context)),
+                  _statBox(context, 'PS', '$_goSta', typeColor),
                 ]),
         ),
 
@@ -660,6 +807,18 @@ class _GoStatusTabState extends State<_GoStatusTab> {
       ]),
     );
   }
+
+  Widget _statBox(BuildContext ctx, String label, String value, Color color) =>
+    Expanded(child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: Column(children: [
+        Text(value, style: TextStyle(fontSize: 22,
+          fontWeight: FontWeight.w700, color: color)),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 11,
+          color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+      ]),
+    ));
 
   Widget _DmgGroup(String title, List<MapEntry<String, double>> entries) =>
     Padding(
