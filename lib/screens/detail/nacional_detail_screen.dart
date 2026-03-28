@@ -50,7 +50,7 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
   List<Map<String, dynamic>> _movesTutor = [];
   List<Map<String, dynamic>> _movesEgg = [];
   bool _loading = true;
-  String _flavorTextPt = '';
+  List<Map<String, dynamic>> _flavorTexts = [];
   Set<String>? _activePokedexIds; // null = todas ativas
 
   bool get _hasMultipleForms => !_loading && _forms.length > 1;
@@ -101,15 +101,10 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
     _evoChain = svc.getEvoChain(id);
 
     // Flavor text do bundle como fallback imediato
-    _flavorTextPt = svc.getFlavorText(id);
+    _flavorTexts = svc.getFlavorTexts(id);
     if (mounted) setState(() => _loading = false);
 
-    // Busca flavor text correto para o jogo ativo e traduz para PT
-    _api.fetchFlavorText(id, widget.pokedexId).then((text) async {
-      if (text.isEmpty || !mounted) return;
-      final translated = await translateFlavorText(text);
-      if (mounted) setState(() => _flavorTextPt = translated.isNotEmpty ? translated : text);
-    });
+
 
     // Carrega moves em background
     _api.fetchPokemon(id).then((d) {
@@ -156,7 +151,6 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
     return rate > 0 ? '$rate' : '—';
   }
 
-  String get _flavorText => _flavorTextPt;
 
   // Categoria já vem traduzida do JSON
   String get _category => PokedexDataService.instance.getCategory(widget.pokemon.id);
@@ -241,7 +235,7 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
                 evoChain: _evoChain,
                 pokedexId: widget.pokedexId,
                 category: _category,
-                flavorText: _flavorText,
+                flavorTexts: _flavorTexts,
                 height: _height,
                 weight: _weight,
                 availableGames: _availableGames,
@@ -263,13 +257,14 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
 class _NacionalInfoTab extends StatelessWidget {
   final Pokemon pokemon;
   final List<Map<String, dynamic>> abilities, evoChain;
-  final String category, flavorText, height, weight, pokedexId;
+  final List<Map<String, dynamic>> flavorTexts;
+  final String category, height, weight, pokedexId;
   final List<String> availableGames;
   final bool loading;
 
   const _NacionalInfoTab({
     required this.pokemon, required this.abilities, required this.evoChain,
-    required this.category, required this.flavorText,
+    required this.flavorTexts, required this.category,
     required this.height, required this.weight,
     required this.availableGames, required this.loading,
     required this.pokedexId,
@@ -286,11 +281,12 @@ class _NacionalInfoTab extends StatelessWidget {
           pokemonTypes: pokemon.types,
           child: AboutHeader(
             category: category,
-            flavorText: flavorText,
+            flavorTexts: flavorTexts,
             height: height,
             weight: weight,
             types: pokemon.types,
             loading: loading,
+            pokedexId: pokedexId,
           ),
         ),
 

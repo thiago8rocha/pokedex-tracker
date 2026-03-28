@@ -59,10 +59,12 @@ class StorageService {
     final entries = await getSectionEntries(pokedexId, sectionApiName);
     if (entries == null || entries.isEmpty) return 0;
     final caughtSet = await getCaught(pokedexId);
-    final sectionIds = entries.map((e) => e['speciesId']!).toSet();
+    final sectionIds = entries.map((e) => e['speciesId'] as int).toSet();
     return caughtSet.intersection(sectionIds).length;
   }
 
+  /// Versão original — mantida para callers sem formaKey (Pokopia, etc.).
+  /// Retorna Map<int, bool> keyed por speciesId.
   Future<Map<int, bool>> getCaughtMap(String pokedexId, List<int> ids) async {
     final prefs = await SharedPreferences.getInstance();
     final map = <int, bool>{};
@@ -72,29 +74,53 @@ class StorageService {
     return map;
   }
 
-  // ─── CACHE DE ENTRIES (entryNumber + speciesId) ──────────────────
-  // Salva como CSV: "entryNum:speciesId,entryNum:speciesId,..."
+  /// Versão com suporte a formaKey — usada pela PokedexScreen.
+  /// Retorna Map<String, bool> keyed por catchKey.
+  /// catchKey = formaKey presente ? '${speciesId}_${formaKey}' : '$speciesId'
+  /// Persistência continua usando speciesId — retrocompatível.
+  Future<Map<String, bool>> getCaughtMapByEntries(
+      String pokedexId, List<Map<String, dynamic>> entries) async {
+    final prefs = await SharedPreferences.getInstance();
+    final map = <String, bool>{};
+    for (final e in entries) {
+      final speciesId = e['speciesId'] as int;
+      final formaKey  = e['formaKey']  as String?;
+      final catchKey  = formaKey != null ? '${speciesId}_$formaKey' : '$speciesId';
+      map[catchKey] = prefs.getBool('${_caughtPrefix}${pokedexId}_$speciesId') ?? false;
+    }
+    return map;
+  }
+
+  // ─── CACHE DE ENTRIES (entryNumber + speciesId + formaKey?) ──────
+  // Salva como CSV: "entryNum:speciesId[:formaKey],..."
+  // formaKey usa '_' como separador internamente, não ':', seguro de parsear.
 
   Future<void> saveSectionEntries(
-      String pokedexId, String sectionApiName, List<Map<String, int>> entries) async {
+      String pokedexId, String sectionApiName,
+      List<Map<String, dynamic>> entries) async {
     final prefs = await SharedPreferences.getInstance();
-    final encoded = entries
-        .map((e) => '${e['entryNumber']}:${e['speciesId']}')
-        .join(',');
+    final encoded = entries.map((e) {
+      final base = '${e['entryNumber']}:${e['speciesId']}';
+      final fk = e['formaKey'] as String?;
+      return fk != null ? '$base:$fk' : base;
+    }).join(',');
     await prefs.setString('$_sectionPrefix${pokedexId}_$sectionApiName', encoded);
   }
 
-  Future<List<Map<String, int>>?> getSectionEntries(
+  Future<List<Map<String, dynamic>>?> getSectionEntries(
       String pokedexId, String sectionApiName) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString('$_sectionPrefix${pokedexId}_$sectionApiName');
     if (raw == null || raw.isEmpty) return null;
     return raw.split(',').map((s) {
       final parts = s.split(':');
-      return {
+      final entry = <String, dynamic>{
         'entryNumber': int.parse(parts[0]),
-        'speciesId': int.parse(parts[1]),
+        'speciesId':   int.parse(parts[1]),
       };
+      // parts[2] em diante = formaKey (pode conter '_' mas nunca ':')
+      if (parts.length > 2) entry['formaKey'] = parts.sublist(2).join(':');
+      return entry;
     }).toList();
   }
 

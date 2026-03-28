@@ -47,7 +47,7 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
   List<Map<String, dynamic>> _movesTutor = [];
   List<Map<String, dynamic>> _movesEgg = [];
   bool _loading = true;
-  String _flavorTextPt = '';
+  List<Map<String, dynamic>> _flavorTexts = [];
 
   bool get _hasMultipleForms => !_loading && _forms.length > 1;
 
@@ -93,13 +93,8 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
     _evoChain = svc.getEvoChain(id);
 
     // Flavor text do bundle como fallback imediato
-    _flavorTextPt = svc.getFlavorText(id);
-    // Busca flavor text correto para o jogo ativo e traduz para PT
-    _api.fetchFlavorText(id, widget.pokedexId).then((text) async {
-      if (text.isEmpty || !mounted) return;
-      final translated = await translateFlavorText(text);
-      if (mounted) setState(() => _flavorTextPt = translated.isNotEmpty ? translated : text);
-    });
+    _flavorTexts = svc.getFlavorTexts(id);
+
 
     if (mounted) setState(() => _loading = false);
 
@@ -146,7 +141,6 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
     return rate > 0 ? '$rate' : '—';
   }
 
-  String get _flavorText => _flavorTextPt;
   // Categoria já vem traduzida do JSON
   String get _category => PokedexDataService.instance.getCategory(widget.pokemon.id);
 
@@ -184,7 +178,7 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
                 abilities: _abilities,
                 evoChain: _evoChain,
                 category: _category,
-                flavorText: _flavorText,
+                flavorTexts: _flavorTexts,
                 height: _height,
                 weight: _weight,
                 loading: _loading,
@@ -206,12 +200,13 @@ class _SwitchDetailScreenState extends State<SwitchDetailScreen>
 class _SwitchInfoTab extends StatelessWidget {
   final Pokemon pokemon;
   final List<Map<String, dynamic>> abilities, evoChain;
-  final String category, flavorText, height, weight, pokedexId;
+  final List<Map<String, dynamic>> flavorTexts;
+  final String category, height, weight, pokedexId;
   final bool loading;
 
   const _SwitchInfoTab({
     required this.pokemon, required this.abilities, required this.evoChain,
-    required this.category, required this.flavorText,
+    required this.flavorTexts, required this.category,
     required this.height, required this.weight,
     required this.loading, required this.pokedexId,
   });
@@ -227,11 +222,12 @@ class _SwitchInfoTab extends StatelessWidget {
           pokemonTypes: pokemon.types,
           child: AboutHeader(
             category: category,
-            flavorText: flavorText,
+            flavorTexts: flavorTexts,
             height: height,
             weight: weight,
             types: pokemon.types,
             loading: loading,
+            pokedexId: pokedexId,
           ),
         ),
 

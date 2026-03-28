@@ -55,6 +55,22 @@ class PokedexDataService {
   String getFlavorText(int id) =>
       get(id)?['flavorText'] as String? ?? '';
 
+  /// Retorna a lista de grupos de flavor text (novo bundle).
+  /// Cada grupo: {textPt, textEn, games: [...]}
+  /// Fallback: converte o flavorText antigo (string) para lista com 1 grupo.
+  List<Map<String, dynamic>> getFlavorTexts(int id) {
+    final raw = get(id)?['flavorTexts'];
+    if (raw is List && raw.isNotEmpty) {
+      return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    }
+    // Fallback para bundle antigo com flavorText como string
+    final legacy = get(id)?['flavorText'] as String? ?? '';
+    if (legacy.isNotEmpty) {
+      return [{'textPt': legacy, 'textEn': '', 'games': <String>[]}];
+    }
+    return [];
+  }
+
   String getGeneration(int id) =>
       get(id)?['generation'] as String? ?? '';
 

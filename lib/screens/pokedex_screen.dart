@@ -303,15 +303,24 @@ class _PokedexScreenState extends State<PokedexScreen>
       for (final section in _sections) {
         // 1. Cache local (SharedPreferences)
         final cached = await _storage.getSectionEntries(_effectivePokedexId, section.apiName);
+
+        // Valida o cache contra o bundle — se o bundle tiver mais entradas
+        // (ex: regionais adicionadas ao dex_go.json), descarta o cache.
         if (cached != null) {
-          bySection[section.apiName] = cached
-              .map((e) => _Entry(
-                    entryNumber: e['entryNumber'] as int,
-                    speciesId:   e['speciesId']   as int,
-                    formaKey:    e['formaKey']    as String?,
-                  ))
-              .toList();
-          continue;
+          final bundle = await DexBundleService.instance.loadSection(section.apiName);
+          final bundleCount = bundle?.length ?? cached.length;
+          if (cached.length >= bundleCount) {
+            // Cache válido — usa direto
+            bySection[section.apiName] = cached
+                .map((e) => _Entry(
+                      entryNumber: e['entryNumber'] as int,
+                      speciesId:   e['speciesId']   as int,
+                      formaKey:    e['formaKey']    as String?,
+                    ))
+                .toList();
+            continue;
+          }
+          // Cache desatualizado — cai no bundle abaixo
         }
 
         // 2. Bundle local (assets/data/dex/dex_*.json)
@@ -388,8 +397,13 @@ class _PokedexScreenState extends State<PokedexScreen>
 
 
       // Carrega status de captura
-      final allSpeciesIds = _allFilteredEntries().map((e) => e.speciesId).toList();
-      final caughtMap = await _storage.getCaughtMap(_effectivePokedexId, allSpeciesIds);
+      final allEntries = _allFilteredEntries()
+          .map((e) => <String, dynamic>{
+                'speciesId': e.speciesId,
+                if (e.formaKey != null) 'formaKey': e.formaKey,
+              })
+          .toList();
+      final caughtMap = await _storage.getCaughtMapByEntries(_effectivePokedexId, allEntries);
 
       if (!mounted) return;
       setState(() {
@@ -447,9 +461,9 @@ class _PokedexScreenState extends State<PokedexScreen>
     final metLabel    = _isPokopia ? 'encontrados'     : 'capturados';
     final notMetLabel = _isPokopia ? 'não encontrados' : 'não capturados';
     if (_filterStatus == metLabel) {
-      entries = entries.where((e) => _caughtMap[e.speciesId] == true).toList();
+      entries = entries.where((e) => _caughtMap[e.catchKey] == true).toList();
     } else if (_filterStatus == notMetLabel) {
-      entries = entries.where((e) => _caughtMap[e.speciesId] != true).toList();
+      entries = entries.where((e) => _caughtMap[e.catchKey] != true).toList();
     }
 
     // Filtro tipo — mostra Pokémon que tenham TODOS os tipos selecionados
@@ -574,21 +588,21 @@ class _PokedexScreenState extends State<PokedexScreen>
     final toFill = filtered
         .skip(start)
         .take(_pageSize)
-        .where((e) => !_pokemonData.containsKey(e.speciesId))
-        .map((e) => e.speciesId)
+        .where((e) => !_pokemonData.containsKey(e.catchKey))
         .toList();
 
-    for (final id in toFill) {
-      _pokemonData[id] = _localPokemonData(id);
+    for (final e in toFill) {
+      _pokemonData[e.catchKey] = _localPokemonData(e.speciesId, formaKey: e.formaKey);
     }
 
     // Pré-decodifica as imagens antes de montar a grid
-    // Evita o jank de 2-3s ao abrir pela primeira vez
     if (toFill.isNotEmpty && mounted) {
       final spriteType = defaultSpriteNotifier.value;
       await Future.wait(
-        toFill.map((id) {
-          final path = _assetPathFor(id, spriteType);
+        toFill.map((e) {
+          final path = e.formaKey != null
+              ? _buildSpriteUrl(e.speciesId, spriteType, formaKey: e.formaKey)
+              : _assetPathFor(e.speciesId, spriteType);
           return precacheImage(AssetImage(path), context)
               .catchError((_) {});
         }),
@@ -608,42 +622,41 @@ class _PokedexScreenState extends State<PokedexScreen>
 
   // ─── CAPTURA ──────────────────────────────────────────────────────
 
-  Future<void> _toggleCatch(int speciesId) async {
-    final current = _caughtMap[speciesId] ?? false;
+  Future<void> _toggleCatch(String catchKey, int speciesId) async {
+    final current = _caughtMap[catchKey] ?? false;
     final newVal = !current;
     HapticFeedback.mediumImpact();
-    setState(() => _caughtMap[speciesId] = newVal);
+    setState(() => _caughtMap[catchKey] = newVal);
     await _storage.setCaught(_effectivePokedexId, speciesId, newVal);
   }
 
   // ─── DETALHE ──────────────────────────────────────────────────────
 
-  /// Constrói um Pokemon a partir do speciesId — usa dados locais do bundle.
-  Pokemon? _buildPokemon(int speciesId, {required int entryNumber}) {
-    final data = _pokemonData[speciesId];
+  /// Constrói um Pokemon a partir de uma _Entry — usa dados locais do bundle.
+  /// Quando formaKey está presente, usa nome, tipos e sprite da forma regional.
+  Pokemon? _buildPokemon(_Entry entry) {
+    final data = _pokemonData[entry.catchKey];
     if (data == null) return null;
 
-    final rawName = data['name'] as String;
-    final baseName = rawName.startsWith('#') ? rawName : rawName.split('-').first;
-    final displayName = baseName.startsWith('#')
-        ? baseName
-        : baseName[0].toUpperCase() + baseName.substring(1);
+    // Nome já está correto no _pokemonData (tratado em _localPokemonData)
+    final displayName = data['name'] as String;
 
     final types = _api.extractTypes(data);
 
-    // Sprites — montadas localmente
+    // Sprites — usa formaKey quando presente
     final spriteType = defaultSpriteNotifier.value;
-    final spriteUrl      = _buildSpriteUrl(speciesId, spriteType);
-    final pixelUrl       = _buildSpriteUrl(speciesId, 'pixel');
-    final homeUrl        = _buildSpriteUrl(speciesId, 'home');
-    final artworkUrl     = _buildSpriteUrl(speciesId, 'artwork');
-    // Shiny segue o mesmo padrão com /shiny/
+    final fk = entry.formaKey;
+    final sid = entry.speciesId;
+    final spriteUrl  = _buildSpriteUrl(sid, spriteType, formaKey: fk);
+    final pixelUrl   = _buildSpriteUrl(sid, 'pixel',    formaKey: fk);
+    final homeUrl    = _buildSpriteUrl(sid, 'home',     formaKey: fk);
+    final artworkUrl = _buildSpriteUrl(sid, 'artwork',  formaKey: fk);
     const base = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
-    final shinyUrl       = '$base/other/official-artwork/shiny/$speciesId.png';
-    final pixelShinyUrl  = '$base/shiny/$speciesId.png';
-    final homeShinyUrl   = '$base/other/home/shiny/$speciesId.png';
+    final shinyUrl      = '$base/other/official-artwork/shiny/$sid.png';
+    final pixelShinyUrl = '$base/shiny/$sid.png';
+    final homeShinyUrl  = '$base/other/home/shiny/$sid.png';
 
-    // Stats — lidos da API se disponíveis, senão zero
+    // Stats
     final rawStats = data['stats'] as List<dynamic>?;
     int statVal(String name) {
       if (rawStats == null) return 0;
@@ -655,8 +668,8 @@ class _PokedexScreenState extends State<PokedexScreen>
     }
 
     return Pokemon(
-      id:                  speciesId,
-      entryNumber:         entryNumber,
+      id:                  sid,
+      entryNumber:         entry.entryNumber,
       name:                displayName,
       types:               types,
       baseHp:              statVal('hp'),
@@ -677,14 +690,12 @@ class _PokedexScreenState extends State<PokedexScreen>
   }
 
   void _openDetail(_Entry entry) async {
-    // Navegação no detalhe sempre usa a lista completa (sem busca)
-    // para que prev/next funcionem independente do filtro ativo
     final savedQuery = _searchQuery;
     _searchQuery = '';
     final fullList = _allFilteredEntries();
     _searchQuery = savedQuery;
 
-    final idx = fullList.indexWhere((e) => e.speciesId == entry.speciesId);
+    final idx = fullList.indexWhere((e) => e.catchKey == entry.catchKey);
     await _openDetailAt(fullList, idx);
   }
 
@@ -693,45 +704,45 @@ class _PokedexScreenState extends State<PokedexScreen>
     final entry = filtered[idx];
 
     // Garante dados locais básicos
-    if (!_pokemonData.containsKey(entry.speciesId)) {
-      _pokemonData[entry.speciesId] = _localPokemonData(entry.speciesId);
+    if (!_pokemonData.containsKey(entry.catchKey)) {
+      _pokemonData[entry.catchKey] = _localPokemonData(entry.speciesId, formaKey: entry.formaKey);
     }
 
-    // Busca stats se ainda não temos — aguarda com timeout para não bloquear
-    if (_pokemonData[entry.speciesId]!['stats'] == null) {
+    // Busca stats se ainda não temos
+    if (_pokemonData[entry.catchKey]!['stats'] == null) {
       final apiData = await _api.fetchPokemon(entry.speciesId)
           .timeout(const Duration(seconds: 4), onTimeout: () => null);
       if (apiData != null && mounted) {
-        _pokemonData[entry.speciesId] = {
-          ..._pokemonData[entry.speciesId]!,
+        _pokemonData[entry.catchKey] = {
+          ..._pokemonData[entry.catchKey]!,
           'stats': apiData['stats'],
         };
       }
     }
 
-    final pokemon = _buildPokemon(entry.speciesId, entryNumber: entry.entryNumber);
+    final pokemon = _buildPokemon(entry);
     if (pokemon == null) return;
 
-    bool isCaught = _caughtMap[entry.speciesId] ?? false;
+    bool isCaught = _caughtMap[entry.catchKey] ?? false;
 
     // Vizinhos — pré-carrega localmente
     final prevEntry = idx > 0 ? filtered[idx - 1] : null;
     final nextEntry = idx < filtered.length - 1 ? filtered[idx + 1] : null;
 
-    if (prevEntry != null && !_pokemonData.containsKey(prevEntry.speciesId)) {
-      _pokemonData[prevEntry.speciesId] = _localPokemonData(prevEntry.speciesId);
+    if (prevEntry != null && !_pokemonData.containsKey(prevEntry.catchKey)) {
+      _pokemonData[prevEntry.catchKey] = _localPokemonData(prevEntry.speciesId, formaKey: prevEntry.formaKey);
     }
-    if (nextEntry != null && !_pokemonData.containsKey(nextEntry.speciesId)) {
-      _pokemonData[nextEntry.speciesId] = _localPokemonData(nextEntry.speciesId);
+    if (nextEntry != null && !_pokemonData.containsKey(nextEntry.catchKey)) {
+      _pokemonData[nextEntry.catchKey] = _localPokemonData(nextEntry.speciesId, formaKey: nextEntry.formaKey);
     }
 
-    // Pré-carrega stats dos vizinhos em background (sem await)
+    // Pré-carrega stats dos vizinhos em background
     for (final neighbor in [prevEntry, nextEntry]) {
-      if (neighbor != null && _pokemonData[neighbor.speciesId]?['stats'] == null) {
+      if (neighbor != null && _pokemonData[neighbor.catchKey]?['stats'] == null) {
         _api.fetchPokemon(neighbor.speciesId).then((apiData) {
           if (apiData != null && mounted) {
-            _pokemonData[neighbor.speciesId] = {
-              ..._pokemonData[neighbor.speciesId]!,
+            _pokemonData[neighbor.catchKey] = {
+              ..._pokemonData[neighbor.catchKey]!,
               'stats': apiData['stats'],
             };
           }
@@ -744,29 +755,23 @@ class _PokedexScreenState extends State<PokedexScreen>
 
     if (prevEntry != null) {
       _prevId = prevEntry.entryNumber;
-      final d = _pokemonData[prevEntry.speciesId];
-      if (d != null) {
-        final raw = (d['name'] as String).split('-').first;
-        _prevName = raw[0].toUpperCase() + raw.substring(1);
-      } else {
-        _prevName = PokedexDataService.instance.getName(prevEntry.speciesId);
-      }
+      final d = _pokemonData[prevEntry.catchKey];
+      _prevName = d != null
+          ? d['name'] as String
+          : PokedexDataService.instance.getName(prevEntry.speciesId);
     }
     if (nextEntry != null) {
       _nextId = nextEntry.entryNumber;
-      final d = _pokemonData[nextEntry.speciesId];
-      if (d != null) {
-        final raw = (d['name'] as String).split('-').first;
-        _nextName = raw[0].toUpperCase() + raw.substring(1);
-      } else {
-        _nextName = PokedexDataService.instance.getName(nextEntry.speciesId);
-      }
+      final d = _pokemonData[nextEntry.catchKey];
+      _nextName = d != null
+          ? d['name'] as String
+          : PokedexDataService.instance.getName(nextEntry.speciesId);
     }
 
     final onToggle = () async {
       isCaught = !isCaught;
       await _storage.setCaught(_effectivePokedexId, entry.speciesId, isCaught);
-      if (mounted) setState(() => _caughtMap[entry.speciesId] = isCaught);
+      if (mounted) setState(() => _caughtMap[entry.catchKey] = isCaught);
     };
 
     final isNacional = _effectivePokedexId == 'nacional';
@@ -825,57 +830,59 @@ class _PokedexScreenState extends State<PokedexScreen>
 
     if (mounted) {
       final updated = await _storage.isCaught(_effectivePokedexId, entry.speciesId);
-      setState(() => _caughtMap[entry.speciesId] = updated);
+      setState(() => _caughtMap[entry.catchKey] = updated);
     }
   }
 
-  /// Navega para prev/next a partir da tela de detalhe usando pushReplacement
-  /// com fade — evita o piscar da tela anterior.
   Future<void> _navigateFromDetail(
       NavigatorState nav, List<_Entry> filtered, int newIdx) async {
     if (newIdx < 0 || newIdx >= filtered.length) return;
     final entry = filtered[newIdx];
 
-    if (!_pokemonData.containsKey(entry.speciesId)) {
+    if (!_pokemonData.containsKey(entry.catchKey)) {
       final batch = await _api.fetchPokemonBatch([entry.speciesId]);
       if (!mounted) return;
-      for (final p in batch) _pokemonData[p['id'] as int] = p;
+      for (final p in batch) {
+        _pokemonData[entry.catchKey] = p;
+      }
     }
 
-    final pokemon = _buildPokemon(entry.speciesId, entryNumber: entry.entryNumber);
+    final pokemon = _buildPokemon(entry);
     if (pokemon == null) return;
 
-    bool isCaught = _caughtMap[entry.speciesId] ?? false;
+    bool isCaught = _caughtMap[entry.catchKey] ?? false;
 
     final prevEntry = newIdx > 0 ? filtered[newIdx - 1] : null;
     final nextEntry = newIdx < filtered.length - 1 ? filtered[newIdx + 1] : null;
 
     for (final e in [prevEntry, nextEntry]) {
-      if (e != null && !_pokemonData.containsKey(e.speciesId)) {
+      if (e != null && !_pokemonData.containsKey(e.catchKey)) {
         _api.fetchPokemonBatch([e.speciesId]).then((batch) {
-          if (mounted) for (final p in batch) _pokemonData[p['id'] as int] = p;
+          if (mounted) for (final p in batch) _pokemonData[e.catchKey] = p;
         });
       }
     }
 
     String? prevName, nextName; int? prevId, nextId;
     if (prevEntry != null) {
-      final d = _pokemonData[prevEntry.speciesId];
+      final d = _pokemonData[prevEntry.catchKey];
       prevId = prevEntry.entryNumber;
-      if (d != null) { final r = (d['name'] as String).split('-').first; prevName = r[0].toUpperCase() + r.substring(1); }
-      else { prevName = PokedexDataService.instance.getName(prevEntry.speciesId); }
+      prevName = d != null
+          ? d['name'] as String
+          : PokedexDataService.instance.getName(prevEntry.speciesId);
     }
     if (nextEntry != null) {
-      final d = _pokemonData[nextEntry.speciesId];
+      final d = _pokemonData[nextEntry.catchKey];
       nextId = nextEntry.entryNumber;
-      if (d != null) { final r = (d['name'] as String).split('-').first; nextName = r[0].toUpperCase() + r.substring(1); }
-      else { nextName = PokedexDataService.instance.getName(nextEntry.speciesId); }
+      nextName = d != null
+          ? d['name'] as String
+          : PokedexDataService.instance.getName(nextEntry.speciesId);
     }
 
     final onToggle = () async {
       isCaught = !isCaught;
       await _storage.setCaught(_effectivePokedexId, entry.speciesId, isCaught);
-      if (mounted) setState(() => _caughtMap[entry.speciesId] = isCaught);
+      if (mounted) setState(() => _caughtMap[entry.catchKey] = isCaught);
     };
 
     final isNacional = _effectivePokedexId == 'nacional';
@@ -1223,16 +1230,16 @@ class _PokedexScreenState extends State<PokedexScreen>
           itemBuilder: (context, index) {
             if (index >= _visibleEntries.length) return _SkeletonCard();
             final entry = _visibleEntries[index];
-            final data = _pokemonData[entry.speciesId];
+            final data = _pokemonData[entry.catchKey];
             return ValueListenableBuilder<String>(
               valueListenable: defaultSpriteNotifier,
               builder: (_, sprite, __) => _PokemonCard(
                 entry: entry,
                 data: data,
-                caught: _caughtMap[entry.speciesId] ?? false,
+                caught: _caughtMap[entry.catchKey] ?? false,
                 defaultSprite: sprite,
-                onLongPress: () => _toggleCatch(entry.speciesId),
-                onToggle: () => _toggleCatch(entry.speciesId),
+                onLongPress: () => _toggleCatch(entry.catchKey, entry.speciesId),
+                onToggle: () => _toggleCatch(entry.catchKey, entry.speciesId),
                 onTap: () => _openDetail(entry),
               ),
             );
