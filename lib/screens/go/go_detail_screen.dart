@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/services/pokedex_data_service.dart';
 import 'package:pokedex_tracker/theme/type_colors.dart';
+import 'package:pokedex_tracker/translations.dart' show translateMove;
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
     show DetailHeader, SectionCard, TypeBadge, FormsTab, PokeballLoader,
          secTitle, neutralBg, neutralBorder, ptType, typeTextColor,
@@ -500,13 +501,15 @@ class _GoMovesTab extends StatefulWidget {
 }
 
 class _GoMovesTabState extends State<_GoMovesTab> {
-  List<String> _fast    = [];
-  List<String> _charged = [];
+  List<Map<String,String>> _fast    = []; // {name, namePt, type, power}
+  List<Map<String,String>> _charged = [];
   bool _loading = true;
   bool _error   = false;
 
-  // Cache estático para não rebuscar ao trocar de aba
-  static final Map<int, Map<String, List<String>>> _cache = {};
+  // Cache estático de moves detalhados por pokemonId
+  static final Map<int, Map<String, List<Map<String,String>>>> _cache = {};
+  // Cache estático dos detalhes de todos os moves (carregado uma vez)
+  static Map<String, Map<String,String>>? _moveDetails; // key: nome EN lowercase
 
   @override
   void initState() {
@@ -525,18 +528,56 @@ class _GoMovesTabState extends State<_GoMovesTab> {
       return;
     }
     try {
+      // Carregar detalhes de todos os moves uma vez (tipo + poder)
+      if (_moveDetails == null) {
+        final futures = await Future.wait([
+          http.get(Uri.parse('https://pogoapi.net/api/v1/pvp_fast_moves.json'))
+              .timeout(const Duration(seconds: 8)),
+          http.get(Uri.parse('https://pogoapi.net/api/v1/pvp_charged_moves.json'))
+              .timeout(const Duration(seconds: 8)),
+        ]);
+        final details = <String, Map<String,String>>{};
+        for (final r in futures) {
+          if (r.statusCode == 200) {
+            final list = json.decode(r.body) as List<dynamic>;
+            for (final m in list) {
+              final mv   = m as Map<String, dynamic>;
+              final name = (mv['name'] as String? ?? '').toLowerCase();
+              if (name.isNotEmpty) {
+                details[name] = {
+                  'type':  (mv['type']  as String? ?? '').toLowerCase(),
+                  'power': (mv['power'] as num?   ?? 0).toInt().toString(),
+                };
+              }
+            }
+          }
+        }
+        _moveDetails = details;
+      }
+
+      // Buscar moves do pokémon
       final r = await http.get(
         Uri.parse('https://pogoapi.net/api/v1/current_pokemon_moves.json'),
       ).timeout(const Duration(seconds: 8));
       if (r.statusCode == 200 && mounted) {
-        // Estrutura confirmada: array de objetos com pokemon_id (int),
-        // fast_moves (List<String>) e charged_moves (List<String>)
         final body = json.decode(r.body) as List<dynamic>;
         for (final entry in body) {
           final e = entry as Map<String, dynamic>;
           if ((e['pokemon_id'] as num?)?.toInt() == id) {
-            final fast    = List<String>.from(e['fast_moves']    as List? ?? []);
-            final charged = List<String>.from(e['charged_moves'] as List? ?? []);
+            List<Map<String,String>> enrich(List<dynamic> names) =>
+              names.map((n) {
+                final nameEn = n as String;
+                final key    = nameEn.toLowerCase();
+                final det    = _moveDetails?[key];
+                return {
+                  'nameEn': nameEn,
+                  'namePt': translateMove(nameEn),
+                  'type':   det?['type']  ?? '',
+                  'power':  det?['power'] ?? '0',
+                };
+              }).toList();
+            final fast    = enrich(e['fast_moves']    as List? ?? []);
+            final charged = enrich(e['charged_moves'] as List? ?? []);
             _cache[id] = {'fast': fast, 'charged': charged};
             if (mounted) setState(() {
               _fast = fast; _charged = charged; _loading = false;
@@ -548,13 +589,6 @@ class _GoMovesTabState extends State<_GoMovesTab> {
     } catch (_) {}
     if (mounted) setState(() { _loading = false; _error = true; });
   }
-
-  // Formatar nome: VINE_WHIP → Vine Whip
-  String _fmt(String s) => s
-      .replaceAll('_', ' ')
-      .split(' ')
-      .map((w) => w.isEmpty ? '' : w[0].toUpperCase() + w.substring(1).toLowerCase())
-      .join(' ');
 
   @override
   Widget build(BuildContext context) {
@@ -594,9 +628,7 @@ class _GoMovesTabState extends State<_GoMovesTab> {
             pokemonTypes: types,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: _fast.map((move) =>
-                _GoMoveRow(name: _fmt(move), typeColor: typeColor)
-              ).toList(),
+              children: _fast.map((m) => _GoMoveRow(move: m)).toList(),
             ),
           ),
 
@@ -609,9 +641,7 @@ class _GoMovesTabState extends State<_GoMovesTab> {
             pokemonTypes: types,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: _charged.map((move) =>
-                _GoMoveRow(name: _fmt(move), typeColor: typeColor)
-              ).toList(),
+              children: _charged.map((m) => _GoMoveRow(move: m)).toList(),
             ),
           ),
 
@@ -621,21 +651,53 @@ class _GoMovesTabState extends State<_GoMovesTab> {
 }
 
 class _GoMoveRow extends StatelessWidget {
-  final String name;
-  final Color typeColor;
-  const _GoMoveRow({required this.name, required this.typeColor});
+  final Map<String, String> move;
+  const _GoMoveRow({required this.move});
 
   @override
   Widget build(BuildContext context) {
+    final namePt  = move['namePt'] ?? move['nameEn'] ?? '';
+    final type    = move['type']  ?? '';
+    final power   = int.tryParse(move['power'] ?? '0') ?? 0;
+    final typeColor = type.isNotEmpty
+        ? TypeColors.fromType(ptType(type))
+        : Theme.of(context).colorScheme.primary;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(children: [
-        Container(width: 3, height: 18,
-          decoration: BoxDecoration(
-            color: typeColor,
-            borderRadius: BorderRadius.circular(2))),
-        const SizedBox(width: 10),
-        Text(name, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+        // Ícone de tipo
+        if (type.isNotEmpty)
+          Container(
+            width: 28, height: 28,
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: typeColor.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Image.asset(
+              'assets/types/$type.png',
+              width: 18, height: 18,
+              errorBuilder: (_, __, ___) => const SizedBox()),
+          )
+        else
+          const SizedBox(width: 36),
+        // Nome traduzido
+        Expanded(child: Text(namePt,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
+        // Poder
+        if (power > 0)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: typeColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: typeColor.withOpacity(0.3)),
+            ),
+            child: Text('$power',
+              style: TextStyle(fontSize: 11,
+                fontWeight: FontWeight.w700, color: typeColor)),
+          ),
       ]),
     );
   }
@@ -861,49 +923,43 @@ class _GoStatusTabState extends State<_GoStatusTab> {
     final qurt = eff.entries.where((e) => e.value == .391).toList()..sort((a,b) => a.key.compareTo(b.key));
 
 
-    // Sem SingleChildScrollView — o conteúdo do Status sempre cabe na tela.
-    // Padding + Column alinhado ao topo: sem scroll, sem espaço vazio.
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
-          SectionCard(
-            title: 'STATUS',
-            pokemonTypes: types,
-            child: _goAtk == 0
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(child: PokeballLoader.small()))
-                : Row(children: [
-                    _statBox(context, 'PS',     '$_goSta', typeColor),
-                    Container(width: 0.5, height: 56, color: neutralBorder(context)),
-                    _statBox(context, 'Ataque', '$_goAtk', typeColor),
-                    Container(width: 0.5, height: 56, color: neutralBorder(context)),
-                    _statBox(context, 'Defesa', '$_goDef', typeColor),
-                  ]),
+        SectionCard(
+          title: 'STATUS',
+          pokemonTypes: types,
+          child: _goAtk == 0
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Center(child: PokeballLoader.small()))
+              : Row(children: [
+                  _statBox(context, 'PS',     '$_goSta', typeColor),
+                  Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                  _statBox(context, 'Ataque', '$_goAtk', typeColor),
+                  Container(width: 0.5, height: 56, color: neutralBorder(context)),
+                  _statBox(context, 'Defesa', '$_goDef', typeColor),
+                ]),
+        ),
+
+        const SizedBox(height: 20),
+
+        SectionCard(
+          title: 'EFETIVIDADE DE TIPOS',
+          pokemonTypes: types,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
+              if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
+              if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
+              if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
+            ],
           ),
+        ),
 
-          const SizedBox(height: 20),
-
-          SectionCard(
-            title: 'EFETIVIDADE DE TIPOS',
-            pokemonTypes: types,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (quad.isNotEmpty) _DmgGroup('Muito fraco a',       quad),
-                if (frac.isNotEmpty) _DmgGroup('Fraco a',             frac),
-                if (half.isNotEmpty) _DmgGroup('Resistente a',        half),
-                if (qurt.isNotEmpty) _DmgGroup('Muito resistente a',  qurt),
-              ],
-            ),
-          ),
-
-        ],
-      ),
+      ]),
     );
   }
 
