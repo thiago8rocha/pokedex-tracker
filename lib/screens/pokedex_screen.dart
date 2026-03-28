@@ -1544,15 +1544,17 @@ class _PokedexScreenState extends State<PokedexScreen>
           const SizedBox(width: 6),
         ],
         // ── Pokopia: filtro de Especialidades ──
-        if (_isPokopia) ...[ 
+        if (_isPokopia) ...[
           Expanded(
             child: _FilterDropBtn(
               label: _filterSpecialties.isEmpty
-                  ? 'Especialidade'
+                  ? 'Especialidades'
                   : _filterSpecialties.length == 1
                       ? _filterSpecialties.first
                       : '${_filterSpecialties.length} especialidades',
               active: _filterSpecialties.isNotEmpty,
+              centered: true,
+              showArrow: false,
               onTap: _showSpecialtyPicker,
               onClear: _filterSpecialties.isNotEmpty ? () {
                 setState(() { _filterSpecialties.clear(); _currentPage = 0; _visibleEntries = []; });
@@ -1561,7 +1563,7 @@ class _PokedexScreenState extends State<PokedexScreen>
             ),
           ),
         // ── Mainline/GO: filtros de Geração + Tipo ──
-        ] else ...[ 
+        ] else ...[
           Expanded(
             flex: 3,
             child: _FilterDropBtn(
@@ -2081,9 +2083,11 @@ class _FilterSheetState extends State<_FilterSheet> {
                         const SizedBox(width: 4),
                       ],
                       Text(
-                        s == 'todos' ? 'Todos'
-                            : s == 'capturados' ? 'Capturados'
-                            : 'Não capturados',
+                        s == 'todos'            ? 'Todos'
+                        : s == 'capturados'     ? 'Capturados'
+                        : s == 'encontrados'    ? 'Encontrados'
+                        : s == 'não encontrados'? 'Não encontrados'
+                        : 'Não capturados',
                         style: TextStyle(
                           fontSize: 12, fontWeight: FontWeight.w500,
                           color: _status == s ? scheme.primary : scheme.onSurface)),
@@ -2093,29 +2097,6 @@ class _FilterSheetState extends State<_FilterSheet> {
               )),
           ]),
           const SizedBox(height: 20),
-
-          // ── Especialidade (só Pokopia) ───────────────────────────
-          if (widget.isPokopia) ...[
-            Row(children: [
-              Expanded(child: Text('Especialidade',
-                style: Theme.of(context).textTheme.labelMedium
-                    ?.copyWith(color: scheme.onSurfaceVariant, letterSpacing: 0.8))),
-              if (_specialties.isNotEmpty)
-                GestureDetector(
-                  onTap: () => setState(() => _specialties = {}),
-                  child: Text('Limpar',
-                    style: TextStyle(fontSize: 12, color: scheme.primary)),
-                ),
-            ]),
-            const SizedBox(height: 8),
-            Wrap(spacing: 6, runSpacing: 6, children: [
-              for (final sp in _allSpecialties)
-                _buildSpecialtyChip(sp, scheme),
-            ]),
-            const SizedBox(height: 20),
-          ],
-
-
 
           // ── Ordenar por ──────────────────────────────────────────
           Text('Ordenar por', style: Theme.of(context).textTheme.labelMedium
@@ -2279,8 +2260,10 @@ class _FilterDropBtn extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
   final VoidCallback? onClear;
+  final bool centered;
+  final bool showArrow;
   const _FilterDropBtn({required this.label, required this.active,
-    required this.onTap, this.onClear});
+    required this.onTap, this.onClear, this.centered = false, this.showArrow = true});
 
   @override
   Widget build(BuildContext context) {
@@ -2300,11 +2283,12 @@ class _FilterDropBtn extends StatelessWidget {
         child: Row(children: [
           Expanded(child: Text(label,
             overflow: TextOverflow.ellipsis,
+            textAlign: centered ? TextAlign.center : TextAlign.start,
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: fg))),
           if (onClear != null)
             GestureDetector(onTap: onClear,
               child: Icon(Icons.close, size: 13, color: fg))
-          else
+          else if (showArrow)
             Icon(Icons.keyboard_arrow_down, size: 14, color: fg),
         ]),
       ),
@@ -2380,33 +2364,64 @@ class _SpecialtyDropSheetState extends State<_SpecialtyDropSheet> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    // Largura fixa dos chips para alinhar em grid uniforme
+    // Calculada para caber 3 por linha em telas comuns (~360dp de conteúdo)
+    const double chipWidth = 116.0;
+    const double chipHeight = 38.0;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(children: [
-              Expanded(child: Text('Especialidade',
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w600))),
-              if (_selected.isNotEmpty)
-                TextButton(
-                  onPressed: () => setState(() => _selected = {}),
-                  child: const Text('Limpar'),
+            // Cabeçalho
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: Text('Especialidades',
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600)),
                 ),
-            ]),
-            const SizedBox(height: 12),
+                if (_selected.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    child: TextButton(
+                      onPressed: () => setState(() => _selected = {}),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(48, 32),
+                      ),
+                      child: const Text('Limpar'),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            // Aviso de limite
+            Text(
+              'Selecione até 2 especialidades',
+              style: TextStyle(
+                fontSize: 11,
+                color: scheme.onSurfaceVariant.withOpacity(0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 14),
+            // Grid de chips com largura fixa
             Flexible(
               child: SingleChildScrollView(
                 child: Wrap(
+                  alignment: WrapAlignment.center,
                   spacing: 6,
                   runSpacing: 6,
                   children: _allSpecialties.map((sp) {
                     final isSelected = _selected.contains(sp);
+                    final isDisabled = !isSelected && _selected.length >= 2;
                     return GestureDetector(
-                      onTap: () => setState(() {
+                      onTap: isDisabled ? null : () => setState(() {
                         if (isSelected) {
                           _selected.remove(sp);
                         } else {
@@ -2415,35 +2430,48 @@ class _SpecialtyDropSheetState extends State<_SpecialtyDropSheet> {
                       }),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        width: chipWidth,
+                        height: chipHeight,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? scheme.primary
-                              : scheme.surfaceContainerHighest,
+                              : isDisabled
+                                  ? scheme.surfaceContainerHighest.withOpacity(0.4)
+                                  : scheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: isSelected ? scheme.primary : scheme.outlineVariant,
+                            color: isSelected
+                                ? scheme.primary
+                                : scheme.outlineVariant.withOpacity(isDisabled ? 0.4 : 1.0),
                             width: isSelected ? 0 : 1,
                           ),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset(
                               specialtyIconPath(sp),
                               width: 18,
                               height: 18,
+                              color: isDisabled && !isSelected
+                                  ? scheme.onSurfaceVariant.withOpacity(0.4)
+                                  : null,
                               errorBuilder: (_, __, ___) => const SizedBox(width: 18, height: 18),
                             ),
-                            const SizedBox(width: 6),
-                            Text(sp,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: isSelected
-                                    ? scheme.onPrimary
-                                    : scheme.onSurfaceVariant,
-                              )),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(sp,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: isSelected
+                                      ? scheme.onPrimary
+                                      : scheme.onSurfaceVariant
+                                          .withOpacity(isDisabled ? 0.4 : 1.0),
+                                )),
+                            ),
                           ],
                         ),
                       ),
