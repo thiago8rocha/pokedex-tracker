@@ -399,106 +399,144 @@ class _EventHabitatTileState extends State<_EventHabitatTile> {
     final scheme = Theme.of(context).colorScheme;
     final h = widget.habitat;
 
-    return GestureDetector(
-      onTap: () => setState(() => _expanded = !_expanded),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: scheme.outlineVariant, width: 1),
-        ),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Text(
-              '#${h.id.toString().padLeft(3, '0')}',
-              style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: scheme.onSurfaceVariant),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(h.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w600)),
-            ),
-            Icon(
-                _expanded ? Icons.expand_less : Icons.expand_more,
-                size: 18,
-                color: scheme.onSurfaceVariant),
-          ]),
-          const SizedBox(height: 4),
-          Text(h.eventName,
-              style:
-                  TextStyle(fontSize: 10, color: scheme.onSurfaceVariant)),
-          if (h.flavorText.isNotEmpty) ...[
-            const SizedBox(height: 5),
-            Text(
-              h.flavorText,
-              style: TextStyle(
-                fontSize: 11,
-                color: scheme.onSurfaceVariant,
-                height: 1.4,
-                fontStyle: FontStyle.italic,
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: scheme.outlineVariant, width: 1),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Preview da imagem
+        ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+          child: SizedBox(
+            height: 80,
+            width: double.infinity,
+            child: Image.asset(
+              h.imageAsset,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: scheme.surfaceContainerHighest,
+                child: const Center(
+                  child: Icon(Icons.landscape_outlined,
+                      size: 28, color: Color(0x4D607D8B)),
+                ),
               ),
             ),
-          ],
-          if (h.items.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              children: h.items
-                  .map((c) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: scheme.surfaceContainer,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                              color: scheme.outlineVariant, width: 0.5),
-                        ),
-                        child: Text(c,
-                            style: TextStyle(
-                                fontSize: 10, color: scheme.onSurface)),
-                      ))
-                  .toList(),
-            ),
-          ],
-          if (_expanded) ...[
-            const SizedBox(height: 8),
-            Text('Pokemon possiveis',
-                style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: scheme.onSurfaceVariant)),
-            const SizedBox(height: 4),
-            Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              children: h.pokemon
-                  .map((p) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: scheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          '${p.name} - ${p.rarity}',
-                          style: TextStyle(
-                              fontSize: 10, color: scheme.onSurface),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ],
-        ]),
-      ),
+          ),
+        ),
+
+        // Info
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                Text(
+                  '#${h.id.toString().padLeft(3, '0')}',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurfaceVariant),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(h.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w600)),
+                ),
+                GestureDetector(
+                  onTap: () => setState(() => _expanded = !_expanded),
+                  child: Icon(
+                    _expanded ? Icons.expand_less : Icons.expand_more,
+                    size: 18,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ]),
+              if (h.flavorText.isNotEmpty) ...[
+                const SizedBox(height: 5),
+                Text(
+                  h.flavorText,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: scheme.onSurfaceVariant,
+                    height: 1.4,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+
+              if (_expanded) ...[
+                const SizedBox(height: 8),
+
+                // Itens
+                if (h.items.isNotEmpty) ...[
+                  Text('Itens necessários',
+                      style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurfaceVariant)),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 5,
+                    runSpacing: 4,
+                    children: h.items
+                        .map((item) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: scheme.surfaceContainer,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: scheme.outlineVariant, width: 0.5),
+                              ),
+                              child: Text(item,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      color: scheme.onSurface)),
+                            ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+
+                // Pokémon
+                if (h.pokemon.isNotEmpty) ...[
+                  Text('Pokémon possíveis',
+                      style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurfaceVariant)),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 5,
+                    runSpacing: 4,
+                    children: h.pokemon
+                        .map((p) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: scheme.surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${p.name} - ${p.rarity}',
+                                style: TextStyle(
+                                    fontSize: 10, color: scheme.onSurface),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ],
+            ],
+          ),
+        ),
+      ]),
     );
   }
 }
