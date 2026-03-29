@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 /// Acessa os dados locais de pokémon do arquivo assets/data/pokedex_data.json.
@@ -23,20 +24,21 @@ class PokedexDataService {
   Future<void> load() async {
     if (_loaded) return;
     try {
-      final raw = await rootBundle.loadString(_assetPath);
-      final decoded = json.decode(raw) as Map<String, dynamic>;
-      _data = decoded.map((k, v) =>
-          MapEntry(int.parse(k), Map<String, dynamic>.from(v as Map)));
+      // Lê os 3 arquivos em paralelo (I/O assíncrono, não bloqueia a UI)
+      final results = await Future.wait([
+        rootBundle.loadString(_assetPath),
+        rootBundle.loadString(_namesPath),
+        rootBundle.loadString(_formsPath),
+      ]);
 
-      final rawNames = await rootBundle.loadString(_namesPath);
-      final decodedNames = json.decode(rawNames) as Map<String, dynamic>;
-      _names = decodedNames.map((k, v) => MapEntry(int.parse(k), v as String));
+      // Decodifica os JSONs em isolates separados (off main thread)
+      final decoded      = await compute(_decodePokedex,  results[0]);
+      final decodedNames = await compute(_decodeNames,    results[1]);
+      final decodedForms = await compute(_decodeForms,    results[2]);
 
-      final rawForms = await rootBundle.loadString(_formsPath);
-      final decodedForms = json.decode(rawForms) as Map<String, dynamic>;
-      _forms = decodedForms.map((k, v) =>
-          MapEntry(int.parse(k), v as List<dynamic>));
-
+      _data  = decoded;
+      _names = decodedNames;
+      _forms = decodedForms;
       _loaded = true;
     } catch (_) {}
   }
@@ -104,4 +106,24 @@ class PokedexDataService {
 
   /// Lista de formas alternativas para um pokémon.
   List<dynamic> getForms(int id) => _forms[id] ?? [];
+}
+
+// ─── Funções top-level para compute() ─────────────────────────────
+// Precisam estar fora da classe para rodar em isolate separado.
+
+Map<int, Map<String, dynamic>> _decodePokedex(String raw) {
+  final decoded = json.decode(raw) as Map<String, dynamic>;
+  return decoded.map((k, v) =>
+      MapEntry(int.parse(k), Map<String, dynamic>.from(v as Map)));
+}
+
+Map<int, String> _decodeNames(String raw) {
+  final decoded = json.decode(raw) as Map<String, dynamic>;
+  return decoded.map((k, v) => MapEntry(int.parse(k), v as String));
+}
+
+Map<int, List<dynamic>> _decodeForms(String raw) {
+  final decoded = json.decode(raw) as Map<String, dynamic>;
+  return decoded.map((k, v) =>
+      MapEntry(int.parse(k), v as List<dynamic>));
 }

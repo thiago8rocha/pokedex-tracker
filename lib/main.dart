@@ -44,9 +44,9 @@ Future<void> _clearLegacyCacheIfNeeded() async {
   final legacyKeys = prefs.getKeys()
       .where((k) => k.startsWith('pkcache_'))
       .toList();
-  for (final k in legacyKeys) {
-    await prefs.remove(k);
-  }
+
+  // Remove todas as chaves legadas em paralelo
+  await Future.wait(legacyKeys.map((k) => prefs.remove(k)));
 
   await prefs.setBool(sentinelKey, true);
 }
