@@ -742,6 +742,13 @@ const List<PokopiaHabitat> pokopiaHabitats = [
 // ─── HABITATS DE EVENTO ───────────────────────────────────────────────────────
 // Fonte: Serebii Event Habitat Dex + screenshots do usuário (março 2026)
 // Imagens: assets/pokopia/habitats/event/habitat_NNN.png
+/// Mapa: speciesId → lista de IDs de habitats de EVENTO onde o pokémon aparece
+const Map<int, List<int>> pokemonEventHabitatMap = {
+  187: [1],      // Hoppip   — Yellow Carpet
+  188: [1, 2],   // Skiploom — Yellow Carpet + Field-trip Friends
+  189: [1, 3],   // Jumpluff — Yellow Carpet + Dandelion Lunchtime
+};
+
 const List<PokopiaEventHabitat> pokopiaEventHabitats = [
   PokopiaEventHabitat(
     id: 1,

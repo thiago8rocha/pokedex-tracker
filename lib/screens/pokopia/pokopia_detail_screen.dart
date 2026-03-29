@@ -3,6 +3,7 @@ import 'package:pokedex_tracker/models/pokemon.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
 import 'package:pokedex_tracker/data/pokopia_habitat_data.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_habitat_detail_screen.dart';
+import 'package:pokedex_tracker/screens/pokopia/pokopia_event_habitat_detail_screen.dart';
 import 'package:pokedex_tracker/services/pokeapi_service.dart';
 
 class PokopiaDetailScreen extends StatefulWidget {
@@ -37,6 +38,12 @@ class _PokopiaDetailScreenState extends State<PokopiaDetailScreen>
   List<PokopiaHabitat> get _pokemonHabitats {
     final ids = pokemonHabitatMap[widget.pokemon.id] ?? [];
     return pokopiaHabitats.where((h) => ids.contains(h.id)).toList();
+  }
+
+  // Habitats de EVENTO deste Pokémon
+  List<PokopiaEventHabitat> get _pokemonEventHabitats {
+    final ids = pokemonEventHabitatMap[widget.pokemon.id] ?? [];
+    return pokopiaEventHabitats.where((h) => ids.contains(h.id)).toList();
   }
 
   // Especialidades deste Pokémon
@@ -100,6 +107,7 @@ class _PokopiaDetailScreenState extends State<PokopiaDetailScreen>
                   specialties: _specialties),
               _HabitatsTab(
                   habitats: _pokemonHabitats,
+                  eventHabitats: _pokemonEventHabitats,
                   originPokemon: widget.pokemon,
                   originCaught: _caught,
                   onToggleOrigin: widget.onToggleCaught),
@@ -398,12 +406,14 @@ class _AmigosTab extends StatelessWidget {
 
 class _HabitatsTab extends StatelessWidget {
   final List<PokopiaHabitat> habitats;
+  final List<PokopiaEventHabitat> eventHabitats;
   final Pokemon originPokemon;
   final bool originCaught;
   final VoidCallback onToggleOrigin;
 
   const _HabitatsTab({
     required this.habitats,
+    required this.eventHabitats,
     required this.originPokemon,
     required this.originCaught,
     required this.onToggleOrigin,
@@ -412,6 +422,8 @@ class _HabitatsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final border = neutralBorder(context);
+    final scheme = Theme.of(context).colorScheme;
+    final hasAny = habitats.isNotEmpty || eventHabitats.isNotEmpty;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -420,42 +432,48 @@ class _HabitatsTab extends StatelessWidget {
         Text(
           'Locais onde este Pokémon pode ser encontrado em Pokopia.',
           style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant),
+              fontSize: 12, color: scheme.onSurfaceVariant),
         ),
         const SizedBox(height: 12),
 
-        if (habitats.isEmpty)
+        if (!hasAny)
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               border: Border.all(color: border, width: 0.5),
               borderRadius: BorderRadius.circular(10)),
             child: Row(children: [
-              Icon(Icons.info_outline,
-                  size: 14,
-                  color:
-                      Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(Icons.info_outline, size: 14, color: scheme.onSurfaceVariant),
               const SizedBox(width: 8),
               Expanded(
                   child: Text(
                 'Dados de habitat ainda não disponíveis para este Pokémon.',
                 style: TextStyle(
                     fontSize: 11,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurfaceVariant,
+                    color: scheme.onSurfaceVariant,
                     height: 1.4),
               )),
             ]),
-          )
-        else
-          ...habitats.map((h) => _HabitatCard(
+          ),
+
+        // Habitats padrão
+        ...habitats.map((h) => _HabitatCard(
+              habitat: h,
+              originPokemon: originPokemon,
+              originCaught: originCaught,
+              onToggleOrigin: onToggleOrigin,
+            )),
+
+        // Habitats de evento
+        if (eventHabitats.isNotEmpty) ...[
+          if (habitats.isNotEmpty) const SizedBox(height: 4),
+          ...eventHabitats.map((h) => _EventHabitatCard(
                 habitat: h,
                 originPokemon: originPokemon,
                 originCaught: originCaught,
                 onToggleOrigin: onToggleOrigin,
               )),
+        ],
       ]),
     );
   }
@@ -554,6 +572,105 @@ class _HabitatCard extends StatelessWidget {
                   ),
                 ),
               ])),
+              Icon(Icons.chevron_right,
+                  size: 18, color: scheme.outlineVariant),
+            ]),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+class _EventHabitatCard extends StatelessWidget {
+  final PokopiaEventHabitat habitat;
+  final Pokemon originPokemon;
+  final bool originCaught;
+  final VoidCallback onToggleOrigin;
+
+  const _EventHabitatCard({
+    required this.habitat,
+    required this.originPokemon,
+    required this.originCaught,
+    required this.onToggleOrigin,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PokopiaEventHabitatDetailScreen(
+            habitat: habitat,
+            originPokemon: originPokemon,
+            originCaught: originCaught,
+            onToggleOrigin: onToggleOrigin,
+          ),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: scheme.outlineVariant, width: 1),
+        ),
+        child: Column(children: [
+          // Preview da imagem
+          ClipRRect(
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(12)),
+            child: SizedBox(
+              height: 100,
+              width: double.infinity,
+              child: Image.asset(
+                habitat.imageAsset,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: scheme.surfaceContainerHighest,
+                  child: Center(
+                    child: Icon(Icons.landscape_outlined,
+                        size: 36, color: scheme.onSurfaceVariant.withOpacity(0.3)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Info
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(habitat.name,
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 3),
+                    // Badge de evento
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: scheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        habitat.eventName,
+                        style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            color: scheme.onPrimaryContainer),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Icon(Icons.chevron_right,
                   size: 18, color: scheme.outlineVariant),
             ]),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_tracker/data/pokopia_habitat_data.dart';
 import 'package:pokedex_tracker/screens/pokopia/pokopia_habitat_detail_screen.dart';
+import 'package:pokedex_tracker/screens/pokopia/pokopia_event_habitat_detail_screen.dart';
 
 class PokopiaHabitatsScreen extends StatefulWidget {
   const PokopiaHabitatsScreen({super.key});
@@ -406,12 +407,19 @@ class _EventHabitatTileState extends State<_EventHabitatTile> {
         border: Border.all(color: scheme.outlineVariant, width: 1),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Preview da imagem
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-          child: SizedBox(
-            height: 80,
-            width: double.infinity,
+        // Preview da imagem — toque abre o detalhe
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PokopiaEventHabitatDetailScreen(habitat: h),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: SizedBox(
+              height: 80,
+              width: double.infinity,
             child: Image.asset(
               h.imageAsset,
               fit: BoxFit.cover,
@@ -425,6 +433,7 @@ class _EventHabitatTileState extends State<_EventHabitatTile> {
             ),
           ),
         ),
+        ),  // GestureDetector
 
         // Info
         Padding(
