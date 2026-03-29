@@ -596,20 +596,7 @@ class _PokedexScreenState extends State<PokedexScreen>
       _pokemonData[e.catchKey] = _localPokemonData(e.speciesId, formaKey: e.formaKey);
     }
 
-    // Pré-decodifica as imagens antes de montar a grid
-    if (toFill.isNotEmpty && mounted) {
-      final spriteType = defaultSpriteNotifier.value;
-      await Future.wait(
-        toFill.map((e) {
-          final path = e.formaKey != null
-              ? _buildSpriteUrl(e.speciesId, spriteType, formaKey: e.formaKey)
-              : _assetPathFor(e.speciesId, spriteType);
-          return precacheImage(AssetImage(path), context)
-              .catchError((_) {});
-        }),
-      );
-    }
-
+    // Atualiza a UI imediatamente, sem esperar precache
     if (!mounted) return;
     setState(() {
       _currentPage = page;
@@ -617,6 +604,18 @@ class _PokedexScreenState extends State<PokedexScreen>
       _loadingPage = false;
       _loadingIds  = false;
     });
+
+    // Pré-decodifica imagens em background (não bloqueia a UI)
+    if (toFill.isNotEmpty && mounted) {
+      final spriteType = defaultSpriteNotifier.value;
+      for (final e in toFill) {
+        if (!mounted) break;
+        final path = e.formaKey != null
+            ? _buildSpriteUrl(e.speciesId, spriteType, formaKey: e.formaKey)
+            : _assetPathFor(e.speciesId, spriteType);
+        precacheImage(AssetImage(path), context).catchError((_) {});
+      }
+    }
   }
 
   String _assetPathFor(int id, String type) => pokemonSpriteAsset(id, type);

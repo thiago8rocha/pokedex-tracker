@@ -180,35 +180,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadCounts() async {
+    // Busca tudo em paralelo e aplica em um único setState
     final active = await _storage.getActivePokedexIds();
     if (!mounted) return;
-    setState(() => _activePokedexIds = active);
 
-    for (final e in [..._gameEntries, _goEntry, _nacEntry]) {
+    final allEntries = [..._gameEntries, _goEntry, _nacEntry];
+
+    // Lança todas as buscas em paralelo
+    final mainFutures = allEntries.map((e) async {
       final c = await _storage.getCaughtCount(e.pokedexId);
-      if (!mounted) return;
-      setState(() => _caughtCounts[e.pokedexId] = c);
-    }
+      return MapEntry(e.pokedexId, c);
+    });
 
+    final dlcFutures = <Future<MapEntry<String, int>>>[];
     for (final e in _gameEntries) {
       for (final dlc in e.dlcs) {
         final key = '${e.pokedexId}/${dlc.sectionApiName}';
-        final c = await _storage.getCaughtCountForSection(e.pokedexId, dlc.sectionApiName);
-        if (!mounted) return;
-        setState(() => _dlcCounts[key] = c);
+        dlcFutures.add(_storage
+            .getCaughtCountForSection(e.pokedexId, dlc.sectionApiName)
+            .then((c) => MapEntry(key, c)));
       }
       if (e.isPokopiaDex) {
         const sec = 'pokopia-habitats';
         final key = '${e.pokedexId}/$sec';
-        final c = await _storage.getCaughtCountForSection(e.pokedexId, sec);
-        if (!mounted) return;
-        setState(() => _dlcCounts[key] = c);
-        final eventCaught = await _storage.getCaughtMap('pokopia_event', pokopiaEventSpeciesIds);
-        final eventCount = eventCaught.values.where((v) => v).length;
-        if (!mounted) return;
-        setState(() => _dlcCounts['${e.pokedexId}/event'] = eventCount);
+        dlcFutures.add(_storage
+            .getCaughtCountForSection(e.pokedexId, sec)
+            .then((c) => MapEntry(key, c)));
+        dlcFutures.add(_storage
+            .getCaughtMap('pokopia_event', pokopiaEventSpeciesIds)
+            .then((m) => MapEntry(
+                '${e.pokedexId}/event',
+                m.values.where((v) => v).length)));
       }
     }
+
+    final results = await Future.wait([...mainFutures, ...dlcFutures]);
+    if (!mounted) return;
+
+    final newCaught  = <String, int>{};
+    final newDlc     = <String, int>{};
+    for (final r in results) {
+      if (allEntries.any((e) => e.pokedexId == r.key)) {
+        newCaught[r.key] = r.value;
+      } else {
+        newDlc[r.key] = r.value;
+      }
+    }
+
+    setState(() {
+      _activePokedexIds = active;
+      _caughtCounts.addAll(newCaught);
+      _dlcCounts.addAll(newDlc);
+    });
   }
 
   int _dlcCaught(_PokedexEntry entry, String sectionApiName) =>
