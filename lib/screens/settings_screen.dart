@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex_tracker/screens/disclaimer_screen.dart';
 import 'package:pokedex_tracker/theme/app_theme.dart';
 import 'package:pokedex_tracker/services/storage_service.dart';
 import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
@@ -96,12 +97,53 @@ class SettingsScreen extends StatelessWidget {
             onTap: () => _confirmClearData(context),
           ),
 
+          _SectionHeader(label: 'APP'),
+          _SettingsTile(
+            icon: Icons.copyright_outlined,
+            title: 'Conteúdo e direitos autorais',
+            subtitle: 'App não oficial, fan-made, sem fins lucrativos',
+            onTap: () => _showDisclaimer(context, tab: 0),
+          ),
+          _SettingsTile(
+            icon: Icons.description_outlined,
+            title: 'Termos e Condições',
+            subtitle: 'Termos de uso do DexCurator',
+            onTap: () => _showDisclaimer(context, tab: 1),
+          ),
+          _SettingsTile(
+            icon: Icons.privacy_tip_outlined,
+            title: 'Política de Privacidade',
+            subtitle: 'Como seus dados são tratados',
+            onTap: () => _showDisclaimer(context, tab: 2),
+          ),
+
           const SizedBox(height: 32),
-          Center(child: Text('Pokedex Tracker',
+          Center(child: Text('DexCurator',
             style: TextStyle(fontSize: 11,
               color: Theme.of(context).colorScheme.onSurfaceVariant))),
           const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  void _showDisclaimer(BuildContext context, {int tab = 0}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, __) => DisclaimerScreen(
+          isFromSettings: true,
+          initialTab: tab,
+        ),
       ),
     );
   }
