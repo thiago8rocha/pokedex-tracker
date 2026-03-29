@@ -26,6 +26,7 @@ class PokopiaHabitat {
   final List<String> biomes; // biomas onde o habitat pode aparecer
   final List<String> items;           // itens necessários
   final List<PokopiaHabitatEntry> pokemon; // pokémon possíveis
+  final String flavorText; // descrição do habitat em PT-BR
   // imagem local: assets/pokopia/habitats/habitat_NNN.png
   String get imageAsset => 'assets/pokopia/habitats/habitat_${id.toString().padLeft(3, '0')}.png';
 
@@ -35,6 +36,7 @@ class PokopiaHabitat {
     required this.biomes,
     required this.items,
     required this.pokemon,
+    this.flavorText = '',
   });
 }
 
@@ -312,6 +314,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 74,  name: 'Geodude',    rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 6,   name: 'Charizard',  rarity: 'Muito Raro'),
     ],
+    flavorText: 'Quatro tufos de grama alta agrupados. O esconderijo perfeito para Pokémon pequenos.',
   ),
   // #002
   PokopiaHabitat(
@@ -326,6 +329,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 127, name: 'Pinsir',     rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 214, name: 'Heracross',  rarity: 'Incomum'),
     ],
+    flavorText: 'Grama alta sombreada por árvores, que permanece fresca mesmo sob o sol do meio-dia. Pokémon podem vir aqui para relaxar.',
   ),
   // #003
   PokopiaHabitat(
@@ -338,6 +342,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 533, name: 'Gurdurr',  rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 66,  name: 'Machop',   rarity: 'Comum'),
     ],
+    flavorText: 'Grama alta próxima a uma grande pedra. Perfeita para brincar de esconde-esconde.',
   ),
   // #004
   PokopiaHabitat(
@@ -351,6 +356,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 705, name: 'Sliggoo',   rarity: 'Raro',    weather: 'Chuvoso'),
       PokopiaHabitatEntry(speciesId: 845, name: 'Cramorant', rarity: 'Incomum'),
     ],
+    flavorText: 'Grama alta à beira d\'água. Um habitat cheio de energia graças à água abundante.',
   ),
   // #005
   PokopiaHabitat(
@@ -363,6 +369,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 80,  name: 'Slowbro',  rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 199, name: 'Slowking', rarity: 'Raro'),
     ],
+    flavorText: 'Grama alta que resiste à brisa do mar. Ideal para escapar do calor costeiro.',
   ),
   // #006
   PokopiaHabitat(
@@ -375,6 +382,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 17,  name: 'Pidgeotto', rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 278, name: 'Wingull',   rarity: 'Comum'),
     ],
+    flavorText: 'Uma área de altitude elevada onde ventos frios sopram pela grama.',
   ),
   // #007
   PokopiaHabitat(
@@ -386,6 +394,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 48, name: 'Venonat',  rarity: 'Comum',   time: 'Noite'),
       PokopiaHabitatEntry(speciesId: 49, name: 'Venomoth', rarity: 'Incomum', time: 'Noite'),
     ],
+    flavorText: 'Grama alta suavemente iluminada que atrai Pokémon com seu brilho gentil.',
   ),
   // #008
   PokopiaHabitat(
@@ -400,6 +409,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 240, name: 'Magby',    rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 133, name: 'Eevee',    rarity: 'Raro'),
     ],
+    flavorText: 'Um belo canteiro de flores silvestres com uma fragrância leve e doce.',
   ),
   // #009
   PokopiaHabitat(
@@ -412,6 +422,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 704, name: 'Goomy',    rarity: 'Raro',    weather: 'Chuvoso'),
       PokopiaHabitatEntry(speciesId: 738, name: 'Vikavolt', rarity: 'Incomum'),
     ],
+    flavorText: 'Flores desabrochando sob a sombra de árvores, atraindo Pokémon com seu aroma fresco.',
   ),
   // #010
   PokopiaHabitat(
@@ -423,6 +434,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 314, name: 'Illumise', rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 313, name: 'Volbeat',  rarity: 'Comum'),
     ],
+    flavorText: 'Flores à beira da água desabrochando em abundância, atraindo Pokémon com seu aroma e água cristalina.',
   ),
   // #011
   PokopiaHabitat(
@@ -435,6 +447,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 2,   name: 'Ivysaur',   rarity: 'Raro'),
       PokopiaHabitatEntry(speciesId: 182, name: 'Bellossom', rarity: 'Raro'),
     ],
+    flavorText: 'Um amplo campo de flores, cada uma liberando uma fragrância agradável.',
   ),
   // #012
   PokopiaHabitat(
@@ -446,6 +459,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 333, name: 'Swablu',  rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 334, name: 'Altaria', rarity: 'Incomum'),
     ],
+    flavorText: 'Flores desabrochando em grande altitude, com seu perfume carregado pelo vento.',
   ),
   // #013
   PokopiaHabitat(
@@ -458,6 +472,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 353, name: 'Shuppet',  rarity: 'Comum',   time: 'Noite'),
       PokopiaHabitatEntry(speciesId: 354, name: 'Banette',  rarity: 'Incomum', time: 'Noite'),
     ],
+    flavorText: 'Um lugar de descanso tranquilo com flores, irradiando elegância e calma.',
   ),
   // #015
   PokopiaHabitat(
@@ -469,6 +484,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 529, name: 'Drilbur',   rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 530, name: 'Excadrill', rarity: 'Incomum'),
     ],
+    flavorText: 'Um campo de vegetais em crescimento que provavelmente atrai Pokémon que amam cultivar.',
   ),
   // #016
   PokopiaHabitat(
@@ -480,6 +496,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 425, name: 'Drifloon', rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 426, name: 'Drifblim', rarity: 'Incomum'),
     ],
+    flavorText: 'Ar quente das fogueiras subindo em espiral para o céu.',
   ),
   // #017
   PokopiaHabitat(
@@ -491,6 +508,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 5,   name: 'Charmeleon', rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 446, name: 'Munchlax',   rarity: 'Raro'),
     ],
+    flavorText: 'Um acampamento natural onde Pokémon se reúnem e se aquecem ao redor da fogueira.',
   ),
   // #019
   PokopiaHabitat(
@@ -502,6 +520,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 316, name: 'Gulpin',  rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 317, name: 'Swalot',  rarity: 'Incomum'),
     ],
+    flavorText: 'Uma mesa com comida preparada, atraindo Pokémon famintos.',
   ),
   // #020
   PokopiaHabitat(
@@ -513,6 +532,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 83,  name: "Farfetch'd", rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 440, name: 'Happiny',    rarity: 'Raro'),
     ],
+    flavorText: 'Uma mesa com uma cesta que cria uma atmosfera relaxante de piquenique.',
   ),
   // #021
   PokopiaHabitat(
@@ -524,6 +544,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 70, name: 'Weepinbell', rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 71, name: 'Victreebel', rarity: 'Incomum'),
     ],
+    flavorText: 'Uma mesa com um vaso de flores onde Pokémon podem sentar e admirar as flores.',
   ),
   // #022
   PokopiaHabitat(
@@ -535,6 +556,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 1, name: 'Bulbasaur', rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 2, name: 'Ivysaur',   rarity: 'Raro'),
     ],
+    flavorText: 'Um banco próximo a arbustos onde Pokémon podem descansar tranquilamente.',
   ),
   // #023
   PokopiaHabitat(
@@ -546,6 +568,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 48, name: 'Venonat',  rarity: 'Comum',   time: 'Noite'),
       PokopiaHabitatEntry(speciesId: 49, name: 'Venomoth', rarity: 'Incomum', time: 'Noite'),
     ],
+    flavorText: 'Um banco suavemente iluminado que atrai Pokémon.',
   ),
   // #024
   PokopiaHabitat(
@@ -557,6 +580,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 107, name: 'Hitmonchan', rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 106, name: 'Hitmonlee',  rarity: 'Incomum'),
     ],
+    flavorText: 'Um lugar de descanso para Pokémon após o treino.',
   ),
   // #025
   PokopiaHabitat(
@@ -568,6 +592,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 113, name: 'Chansey',  rarity: 'Raro'),
       PokopiaHabitatEntry(speciesId: 242, name: 'Blissey',  rarity: 'Muito Raro'),
     ],
+    flavorText: 'Um lugar onde Pokémon curandeiros podem aparecer para ajudar os feridos.',
   ),
   // #027
   PokopiaHabitat(
@@ -579,6 +604,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 422, name: 'Shellos',   rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 423, name: 'Gastrodon', rarity: 'Incomum'),
     ],
+    flavorText: 'Uma placa que pode orientar Pokémon errantes.',
   ),
   // #028
   PokopiaHabitat(
@@ -590,6 +616,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 296, name: 'Makuhita',  rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 297, name: 'Hariyama',  rarity: 'Incomum'),
     ],
+    flavorText: 'Um carrinho capaz de transportar grandes caixas.',
   ),
   // #029
   PokopiaHabitat(
@@ -602,6 +629,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 611, name: 'Fraxure', rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 612, name: 'Haxorus', rarity: 'Raro'),
     ],
+    flavorText: 'Uma área de corte de troncos com ferramentas e uma cadeira de descanso.',
   ),
   // #030
   PokopiaHabitat(
@@ -613,6 +641,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 425, name: 'Drifloon', rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 446, name: 'Munchlax', rarity: 'Incomum'),
     ],
+    flavorText: 'Uma cama com um brinquedo de pelúcia, oferecendo conforto para Pokémon pequenos.',
   ),
   // #031
   PokopiaHabitat(
@@ -624,6 +653,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 163, name: 'Hoothoot', rarity: 'Comum',   time: 'Noite'),
       PokopiaHabitatEntry(speciesId: 164, name: 'Noctowl',  rarity: 'Incomum', time: 'Noite'),
     ],
+    flavorText: 'Uma cama com iluminação suave para descanso tranquilo.',
   ),
   // #036
   PokopiaHabitat(
@@ -636,6 +666,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 278, name: 'Wingull',   rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 279, name: 'Pelipper',  rarity: 'Incomum'),
     ],
+    flavorText: 'Uma boia inflável com sombra para relaxar.',
   ),
   // #037
   PokopiaHabitat(
@@ -647,6 +678,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 95,  name: 'Onix',    rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 208, name: 'Steelix', rarity: 'Incomum'),
     ],
+    flavorText: 'Grama alta enfraquecida por uma estranha pedra lisa.',
   ),
   // #038
   PokopiaHabitat(
@@ -659,6 +691,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 82,  name: 'Magneton',  rarity: 'Incomum'),
       PokopiaHabitatEntry(speciesId: 462, name: 'Magnezone', rarity: 'Raro'),
     ],
+    flavorText: 'Uma área de armazenamento industrial sem funcionamento.',
   ),
   // #040
   PokopiaHabitat(
@@ -669,6 +702,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
     pokemon: [
       PokopiaHabitatEntry(speciesId: 6, name: 'Charizard', rarity: 'Muito Raro'),
     ],
+    flavorText: 'Um acampamento centrado em uma festa de bagas.',
   ),
   // #057
   PokopiaHabitat(
@@ -681,6 +715,7 @@ const List<PokopiaHabitat> pokopiaHabitats = [
       PokopiaHabitatEntry(speciesId: 102, name: 'Exeggcute',  rarity: 'Comum'),
       PokopiaHabitatEntry(speciesId: 103, name: 'Exeggutor',  rarity: 'Incomum'),
     ],
+    flavorText: 'Um habitat de lagoa tranquila.',
   ),
   // #085
   PokopiaHabitat(
