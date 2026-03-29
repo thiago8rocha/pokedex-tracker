@@ -100,10 +100,6 @@ class PokopiaHubScreen extends StatelessWidget {
             onPressed: () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const SettingsScreen())),
           ),
-          Builder(builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(ctx).openEndDrawer(),
-          )),
         ],
       ),
       endDrawer: _buildPokopiaDrawer(context),
