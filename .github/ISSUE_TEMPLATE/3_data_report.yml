@@ -1,0 +1,115 @@
+name: Data Report
+description: Report a data inconsistency on DexCurator
+title: "[Data] "
+labels: ["data"]
+assignees: ["thiago8rocha"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Found incorrect data in DexCurator? Wrong stats, incorrect type, missing move, strange translation?
+        Please fill in the fields below with as much detail as possible.
+
+  - type: input
+    id: pokemon
+    attributes:
+      label: Affected Pokémon
+      description: Name and national number of the Pokémon (if applicable).
+      placeholder: "Ex: Charizard (#6)"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: data_type
+    attributes:
+      label: Type of incorrect data
+      description: What is wrong?
+      options:
+        - Base stats (HP, Attack, Defense, etc.)
+        - Pokémon type
+        - Ability
+        - Move (name, power, accuracy, effect)
+        - Evolution chain
+        - Translation (PT-BR)
+        - Game-specific Pokédex entry
+        - Pokémon GO data (CP, availability)
+        - TCG Pocket data (card, set)
+        - Pokopia data (habitat, specialty)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: game
+    attributes:
+      label: Affected game (if applicable)
+      description: Does the error appear in a specific game or in the National Pokédex?
+      options:
+        - National (all games)
+        - Red / Blue
+        - Yellow
+        - Gold / Silver
+        - Crystal
+        - Ruby / Sapphire
+        - FireRed / LeafGreen
+        - Emerald
+        - Diamond / Pearl
+        - Platinum
+        - HeartGold / SoulSilver
+        - Black / White
+        - Black 2 / White 2
+        - X / Y
+        - Omega Ruby / Alpha Sapphire
+        - Sun / Moon
+        - Ultra Sun / Ultra Moon
+        - Let's Go Pikachu / Eevee
+        - Sword / Shield
+        - Brilliant Diamond / Shining Pearl
+        - Legends Arceus
+        - Scarlet / Violet
+        - Legends Z-A
+        - Pokémon GO
+        - TCG Pocket
+        - Pokopia
+    validations:
+      required: false
+
+  - type: textarea
+    id: current_value
+    attributes:
+      label: Current value in the app
+      description: What is DexCurator showing incorrectly?
+      placeholder: "Ex: The app shows Charizard as Fire/Flying in X/Y, but..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: correct_value
+    attributes:
+      label: Correct value
+      description: What should the correct value be?
+      placeholder: "Ex: Charizard should be Fire/Flying, the correct would be..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Screenshot of the app showing the incorrect data.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: Read carefully before submitting.
+      options:
+        - label: I have searched the existing issues and this error is **NOT** a duplicate of another already reported.
+          required: true
+        - label: I have verified the data against at least one reliable source.
+          required: true
+        - label: I have filled out all of the requested information in this form.
+          required: true

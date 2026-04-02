@@ -1,9 +1,1 @@
 blank_issues_enabled: false
-
-contact_links:
-  - name: Discussao geral
-    url: https://github.com/thiago8rocha/DexCurator/discussions
-    about: Duvidas, ideias soltas ou conversas sobre o app que nao se encaixam nos templates acima
-  - name: Repositorio no GitHub
-    url: https://github.com/thiago8rocha/DexCurator
-    about: Codigo-fonte completo do DexCurator

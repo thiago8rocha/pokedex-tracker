@@ -1,0 +1,77 @@
+name: Feature Request
+description: Suggest a feature to improve DexCurator
+title: "[Feature] "
+labels: ["enhancement"]
+assignees: ["thiago8rocha"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an improvement to DexCurator!
+        Please fill in the fields below with as much detail as possible.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature description
+      description: Clearly describe what you would like to see in the app.
+      placeholder: "Ex: I would like to filter Pokémon by ability on the main screen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem it solves
+      description: Is this suggestion related to any current difficulty or limitation?
+      placeholder: "Ex: I always get lost when trying to find Pokémon with ability X because..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe how you imagine the feature would work.
+      placeholder: "Ex: An ability search field in the advanced filter of the Pokédex..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: App module
+      description: Which part of the app does this suggestion affect?
+      options:
+        - Main Pokédex
+        - Pokémon detail
+        - Pokémon GO
+        - TCG Pocket
+        - Pokopia
+        - Settings
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: extras
+    attributes:
+      label: Additional context
+      description: Screenshots, references, examples from other apps, etc.
+      placeholder: "Drag images here or paste a link..."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: Read carefully before submitting.
+      options:
+        - label: I have searched the existing issues and this suggestion is **NOT** a duplicate of another open or closed issue.
+          required: true
+        - label: I have written a short and descriptive title.
+          required: true
+        - label: I have filled out all of the requested information in this form.
+          required: true

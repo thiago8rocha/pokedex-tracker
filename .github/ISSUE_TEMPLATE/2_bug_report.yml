@@ -1,0 +1,101 @@
+name: Issue Report
+description: Report an issue on DexCurator
+title: "[Bug] "
+labels: ["bug"]
+assignees: ["thiago8rocha"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue on DexCurator!
+        Please fill in all required fields so we can reproduce and fix the problem.
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Describe exactly what to do to reproduce the problem.
+      placeholder: |
+        1. Open screen '...'
+        2. Tap on '...'
+        3. See the error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+      placeholder: "Ex: The app should display the move list correctly..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What is going wrong?
+      placeholder: "Ex: The app crashes unexpectedly when opening the Moves tab..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Attach screenshots or screen recordings if relevant.
+      placeholder: "Drag images here or paste a link..."
+    validations:
+      required: false
+
+  - type: input
+    id: app_version
+    attributes:
+      label: DexCurator version
+      description: You can find the version in Settings → About.
+      placeholder: "Ex: 1.0.2"
+    validations:
+      required: true
+
+  - type: input
+    id: android_version
+    attributes:
+      label: Android version
+      description: You can find this in your device Settings → About phone.
+      placeholder: "Ex: Android 14"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: Your device model.
+      placeholder: "Ex: Samsung Galaxy S23"
+    validations:
+      required: true
+
+  - type: textarea
+    id: extras
+    attributes:
+      label: Additional information
+      description: Any extra context that might help with the investigation.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: Read carefully before submitting.
+      options:
+        - label: I have searched the existing issues and this problem is **NOT** a duplicate of another open or closed issue.
+          required: true
+        - label: I have written a short and descriptive title.
+          required: true
+        - label: I have filled out all of the requested information in this form, including version and device.
+          required: true
+        - label: I am using the latest available version of DexCurator.
+          required: true
