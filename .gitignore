@@ -1,4 +1,4 @@
-# Miscellaneous
+# ─── Miscellaneous ───────────────────────────────────────────────
 *.class
 *.log
 *.pyc
@@ -12,34 +12,54 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# ─── IDEs e Editores ─────────────────────────────────────────────
+# IntelliJ / Android Studio
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
+# VS Code (descomente se não quiser versionar .vscode/)
 #.vscode/
 
-# Flutter/Dart/Pub related
+# Cursor IDE
+.cursor/
+
+# ─── Flutter / Dart / Pub ────────────────────────────────────────
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 /build/
 /coverage/
 
-# Symbolication related
-app.*.symbols
+# Metadata interno do Flutter CLI (não tem utilidade no repo)
+.metadata
 
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
+# ─── Android ─────────────────────────────────────────────────────
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Keystore e credenciais de assinatura — NUNCA commitar
+android/app/key.properties
+android/app/*.jks
+android/app/*.keystore
+android/local.properties
+
+# ─── Plataformas não suportadas (Android-only app) ───────────────
+# Estas pastas foram geradas pelo flutter create mas o DexCurator
+# é exclusivo para Android. Remova-as do tracking com:
+#   git rm -r --cached ios macos linux windows web
+/ios/
+/macos/
+/linux/
+/windows/
+/web/
+
+# ─── Symbolication / Obfuscation ────────────────────────────────
+app.*.symbols
+app.*.map.json
