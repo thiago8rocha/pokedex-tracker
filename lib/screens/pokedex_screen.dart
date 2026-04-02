@@ -1,27 +1,27 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/dex_bundle_service.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/dex_bundle_service.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show defaultSpriteNotifier, typeNamePt, typeIconColors, TypeBadge, PokeballLoader, specialtyIconPath;
-import 'package:pokedex_tracker/screens/detail/nacional_detail_screen.dart';
-import 'package:pokedex_tracker/screens/detail/mainline_detail_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_detail_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_detail_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_hub_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_hub_screen.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_hub_screen.dart';
-import 'package:pokedex_tracker/screens/menu/moves_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/abilities_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/natures_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/teams_screen.dart';
-import 'package:pokedex_tracker/screens/menu/items_list_screen.dart';
-import 'package:pokedex_tracker/screens/settings_screen.dart';
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/theme/type_colors.dart';
+import 'package:dexcurator/screens/detail/nacional_detail_screen.dart';
+import 'package:dexcurator/screens/detail/mainline_detail_screen.dart';
+import 'package:dexcurator/screens/go/go_detail_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_detail_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_hub_screen.dart';
+import 'package:dexcurator/screens/go/go_hub_screen.dart';
+import 'package:dexcurator/screens/pocket/pocket_hub_screen.dart';
+import 'package:dexcurator/screens/menu/moves_list_screen.dart';
+import 'package:dexcurator/screens/menu/abilities_list_screen.dart';
+import 'package:dexcurator/screens/menu/natures_list_screen.dart';
+import 'package:dexcurator/screens/menu/teams_screen.dart';
+import 'package:dexcurator/screens/menu/items_list_screen.dart';
+import 'package:dexcurator/screens/settings_screen.dart';
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/theme/type_colors.dart';
 
 // ─── TIPO PT ─────────────────────────────────────────────────────
 

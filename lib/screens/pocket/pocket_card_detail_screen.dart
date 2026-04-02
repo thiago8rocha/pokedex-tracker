@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show PokeballLoader, translateFlavorText;
-import 'package:pokedex_tracker/services/tcg_pocket_service.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_rarity_widget.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_energy_icon.dart';
+import 'package:dexcurator/services/tcg_pocket_service.dart';
+import 'package:dexcurator/screens/pocket/pocket_rarity_widget.dart';
+import 'package:dexcurator/screens/pocket/pocket_energy_icon.dart';
 
 class PocketCardDetailScreen extends StatefulWidget {
   final PocketCardBrief card;

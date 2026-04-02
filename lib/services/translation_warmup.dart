@@ -1,5 +1,5 @@
-import 'package:pokedex_tracker/services/tcg_pocket_service.dart';
-import 'package:pokedex_tracker/services/translation_service.dart';
+import 'package:dexcurator/services/tcg_pocket_service.dart';
+import 'package:dexcurator/services/translation_service.dart';
 
 /// Pré-aquece o cache de traduções em background no startup do app.
 ///

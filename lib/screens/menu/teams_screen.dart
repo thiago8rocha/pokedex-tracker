@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show PokeballLoader;
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/teams_storage_service.dart';
-import 'package:pokedex_tracker/screens/menu/team_builder_screen.dart';
-import 'package:pokedex_tracker/screens/menu/team_coverage_screen.dart';
-import 'package:pokedex_tracker/screens/menu/team_suggestion_screen.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/teams_storage_service.dart';
+import 'package:dexcurator/screens/menu/team_builder_screen.dart';
+import 'package:dexcurator/screens/menu/team_coverage_screen.dart';
+import 'package:dexcurator/screens/menu/team_suggestion_screen.dart';
 
 // ─── Dados de jogos ───────────────────────────────────────────────
 const kTeamsGamesByGen = <int, List<Map<String, dynamic>>>{

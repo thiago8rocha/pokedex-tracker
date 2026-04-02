@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart' show specialtyIconPath;
+import 'package:dexcurator/screens/detail/detail_shared.dart' show specialtyIconPath;
 
 class PokopiaSpecialtiesScreen extends StatefulWidget {
   const PokopiaSpecialtiesScreen({super.key});

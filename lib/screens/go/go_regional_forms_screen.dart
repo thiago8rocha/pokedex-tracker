@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show ptType, defaultSpriteNotifier;
-import 'package:pokedex_tracker/screens/go/go_detail_screen.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/theme/type_colors.dart';
+import 'package:dexcurator/screens/go/go_detail_screen.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/theme/type_colors.dart';
 
 class GoRegionalFormsScreen extends StatefulWidget {
   const GoRegionalFormsScreen({super.key});

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show PokeballLoader;
-import 'package:pokedex_tracker/data/pokopia_habitat_data.dart';
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_detail_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_habitats_screen.dart';
+import 'package:dexcurator/data/pokopia_habitat_data.dart';
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_detail_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_habitats_screen.dart';
 
 class PokopiaHabitatDetailScreen extends StatefulWidget {
   final PokopiaHabitat habitat;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pokedex_tracker/services/tcg_pocket_service.dart';
-import 'package:pokedex_tracker/services/translation_warmup.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_card_detail_screen.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_rarity_widget.dart';
+import 'package:dexcurator/services/tcg_pocket_service.dart';
+import 'package:dexcurator/services/translation_warmup.dart';
+import 'package:dexcurator/screens/pocket/pocket_card_detail_screen.dart';
+import 'package:dexcurator/screens/pocket/pocket_rarity_widget.dart';
 
 // ─── FILTRO DE COLEÇÃO ────────────────────────────────────────────
 

@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dexcurator/core/app_constants.dart';
 
-const String _kBase   = 'https://api.tcgdex.net/v2/en';
-const String _kAssets = 'https://assets.tcgdex.net/en';
+const String _kBase   = kTcgDexBase;
+const String _kAssets = kTcgDexAssets;
 
 // Ordem de exibição — Promos sempre ao final
 const List<String> kPocketSetOrder = [
@@ -210,7 +211,7 @@ class PocketCardDetail {
 
 class TcgPocketService {
   static const Map<String, String> _headers = {
-    'User-Agent': 'Mozilla/5.0 (Android; PokopiaTracker)',
+    'User-Agent': kUserAgent,
     'Accept': 'application/json',
   };
 
@@ -432,7 +433,7 @@ class TcgPocketService {
       final cardIdClean  = resolvedSet.isNotEmpty
           ? '$resolvedSet-$localNoZeros' : cardId;
 
-      const ptBase = 'https://api.tcgdex.net/v2/pt';
+      const ptBase = 'https://api.tcgdex.net/v2/pt'; // PT variant — not in kTcgDexBase (EN)
       final urls = <String>[
         '$ptBase/cards/$cardIdClean',
         '$ptBase/cards/$cardId',

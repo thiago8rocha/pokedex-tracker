@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/pokedex_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_specialties_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_flavors_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_relics_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_fossils_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_habitats_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_hub_screen.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_hub_screen.dart';
-import 'package:pokedex_tracker/screens/menu/moves_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/abilities_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/natures_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/teams_screen.dart';
-import 'package:pokedex_tracker/screens/menu/items_list_screen.dart';
-import 'package:pokedex_tracker/screens/settings_screen.dart';
+import 'package:dexcurator/screens/pokedex_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_specialties_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_flavors_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_relics_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_fossils_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_habitats_screen.dart';
+import 'package:dexcurator/screens/go/go_hub_screen.dart';
+import 'package:dexcurator/screens/pocket/pocket_hub_screen.dart';
+import 'package:dexcurator/screens/menu/moves_list_screen.dart';
+import 'package:dexcurator/screens/menu/abilities_list_screen.dart';
+import 'package:dexcurator/screens/menu/natures_list_screen.dart';
+import 'package:dexcurator/screens/menu/teams_screen.dart';
+import 'package:dexcurator/screens/menu/items_list_screen.dart';
+import 'package:dexcurator/screens/settings_screen.dart';
 
 class PokopiaHubScreen extends StatelessWidget {
   const PokopiaHubScreen({super.key});

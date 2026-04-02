@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dexcurator/core/app_constants.dart';
 
-/// Serviço de tradução centralizado do Pokopia Tracker.
+/// Serviço de tradução centralizado do DexCurator.
 ///
 /// - MyMemory API (gratuita, sem chave)
 /// - Cache persistente via SharedPreferences
 /// - Deduplicação de requisições em voo
 /// - Pré-aquecimento em background no startup
+///
+/// NOTA: Este é o único ponto de tradução dinâmica do app.
+/// Não usar endpoints alternativos (ex: translate.googleapis.com)
+/// em outros arquivos — centralizar aqui.
 class TranslationService {
   static const String   _cachePrefix = 'trcache_';
   static const Duration _timeout     = Duration(seconds: 8);
@@ -55,33 +60,36 @@ class TranslationService {
     String from = 'en',
     String to   = 'pt-BR',
   }) async {
-    return Future.wait(texts.map((t) => translate(t, from: from, to: to)));
+    return Future.wait(
+        texts.map((t) => translate(t, from: from, to: to)));
   }
 
   /// Verifica se um texto já está cacheado (sem rede).
-  static Future<bool> isCached(String text,
-      {String from = 'en', String to = 'pt-BR'}) async {
+  static Future<bool> isCached(
+    String text, {
+    String from = 'en',
+    String to   = 'pt-BR',
+  }) async {
     await _ensurePrefs();
     return _prefs!.containsKey(_key(from, to, text));
   }
 
   /// Pré-aquece o cache traduzindo uma lista em background.
-  /// Não bloqueia — dispara e esquece.
-  /// Chame no startup do app (ex: main.dart após runApp).
-  static void warmup(List<String> texts,
-      {String from = 'en', String to = 'pt-BR'}) {
-    // unawaited — roda em background sem bloquear nada
+  static void warmup(
+    List<String> texts, {
+    String from = 'en',
+    String to   = 'pt-BR',
+  }) {
     Future(() async {
-      // Processar em lotes de 3 para não saturar a API
       const batchSize = 3;
       for (int i = 0; i < texts.length; i += batchSize) {
         final batch = texts.skip(i).take(batchSize).toList();
         await Future.wait(
           batch.map((t) => translate(t, from: from, to: to)),
         );
-        // Pequena pausa entre lotes para não bater rate limit
         if (i + batchSize < texts.length) {
-          await Future.delayed(const Duration(milliseconds: 300));
+          await Future.delayed(
+              const Duration(milliseconds: 300));
         }
       }
     });
@@ -90,7 +98,8 @@ class TranslationService {
   /// Limpa todo o cache de traduções.
   static Future<void> clearCache() async {
     await _ensurePrefs();
-    final keys = _prefs!.getKeys()
+    final keys = _prefs!
+        .getKeys()
         .where((k) => k.startsWith(_cachePrefix))
         .toList();
     for (final k in keys) await _prefs!.remove(k);
@@ -103,42 +112,40 @@ class TranslationService {
 
   static Future<String?> _fetch(
       String text, String from, String to, String key) async {
-    // Tenta MyMemory com até 3 tentativas e backoff exponencial
     const maxRetries = 3;
     for (int attempt = 0; attempt < maxRetries; attempt++) {
       try {
         if (attempt > 0) {
-          // Espera 1s, 2s, 4s antes de cada retry
-          await Future.delayed(Duration(seconds: 1 << attempt));
+          await Future.delayed(
+              Duration(seconds: 1 << attempt));
         }
         final url = Uri.parse(
-          'https://api.mymemory.translated.net/get'
+          '${kMyMemoryBase}'
           '?q=${Uri.encodeComponent(text)}&langpair=$from|$to',
         );
         final res = await http.get(url, headers: {
-          'User-Agent': 'Mozilla/5.0 (Android; PokopiaTracker)',
+          'User-Agent': kUserAgent,
         }).timeout(_timeout);
 
         if (res.statusCode == 200) {
-          final json   = jsonDecode(res.body) as Map<String, dynamic>;
-          final result = json['responseData']?['translatedText'] as String?;
-          if (result != null && result.isNotEmpty &&
-              result != 'PLEASE SELECT TWO DISTINCT LANGUAGES') {
+          final json =
+              jsonDecode(res.body) as Map<String, dynamic>;
+          final result = json['responseData']
+              ?['translatedText'] as String?;
+          if (result != null &&
+              result.isNotEmpty &&
+              result !=
+                  'PLEASE SELECT TWO DISTINCT LANGUAGES') {
             await _ensurePrefs();
             await _prefs!.setString(key, result);
             return result;
           }
         }
-        // Rate limit (429) — espera mais antes de tentar
         if (res.statusCode == 429) {
           await Future.delayed(const Duration(seconds: 3));
         }
-      } catch (_) {
-        // timeout ou erro de rede — próxima tentativa
-      }
+      } catch (_) {}
     }
-    // Todas as tentativas falharam — não retorna nada
-    // O caller decide o que fazer (mostrar loader, tentar mais tarde)
     return null;
   }
 }

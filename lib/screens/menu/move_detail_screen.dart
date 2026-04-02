@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pokedex_tracker/theme/type_colors.dart';
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/theme/type_colors.dart';
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show ptType, typeIconAsset, typeTextColor, neutralBg, kApiBase, PokeballLoader;
-import 'package:pokedex_tracker/screens/detail/mainline_detail_screen.dart';
-import 'package:pokedex_tracker/screens/detail/nacional_detail_screen.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/dex_bundle_service.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/translations.dart';
-import 'package:pokedex_tracker/screens/menu/moves_list_screen.dart' show MoveEntry;
+import 'package:dexcurator/screens/detail/mainline_detail_screen.dart';
+import 'package:dexcurator/screens/detail/nacional_detail_screen.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/dex_bundle_service.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/translations.dart';
+import 'package:dexcurator/screens/menu/moves_list_screen.dart' show MoveEntry;
 
 class MoveDetailScreen extends StatefulWidget {
   final MoveEntry                             entry;

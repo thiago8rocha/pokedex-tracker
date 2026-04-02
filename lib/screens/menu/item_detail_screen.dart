@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart' show neutralBg;
-import 'package:pokedex_tracker/screens/menu/items_list_screen.dart'
+import 'package:dexcurator/screens/detail/detail_shared.dart' show neutralBg;
+import 'package:dexcurator/screens/menu/items_list_screen.dart'
     show ItemEntry, ItemSprite;
 
 class ItemDetailScreen extends StatelessWidget {

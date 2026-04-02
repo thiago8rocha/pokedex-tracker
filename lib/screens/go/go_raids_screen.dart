@@ -1,14 +1,15 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show PokeballLoader, ptType, defaultSpriteNotifier;
-import 'package:pokedex_tracker/screens/go/go_detail_screen.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/theme/type_colors.dart';
+import 'package:dexcurator/screens/go/go_detail_screen.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/core/app_constants.dart';
+import 'package:dexcurator/theme/type_colors.dart';
 
 // PENDÊNCIA — Créditos/Fontes (registrado em 6.4 do doc de projeto):
 // - Raids Ativas: dados via scraping de leekduck.com/raid-bosses/
@@ -113,7 +114,7 @@ class _GoRaidsScreenState extends State<GoRaidsScreen> {
       final res = await http.get(
         Uri.parse('https://leekduck.com/raid-bosses/'),
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36',
+          'User-Agent': kUserAgent,
           'Accept': 'text/html',
         },
       ).timeout(const Duration(seconds: 12));

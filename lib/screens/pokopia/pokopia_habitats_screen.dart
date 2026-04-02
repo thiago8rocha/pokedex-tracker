@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/data/pokopia_habitat_data.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_habitat_detail_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_event_habitat_detail_screen.dart';
+import 'package:dexcurator/data/pokopia_habitat_data.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_habitat_detail_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_event_habitat_detail_screen.dart';
 
 class PokopiaHabitatsScreen extends StatefulWidget {
   const PokopiaHabitatsScreen({super.key});

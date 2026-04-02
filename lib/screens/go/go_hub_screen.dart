@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/pokedex_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_cp_calculator_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_raids_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_mega_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_gigantamax_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_regional_forms_screen.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_hub_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_hub_screen.dart';
-import 'package:pokedex_tracker/screens/menu/moves_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/abilities_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/natures_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/teams_screen.dart';
-import 'package:pokedex_tracker/screens/menu/items_list_screen.dart';
-import 'package:pokedex_tracker/screens/settings_screen.dart';
+import 'package:dexcurator/screens/pokedex_screen.dart';
+import 'package:dexcurator/screens/go/go_cp_calculator_screen.dart';
+import 'package:dexcurator/screens/go/go_raids_screen.dart';
+import 'package:dexcurator/screens/go/go_mega_screen.dart';
+import 'package:dexcurator/screens/go/go_gigantamax_screen.dart';
+import 'package:dexcurator/screens/go/go_regional_forms_screen.dart';
+import 'package:dexcurator/screens/pocket/pocket_hub_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_hub_screen.dart';
+import 'package:dexcurator/screens/menu/moves_list_screen.dart';
+import 'package:dexcurator/screens/menu/abilities_list_screen.dart';
+import 'package:dexcurator/screens/menu/natures_list_screen.dart';
+import 'package:dexcurator/screens/menu/teams_screen.dart';
+import 'package:dexcurator/screens/menu/items_list_screen.dart';
+import 'package:dexcurator/screens/settings_screen.dart';
 
 class GoHubScreen extends StatelessWidget {
   const GoHubScreen({super.key});

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pokedex_tracker/theme/app_theme.dart';
-import 'package:pokedex_tracker/screens/pokedex_screen.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/pokedex_silent_refresh_service.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/core/app_constants.dart';
+import 'package:dexcurator/theme/app_theme.dart';
+import 'package:dexcurator/screens/pokedex_screen.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/pokedex_silent_refresh_service.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show initBilingualMode, initDefaultSprite;
-import 'package:pokedex_tracker/screens/disclaimer_screen.dart';
+import 'package:dexcurator/screens/disclaimer_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,31 +60,45 @@ ThemeMode _themeModeFromId(String id) {
 
 // ─── APP ─────────────────────────────────────────────────────────
 
-class PokedexTrackerApp extends StatelessWidget {
+class PokedexTrackerApp extends StatefulWidget {
   final bool showDisclaimer;
   const PokedexTrackerApp({super.key, this.showDisclaimer = false});
 
   @override
+  State<PokedexTrackerApp> createState() => _PokedexTrackerAppState();
+}
+
+class _PokedexTrackerAppState extends State<PokedexTrackerApp> {
+  @override
+  void initState() {
+    super.initState();
+    appThemeController.addListener(_onThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    appThemeController.removeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onThemeChanged() => setState(() {});
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: appThemeController,
-      builder: (_, __) => MaterialApp(
-        title: 'DexCurator',
-        debugShowCheckedModeBanner: false,
-        theme: appThemeController.lightTheme,
-        darkTheme: appThemeController.darkTheme,
-        themeMode: appThemeController.themeMode,
-        home: showDisclaimer
-            ? const _DisclaimerGate()
-            : const _LastDexLoader(),
-      ),
+    return MaterialApp(
+      title: kAppName,
+      debugShowCheckedModeBanner: false,
+      theme: AppThemes.light(appThemeController.themeId),
+      darkTheme: AppThemes.dark(appThemeController.themeId),
+      themeMode: appThemeController.themeMode,
+      home: widget.showDisclaimer
+          ? const _DisclaimerGate()
+          : const _LastDexLoader(),
     );
   }
 }
 
 // ─── DISCLAIMER GATE ─────────────────────────────────────────────
-// Exibe o disclaimer no primeiro acesso e redireciona para a Pokédex
-// após o usuário confirmar.
 
 class _DisclaimerGate extends StatelessWidget {
   const _DisclaimerGate();
@@ -93,20 +108,13 @@ class _DisclaimerGate extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: DisclaimerScreen(isFromSettings: false),
-            ),
-          ],
-        ),
+        child: DisclaimerScreen(isFromSettings: false),
       ),
     );
   }
 }
 
 // ─── LAST DEX LOADER ─────────────────────────────────────────────
-// Restaura a última Pokédex visitada pelo usuário.
 
 class _LastDexLoader extends StatefulWidget {
   const _LastDexLoader();
@@ -116,6 +124,35 @@ class _LastDexLoader extends StatefulWidget {
 }
 
 class _LastDexLoaderState extends State<_LastDexLoader> {
+  // Mapa de id → nome para restaurar a tela certa
+  static const _idToName = <String, String>{
+    'nacional': 'Nacional',
+    'pokémon_go': 'Pokémon GO',
+    'red___blue': 'Red / Blue',
+    'yellow': 'Yellow',
+    'gold___silver': 'Gold / Silver',
+    'crystal': 'Crystal',
+    'ruby___sapphire': 'Ruby / Sapphire',
+    'firered___leafgreen_(gba)': 'FireRed / LeafGreen (GBA)',
+    'emerald': 'Emerald',
+    'diamond___pearl': 'Diamond / Pearl',
+    'platinum': 'Platinum',
+    'heartgold___soulsilver': 'HeartGold / SoulSilver',
+    'black___white': 'Black / White',
+    'black_2___white_2': 'Black 2 / White 2',
+    'x___y': 'X / Y',
+    'omega_ruby___alpha_sapphire': 'Omega Ruby / Alpha Sapphire',
+    'sun___moon': 'Sun / Moon',
+    'ultra_sun___ultra_moon': 'Ultra Sun / Ultra Moon',
+    "let's_go_pikachu___eevee": "Let's Go Pikachu / Eevee",
+    'sword___shield': 'Sword / Shield',
+    'brilliant_diamond___shining_pearl': 'Brilliant Diamond / Shining Pearl',
+    'legends:_arceus': 'Legends: Arceus',
+    'scarlet___violet': 'Scarlet / Violet',
+    'legends:_z-a': 'Legends: Z-A',
+    'pokopia': 'Pokopia',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -125,11 +162,17 @@ class _LastDexLoaderState extends State<_LastDexLoader> {
   Future<void> _load() async {
     final lastId = await StorageService().getLastPokedexId();
     if (!mounted) return;
+    final id = lastId ?? 'nacional';
+    final name = _idToName[id] ?? 'Nacional';
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => PokedexScreen(
-          pokedexId: lastId ?? 'national',
-          pokedexName: lastId == null ? 'Nacional' : null,
+          pokedexId: id,
+          pokedexName: name,
+          totalPokemon: id == 'nacional' ? 1025
+              : id == 'pokémon_go' ? 941
+              : id == 'pokopia' ? 304
+              : 0,
         ),
       ),
     );
@@ -137,8 +180,6 @@ class _LastDexLoaderState extends State<_LastDexLoader> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SizedBox.shrink(),
-    );
+    return const Scaffold(body: SizedBox.shrink());
   }
 }

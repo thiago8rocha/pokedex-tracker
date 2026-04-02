@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart' show kApiBase;
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/dex_bundle_service.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart' show kApiBase;
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/dex_bundle_service.dart';
 
 /// Pré-carrega os detalhes (tipo, categoria, poder, precisão, PP)
 /// de todos os moves do jogo ativo em background ao abrir o app.

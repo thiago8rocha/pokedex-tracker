@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/theme/type_colors.dart';
-import 'package:pokedex_tracker/translations.dart';
+import 'package:dexcurator/core/app_constants.dart';
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/translation_service.dart';
+import 'package:dexcurator/theme/type_colors.dart';
+import 'package:dexcurator/translations.dart';
 
 // ─── UTILITÁRIOS GLOBAIS ─────────────────────────────────────────
 
-const String kApiBase = 'https://pokeapi.co/api/v2';
 
 // ─── ÍCONES DE TIPO ───────────────────────────────────────────────
 // SVGs em assets/types/<type>.svg (MIT — duiker101/pokemon-type-svg-icons)
@@ -104,45 +105,22 @@ const Map<String, List<String>> pokedexVersionGroups = {
 
 /// Traduz o flavor text para pt-BR usando a API gratuita do Google Translate.
 /// Se o texto já estiver em português ou a tradução falhar, retorna o original.
+/// Traduz [text] de inglês para português usando o TranslationService.
+///
+/// Delega para TranslationService (MyMemory + cache persistente).
+/// Retorna o texto original se a tradução falhar ou o texto já for PT.
 Future<String> translateFlavorText(String text) async {
   if (text.isEmpty) return text;
 
-  // Pula tradução apenas se já for inequivocamente português
+  // Pula tradução se já for inequivocamente português
   final ptOnly = RegExp(
     r'\b(não|também|seus|suas|dele|dela|então|assim|isto|isso|aqui|pelo|pela|são|está)\b',
     caseSensitive: false,
   );
   if (ptOnly.hasMatch(text)) return text;
 
-  // Tentativa 1: Google Translate (gratuito, sem chave)
-  try {
-    final url = Uri.https('translate.googleapis.com', '/translate_a/single', {
-      'client': 'gtx', 'sl': 'en', 'tl': 'pt', 'dt': 't', 'q': text,
-    });
-    final r = await http.get(url).timeout(const Duration(seconds: 6));
-    if (r.statusCode == 200) {
-      final data = json.decode(r.body) as List<dynamic>;
-      final result = (data[0] as List<dynamic>)
-          .map((s) => (s as List<dynamic>)[0] as String? ?? '')
-          .join('').trim();
-      if (result.isNotEmpty && result != text) return result;
-    }
-  } catch (_) {}
-
-  // Tentativa 2: MyMemory (API pública, sem chave)
-  try {
-    final url = Uri.https('api.mymemory.translated.net', '/get', {
-      'q': text, 'langpair': 'en|pt-BR',
-    });
-    final r = await http.get(url).timeout(const Duration(seconds: 6));
-    if (r.statusCode == 200) {
-      final data = json.decode(r.body) as Map<String, dynamic>;
-      final result = data['responseData']?['translatedText'] as String? ?? '';
-      if (result.isNotEmpty && result != text) return result;
-    }
-  } catch (_) {}
-
-  return text;
+  final translated = await TranslationService.translate(text);
+  return translated ?? text;
 }
 
 

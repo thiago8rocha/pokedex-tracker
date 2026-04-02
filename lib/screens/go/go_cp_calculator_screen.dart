@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
+import 'package:dexcurator/core/app_constants.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
 
 // ─── MODELOS ─────────────────────────────────────────────────────
 
@@ -178,7 +179,7 @@ class _GoCpCalculatorScreenState extends State<GoCpCalculatorScreen>
     } catch (_) {}
     // Fallback: API
     try {
-      final r = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon/$id'));
+      final r = await http.get(Uri.parse('${kPokeApiBase}/pokemon/$id'));
       if (r.statusCode == 200) {
         final d = json.decode(r.body) as Map<String, dynamic>;
         final stats = d['stats'] as List<dynamic>;
@@ -348,7 +349,7 @@ class _GoCpCalculatorScreenState extends State<GoCpCalculatorScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     child: Row(children: [
                       Image.network(
-                        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pid.png',
+                        '${kSpriteBase}/$pid.png',
                         width: 36, height: 36,
                         errorBuilder: (_, __, ___) => const SizedBox(width: 36, height: 36),
                       ),
@@ -374,7 +375,7 @@ class _GoCpCalculatorScreenState extends State<GoCpCalculatorScreen>
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
             child: Row(children: [
               Image.network(
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${_pokemon!.id}.png',
+                '${kSpriteBase}/${_pokemon!.id}.png',
                 width: 48, height: 48,
                 errorBuilder: (_, __, ___) => const SizedBox(width: 48, height: 48),
               ),
@@ -446,7 +447,7 @@ class _GoCpCalculatorScreenState extends State<GoCpCalculatorScreen>
                   child: Row(children: [
                     if (evo.data != null)
                       Image.network(
-                        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${evo.data!.id}.png',
+                        '${kSpriteBase}/${evo.data!.id}.png',
                         width: 44, height: 44,
                         errorBuilder: (_, __, ___) => const SizedBox(width: 44, height: 44),
                       ),

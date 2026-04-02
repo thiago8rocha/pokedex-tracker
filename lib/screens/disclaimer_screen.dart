@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
+import 'package:dexcurator/core/app_constants.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/screens/pokedex_screen.dart';
 
 // ─── ENTRY POINT ─────────────────────────────────────────────────
 // Chamado no primeiro acesso. Exibe aviso de app não oficial + links
@@ -36,9 +38,31 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
   void _confirm() async {
     if (!widget.isFromSettings) {
       await StorageService().setDisclaimerSeen();
+      if (!mounted) return;
+      // É a tela raiz — navega direto para a Pokédex principal.
+      final lastId = await StorageService().getLastPokedexId();
+      final id = lastId ?? 'nacional';
+      const nameMap = <String, String>{
+        'nacional': 'Nacional', 'pokémon_go': 'Pokémon GO', 'pokopia': 'Pokopia',
+      };
+      final name = nameMap[id] ?? 'Nacional';
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => PokedexScreen(
+            pokedexId: id,
+            pokedexName: name,
+            totalPokemon: id == 'nacional' ? 1025
+                : id == 'pokémon_go' ? 941
+                : id == 'pokopia' ? 304
+                : 0,
+          ),
+        ),
+      );
+    } else {
+      if (!mounted) return;
+      Navigator.of(context).pop();
     }
-    if (!mounted) return;
-    Navigator.of(context).pop();
   }
 
   @override
@@ -168,7 +192,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                 'indicados no repositório público do projeto:'),
         const SizedBox(height: 8),
         _LinkText(
-            text: 'github.com/thiago8rocha/pokedex-tracker',
+            text: kRepoUrl,
             scheme: scheme),
         const SizedBox(height: 20),
         _SectionTitle(text: 'Fontes de dados'),
@@ -260,11 +284,11 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
 
         _SubTitle(text: '7. Contato'),
         _LinkText(
-            text: 'github.com/thiago8rocha/pokedex-tracker',
+            text: kRepoUrl,
             scheme: scheme),
         const SizedBox(height: 8),
 
-        _DateText(text: 'Vigência: Março de 2026'),
+        _DateText(text: 'Vigência: Abril de 2026'),
         const SizedBox(height: 8),
       ],
     );
@@ -362,7 +386,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                 'estas afirmações:'),
         const SizedBox(height: 6),
         _LinkText(
-            text: 'github.com/thiago8rocha/pokedex-tracker',
+            text: kRepoUrl,
             scheme: scheme),
         const SizedBox(height: 12),
 
@@ -373,7 +397,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                 'GitHub Issues no repositório do projeto.'),
         const SizedBox(height: 8),
 
-        _DateText(text: 'Vigência: Março de 2026'),
+        _DateText(text: 'Vigência: Abril de 2026'),
         const SizedBox(height: 8),
       ],
     );

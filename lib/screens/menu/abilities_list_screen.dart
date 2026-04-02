@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show PokeballLoader;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pokedex_tracker/screens/settings_screen.dart';
-import 'package:pokedex_tracker/translations.dart';
-import 'package:pokedex_tracker/screens/menu/ability_detail_screen.dart';
+import 'package:dexcurator/screens/settings_screen.dart';
+import 'package:dexcurator/translations.dart';
+import 'package:dexcurator/screens/menu/ability_detail_screen.dart';
 
 class AbilitiesListScreen extends StatefulWidget {
   const AbilitiesListScreen({super.key});

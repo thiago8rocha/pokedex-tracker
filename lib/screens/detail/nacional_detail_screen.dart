@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/theme/type_colors.dart';
-import 'package:pokedex_tracker/translations.dart';
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/theme/type_colors.dart';
+import 'package:dexcurator/translations.dart';
 
 class NacionalDetailScreen extends StatefulWidget {
   final Pokemon pokemon;

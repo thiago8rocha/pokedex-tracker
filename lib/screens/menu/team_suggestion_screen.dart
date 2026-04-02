@@ -1,13 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/theme/type_colors.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/theme/type_colors.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show ptType, typeIconAsset, calculateWeaknesses, PokeballLoader;
-import 'package:pokedex_tracker/services/dex_bundle_service.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/teams_storage_service.dart';
-import 'package:pokedex_tracker/screens/menu/teams_screen.dart'
+import 'package:dexcurator/services/dex_bundle_service.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/teams_storage_service.dart';
+import 'package:dexcurator/screens/menu/teams_screen.dart'
     show TeamsGamePickerSheet, kTeamsGamesByGen, gameById;
 
 // ─── IDs de lendários e míticos (Gen 1–9) ────────────────────────

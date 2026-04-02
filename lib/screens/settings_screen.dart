@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/screens/disclaimer_screen.dart';
-import 'package:pokedex_tracker/theme/app_theme.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/screens/disclaimer_screen.dart';
+import 'package:dexcurator/theme/app_theme.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show bilingualModeNotifier, defaultSpriteNotifier, PokeballLoader;
 
 // ─── MODELO DE POKEDEX ────────────────────────────────────────────

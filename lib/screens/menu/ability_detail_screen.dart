@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/models/pokemon.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart' show neutralBg;
-import 'package:pokedex_tracker/screens/detail/mainline_detail_screen.dart';
-import 'package:pokedex_tracker/screens/detail/nacional_detail_screen.dart';
-import 'package:pokedex_tracker/services/pokedex_data_service.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/translations.dart';
-import 'package:pokedex_tracker/screens/menu/abilities_list_screen.dart' show AbilityEntry;
+import 'package:dexcurator/models/pokemon.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart' show neutralBg;
+import 'package:dexcurator/screens/detail/mainline_detail_screen.dart';
+import 'package:dexcurator/screens/detail/nacional_detail_screen.dart';
+import 'package:dexcurator/services/pokedex_data_service.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/translations.dart';
+import 'package:dexcurator/screens/menu/abilities_list_screen.dart' show AbilityEntry;
 
 class AbilityDetailScreen extends StatefulWidget {
   final AbilityEntry entry;

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/screens/pokedex_screen.dart';
-import 'package:pokedex_tracker/screens/settings_screen.dart';
-import 'package:pokedex_tracker/screens/pokopia/pokopia_hub_screen.dart';
-import 'package:pokedex_tracker/screens/go/go_hub_screen.dart';
-import 'package:pokedex_tracker/screens/pocket/pocket_hub_screen.dart';
-import 'package:pokedex_tracker/screens/menu/moves_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/abilities_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/natures_list_screen.dart';
-import 'package:pokedex_tracker/screens/menu/teams_screen.dart';
-import 'package:pokedex_tracker/screens/menu/items_list_screen.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/screens/pokedex_screen.dart';
+import 'package:dexcurator/screens/settings_screen.dart';
+import 'package:dexcurator/screens/pokopia/pokopia_hub_screen.dart';
+import 'package:dexcurator/screens/go/go_hub_screen.dart';
+import 'package:dexcurator/screens/pocket/pocket_hub_screen.dart';
+import 'package:dexcurator/screens/menu/moves_list_screen.dart';
+import 'package:dexcurator/screens/menu/abilities_list_screen.dart';
+import 'package:dexcurator/screens/menu/natures_list_screen.dart';
+import 'package:dexcurator/screens/menu/teams_screen.dart';
+import 'package:dexcurator/screens/menu/items_list_screen.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show typeNamePt, typeIconColors;
 
 // ─── MODELOS ─────────────────────────────────────────────────────

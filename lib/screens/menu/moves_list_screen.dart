@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:pokedex_tracker/theme/type_colors.dart';
-import 'package:pokedex_tracker/screens/detail/detail_shared.dart'
+import 'package:dexcurator/theme/type_colors.dart';
+import 'package:dexcurator/screens/detail/detail_shared.dart'
     show ptType, typeIconAsset, typeTextColor, neutralBg, kApiBase, PokeballLoader;
-import 'package:pokedex_tracker/services/storage_service.dart';
-import 'package:pokedex_tracker/services/pokeapi_service.dart';
-import 'package:pokedex_tracker/services/dex_bundle_service.dart';
-import 'package:pokedex_tracker/services/move_warmup_service.dart';
-import 'package:pokedex_tracker/translations.dart';
-import 'package:pokedex_tracker/screens/menu/move_detail_screen.dart';
+import 'package:dexcurator/services/storage_service.dart';
+import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/dex_bundle_service.dart';
+import 'package:dexcurator/services/move_warmup_service.dart';
+import 'package:dexcurator/translations.dart';
+import 'package:dexcurator/screens/menu/move_detail_screen.dart';
 
 // ─── Modelo público ───────────────────────────────────────────────
 class MoveEntry {
