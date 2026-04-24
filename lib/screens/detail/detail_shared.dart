@@ -2590,7 +2590,7 @@ String encounterMethodPt(String method) {
     'Overworld': 'Overworld', 'Wandering': 'Errante',
     'Surfing': 'Surfando', 'Fishing': 'Pescando',
     'Old Rod': 'Vara Velha', 'Good Rod': 'Vara Boa', 'Super Rod': 'Super Vara',
-    'gift': 'Presente', 'Gift': 'Presente',
+    'Gift': 'Presente',
     'Starter Pokémon': 'Inicial', 'Starter Pokemon': 'Inicial',
     'Headbutt': 'Headbutt', 'Rock Smash': 'Quebra-Pedra',
     'Raid Battle': 'Raid', 'Dynamax Adventure': 'Aventura Dynamax',
