@@ -1560,10 +1560,6 @@ class FormsTab extends StatelessWidget {
             'sprites/pokemon/other/official-artwork/$id.png';
         final c1 = types.isNotEmpty ? typeColor(types[0]) : Colors.grey;
         final c2 = types.length > 1 ? typeColor(types[1]) : c1;
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
-        final gameBg   = isDark ? const Color(0xFF3A3A3A) : const Color(0xFFDDDDDD);
-        final gameText = isDark ? const Color(0xFFAAAAAA) : const Color(0xFF666666);
-
         return GestureDetector(
           onTap: () => _showFormModal(ctx, id, name, types, game, sprite),
           child: Container(
@@ -1593,20 +1589,6 @@ class FormsTab extends StatelessWidget {
                     fontSize: 8, color: Colors.white, fontWeight: FontWeight.w700)),
                 );
               }).toList()),
-              if (game != null) ...[
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: gameBg,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(game,
-                    style: TextStyle(fontSize: 8, color: gameText,
-                      fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center),
-                ),
-              ],
             ]),
           ),
         );
@@ -1617,8 +1599,6 @@ class FormsTab extends StatelessWidget {
   void _showFormModal(BuildContext context, int id, String name,
       List<String> types, String? game, String sprite) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final gameBg   = isDark ? const Color(0xFF3A3A3A) : const Color(0xFFDDDDDD);
-    final gameText = isDark ? const Color(0xFFAAAAAA) : const Color(0xFF666666);
     final c1 = types.isNotEmpty ? typeColor(types[0]) : Colors.grey;
     final c2 = types.length > 1 ? typeColor(types[1]) : c1;
 
@@ -1664,17 +1644,6 @@ class FormsTab extends StatelessWidget {
                   color: Colors.white)),
               );
             }).toList()),
-          // Jogo
-          if (game != null) ...[
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: gameBg, borderRadius: BorderRadius.circular(4)),
-              child: Text(game, style: TextStyle(
-                fontSize: 11, color: gameText, fontWeight: FontWeight.w500)),
-            ),
-          ],
         ]),
       ),
     );
@@ -2573,6 +2542,29 @@ Map<String, double> calculateWeaknesses(List<String> types) {
 
 // função com _ para compatibilidade interna
 Map<String, double> _calculateWeaknesses(List<String> types) => calculateWeaknesses(types);
+
+// ─── LOCALIZAÇÃO: NOME DO JOGO ────────────────────────────────────
+
+String encounterGameName(String raw) {
+  const map = {
+    'red': 'Red', 'blue': 'Blue', 'yellow': 'Yellow',
+    'Gold': 'Gold', 'Silver': 'Silver', 'crystal': 'Crystal',
+    'ruby': 'Ruby', 'sapphire': 'Sapphire', 'firered': 'FireRed',
+    'leafgreen': 'LeafGreen', 'emerald': 'Emerald',
+    'diamond': 'Diamond', 'pearl': 'Pearl', 'platinum': 'Platinum',
+    'heartgold': 'HeartGold', 'soulsilver': 'SoulSilver',
+    'black': 'Black', 'white': 'White', 'black2': 'Black 2', 'white2': 'White 2',
+    'x': 'X', 'y': 'Y', 'omegaRuby': 'Omega Ruby', 'alphaSapphire': 'Alpha Sapphire',
+    'Sun': 'Sun', 'Moon': 'Moon', 'ultraSun': 'Ultra Sun', 'ultraMoon': 'Ultra Moon',
+    'letsGoPikachu': "Let's Go Pikachu", 'letsGoEevee': "Let's Go Eevee",
+    'Sword': 'Sword', 'Shield': 'Shield',
+    'brilliandDiamond': 'Brilliant Diamond', 'shiningPearl': 'Shining Pearl',
+    'legendsArceus': 'Legends: Arceus',
+    'Scarlet': 'Scarlet', 'Violet': 'Violet',
+    'legendsZA': 'Legends: Z-A',
+  };
+  return map[raw] ?? raw;
+}
 
 // ─── LOCALIZAÇÃO: NOME DO MÉTODO ─────────────────────────────────
 

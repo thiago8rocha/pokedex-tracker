@@ -3,6 +3,7 @@ import 'package:dexcurator/models/pokemon.dart';
 import 'package:dexcurator/screens/detail/detail_shared.dart';
 import 'package:dexcurator/services/pokedex_data_service.dart';
 import 'package:dexcurator/services/pokeapi_service.dart';
+import 'package:dexcurator/services/location_service.dart';
 import 'package:dexcurator/services/storage_service.dart';
 import 'package:dexcurator/translations.dart';
 
@@ -23,13 +24,13 @@ const Map<String, String> _kGameToPokedexId = {
   'Omega Ruby / Alpha Sapphire':       'omega_ruby___alpha_sapphire',
   'Sun / Moon':                        'sun___moon',
   'Ultra Sun / Ultra Moon':            'ultra_sun___ultra_moon',
-  "Let's Go Pikachu / Eevee":          "let's_go_pikachu___eevee",
+  "Let's Go Pikachu / Eevee":          'lets_go_pikachu___eevee',
   'Sword / Shield':                    'sword___shield',
   'Brilliant Diamond / Shining Pearl': 'brilliant_diamond___shining_pearl',
-  'Legends: Arceus':                   'legends:_arceus',
+  'Legends: Arceus':                   'legends_arceus',
   'Scarlet / Violet':                  'scarlet___violet',
-  'Legends: Z-A':                      'legends:_z-a',
-  'FireRed / LeafGreen':               'firered___leafgreen',
+  'Legends: Z-A':                      'legends_z-a',
+  'FireRed / LeafGreen':               'firered___leafgreen_(gba)',
   'Pokémon GO':                        'pokémon_go',
   'Pokopia':                           'pokopia',
 };
@@ -140,10 +141,16 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
       if (d != null && mounted) _parseMoves(d);
     });
 
-    // Carrega localizações em background
-    _api.fetchEncounters(id).then((enc) {
-      if (mounted) setState(() { _encounters = enc; _loadingEncounters = false; });
-    });
+    // Localizations from bundled asset
+    final locationSvc = LocationService.instance;
+    if (!locationSvc.isLoaded) await locationSvc.warmup();
+    if (mounted) {
+      final enc = <String, List<Map<String, dynamic>>>{};
+      for (final dexId in locationSvc.getAvailableDexIds(id)) {
+        enc[dexId] = locationSvc.getLocations(id, dexId);
+      }
+      setState(() { _encounters = enc; _loadingEncounters = false; });
+    }
   }
 
   void _parseForms(Map<String, dynamic> d) {
@@ -362,15 +369,16 @@ class _NacionalInfoTab extends StatelessWidget {
       if (dexId == null || excluded.contains(dexId)) continue;
 
       if (rows.isNotEmpty) rows.add(const Divider(height: 12, thickness: 0.5));
-      rows.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text(gameName,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.primary,
-            letterSpacing: 0.3)),
-      ));
+
       final locs = encounters[dexId];
       if (locs == null || locs.isEmpty) {
+        rows.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(gameName,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+              letterSpacing: 0.3)),
+        ));
         rows.add(Padding(
           padding: const EdgeInsets.only(bottom: 4),
           child: Text('Dados não disponíveis.',
@@ -378,8 +386,42 @@ class _NacionalInfoTab extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ));
       } else {
+        // Group by individual game version (g field)
+        final byVersion = <String, List<Map<String, dynamic>>>{};
         for (final loc in locs) {
-          rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
+          final v = loc['game'] as String? ?? '';
+          (byVersion[v] ??= []).add(loc);
+        }
+        // If all have the same (or no) version label, show single header
+        if (byVersion.length <= 1) {
+          rows.add(Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(gameName,
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.primary,
+                letterSpacing: 0.3)),
+          ));
+          for (final loc in locs) {
+            rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
+          }
+        } else {
+          // Multiple game versions — show per-version sub-headers
+          bool firstVersion = true;
+          for (final version in byVersion.keys) {
+            if (!firstVersion) rows.add(const SizedBox(height: 6));
+            final label = version.isNotEmpty ? encounterGameName(version) : gameName;
+            rows.add(Padding(
+              padding: EdgeInsets.only(top: firstVersion ? 0 : 4, bottom: 2),
+              child: Text(label,
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.primary,
+                  letterSpacing: 0.3)),
+            ));
+            for (final loc in byVersion[version]!) {
+              rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
+            }
+            firstVersion = false;
+          }
         }
       }
     }
