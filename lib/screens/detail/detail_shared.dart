@@ -64,7 +64,7 @@ Map<String, String> get typeNamePt => typeNamesPt;
 // Usado para buscar o flavor text do jogo correto em pokemon-species.
 // Ordem: prioridade decrescente (primeiros = preferidos para esse jogo).
 const Map<String, List<String>> pokedexVersionGroups = {
-  'let_s_go_pikachu___eevee':           ['lets-go-pikachu-lets-go-eevee'],
+  'lets_go_pikachu___eevee':            ['lets-go-pikachu-lets-go-eevee'],
   'firered___leafgreen':                 ['firered-leafgreen'],
   'sword___shield':                      ['sword-shield'],
   'brilliant_diamond___shining_pearl':   ['brilliant-diamond-and-shining-pearl'],
@@ -1590,7 +1590,7 @@ class FormsTab extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(color: tc, borderRadius: BorderRadius.circular(4)),
                   child: Text(ptType(t), style: TextStyle(
-                    fontSize: 8, color: typeTextColor(tc), fontWeight: FontWeight.w700)),
+                    fontSize: 8, color: Colors.white, fontWeight: FontWeight.w700)),
                 );
               }).toList()),
               if (game != null) ...[
@@ -1661,7 +1661,7 @@ class FormsTab extends StatelessWidget {
                   color: tc, borderRadius: BorderRadius.circular(4)),
                 child: Text(ptType(t), style: TextStyle(
                   fontSize: 12, fontWeight: FontWeight.w700,
-                  color: typeTextColor(tc))),
+                  color: Colors.white)),
               );
             }).toList()),
           // Jogo
@@ -2414,7 +2414,7 @@ class _EvoChainWidgetState extends State<EvoChainWidget> {
                         Expanded(child: Text(ptType(t),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 9, color: typeTextColor(tc),
+                            fontSize: 9, color: Colors.white,
                             fontWeight: FontWeight.w700))),
                       ]),
                     ),
