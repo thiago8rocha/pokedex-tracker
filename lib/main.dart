@@ -17,9 +17,8 @@ import 'package:dexcurator/services/location_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Aumentar cache de imagens: 256MB e 1000 entradas
-  PaintingBinding.instance.imageCache.maximumSize = 1000;
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 256 * 1024 * 1024;
+  PaintingBinding.instance.imageCache.maximumSize = 500;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 100 * 1024 * 1024;
 
   // Inicializar SharedPreferences uma vez e reutilizar
   final prefs = await SharedPreferences.getInstance();

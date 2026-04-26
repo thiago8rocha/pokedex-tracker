@@ -1,29 +1,35 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// Provides in-game location data for all main-series games, sourced from
-/// a bundled JSON derived from the CTA Dex database.
-///
-/// Data shape: { "speciesId": { "dexId": [ {l, m?, n?, x?, r?, t?, w?} ] } }
-/// Keys: l=location, m=method, n=minLevel, x=maxLevel, r=rarity, t=time, w=weather
+/// Provides in-game location data for all main-series games.
+/// Data shape: { "speciesId": { "dexId": [ {l, g?, m?, n?, x?, r?, t?, w?} ] } }
+/// Keys: l=location, g=game version, m=method, n=minLevel, x=maxLevel,
+///       r=rarity, t=time, w=weather
 class LocationService {
   static LocationService? _instance;
   static LocationService get instance => _instance ??= LocationService._();
   LocationService._();
 
   Map<String, dynamic>? _data;
-  bool _loading = false;
+  Future<void>? _warmupFuture;
 
-  Future<void> warmup() async {
-    if (_data != null || _loading) return;
-    _loading = true;
-    final raw = await rootBundle.loadString('assets/locations.json');
-    _data = json.decode(raw) as Map<String, dynamic>;
-    _loading = false;
+  /// Safe to call concurrently — all callers share the same Future.
+  Future<void> warmup() {
+    _warmupFuture ??= _doWarmup();
+    return _warmupFuture!;
   }
 
-  /// Returns locations for a given species in a specific dex/game.
-  /// Each entry: {location, method?, minLevel?, maxLevel?, rarity?, time?, weather?}
+  Future<void> _doWarmup() async {
+    final raw = await rootBundle.loadString('assets/locations.json');
+    _data = await compute<String, Map<String, dynamic>>(
+      (s) => json.decode(s) as Map<String, dynamic>,
+      raw,
+    );
+  }
+
+  /// Returns locations for a species in a specific dex/game.
+  /// Each entry has: location, game, method, minLevel, maxLevel, rarity, time, weather
   List<Map<String, dynamic>> getLocations(int speciesId, String dexId) {
     if (_data == null) return [];
     final byDex = _data![speciesId.toString()] as Map<String, dynamic>?;
@@ -34,6 +40,7 @@ class LocationService {
       final r = e as Map<String, dynamic>;
       return {
         'location':  r['l'] as String,
+        'game':      r['g'] as String? ?? '',
         'method':    r['m'] as String? ?? '',
         'minLevel':  r['n'] as String? ?? '',
         'maxLevel':  r['x'] as String? ?? r['n'] as String? ?? '',
