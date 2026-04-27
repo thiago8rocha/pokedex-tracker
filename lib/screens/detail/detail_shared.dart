@@ -2629,64 +2629,41 @@ class EncounterRow extends StatelessWidget {
 
   const EncounterRow({super.key, required this.enc, required this.pokemonTypes});
 
+  static const _giftMethods = {
+    'gift', 'Gift', 'gift-egg', 'Gift Egg',
+    'Starter Pokemon', 'Starter Pokémon',
+  };
+
   @override
   Widget build(BuildContext context) {
-    final scheme    = Theme.of(context).colorScheme;
-    final location  = normalizeLocationName(enc['location'] as String? ?? '');
-    final method    = enc['method']   as String? ?? '';
-    final rarity    = enc['rarity']   as String? ?? '';
-    final time      = enc['time']     as String? ?? '';
-    final weather   = enc['weather']  as String? ?? '';
-    final minLevel  = enc['minLevel'] as String? ?? '';
-    final maxLevel  = enc['maxLevel'] as String? ?? '';
-    final methodPt  = encounterMethodPt(method);
-    final typeKey   = pokemonTypes.isNotEmpty ? pokemonTypes[0].toLowerCase() : 'normal';
-    final tColor    = typeColors[typeKey] ?? const Color(0xFF888888);
+    final scheme   = Theme.of(context).colorScheme;
+    final rawLoc   = enc['location'] as String? ?? '';
+    final method   = enc['method']  as String? ?? '';
+    final time     = enc['time']    as String? ?? '';
+    final weather  = enc['weather'] as String? ?? '';
 
-    // Build detail tags: rarity, level range, time, weather
+    final location = normalizeLocationName(rawLoc);
+    final isGift   = _giftMethods.contains(method);
+    final display  = isGift ? 'Presente em $location' : location;
+
     final tags = <String>[];
-    if (minLevel.isNotEmpty) {
-      tags.add(maxLevel.isNotEmpty && maxLevel != minLevel
-          ? 'Nv. $minLevel–$maxLevel'
-          : 'Nv. $minLevel');
-    }
-    if (rarity.isNotEmpty && rarity != '100' && rarity != '100%') {
-      final r = rarity.endsWith('%') ? rarity : '$rarity%';
-      tags.add(r);
-    }
-    if (time.isNotEmpty) tags.add(encounterTimePt(time));
+    if (time.isNotEmpty)    tags.add(encounterTimePt(time));
     if (weather.isNotEmpty) tags.add(encounterWeatherPt(weather));
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Expanded(
-            child: Text(location,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500,
-                  color: scheme.onSurface)),
-          ),
-          if (methodPt.isNotEmpty) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              decoration: BoxDecoration(
-                color: tColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: tColor.withOpacity(0.4), width: 0.5),
-              ),
-              child: Text(methodPt,
-                style: TextStyle(fontSize: 11, color: tColor,
-                    fontWeight: FontWeight.w600)),
-            ),
-          ],
-        ]),
+        Text(display,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: isGift ? scheme.primary : scheme.onSurface,
+          )),
         if (tags.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 2),
             child: Text(tags.join(' · '),
-              style: TextStyle(fontSize: 11,
-                  color: scheme.onSurfaceVariant)),
+              style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
           ),
       ]),
     );
