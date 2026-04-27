@@ -2562,7 +2562,7 @@ String encounterMethodPt(String method) {
     'Honey Tree': 'Árvore de Mel', 'Honey Tree - Rare': 'Mel (Raro)',
     'Honey Tree - Very Rare': 'Mel (Muito Raro)', 'Berry Tree': 'Árvore de Fruta',
     'Berry': 'Fruta', 'DexNav': 'DexNav',
-    'Swarm': 'Enxame', 'Horde': 'Horda', 'Island Scan': 'Island Scan',
+    'Swarm': 'Enxame', 'Horde': 'Horda', 'Island Scan': 'Island Scan', 'PokeRadar': 'PokéRadar',
     'Weather SOS Battle': 'Batalha SOS (Clima)', 'Shaking Trees': 'Árvore Agitada',
     'Shaking Trees - SOS only': 'Árvore Agitada (SOS)',
     'In the Sky': 'No Ar', 'In the Sky - Rare Spawns': 'No Ar (Raro)',

@@ -386,42 +386,22 @@ class _NacionalInfoTab extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ));
       } else {
-        // Group by individual game version (g field)
-        final byVersion = <String, List<Map<String, dynamic>>>{};
+        // Deduplicate by location+method+level+rarity+time+weather
+        final seen = <String>{};
+        final merged = <Map<String, dynamic>>[];
         for (final loc in locs) {
-          final v = loc['game'] as String? ?? '';
-          (byVersion[v] ??= []).add(loc);
+          final key = '${loc['location']}|${loc['method']}|${loc['minLevel']}|${loc['maxLevel']}|${loc['rarity']}|${loc['time']}|${loc['weather']}';
+          if (seen.add(key)) merged.add(loc);
         }
-        // If all have the same (or no) version label, show single header
-        if (byVersion.length <= 1) {
-          rows.add(Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Text(gameName,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.primary,
-                letterSpacing: 0.3)),
-          ));
-          for (final loc in locs) {
-            rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
-          }
-        } else {
-          // Multiple game versions — show per-version sub-headers
-          bool firstVersion = true;
-          for (final version in byVersion.keys) {
-            if (!firstVersion) rows.add(const SizedBox(height: 6));
-            final label = version.isNotEmpty ? encounterGameName(version) : gameName;
-            rows.add(Padding(
-              padding: EdgeInsets.only(top: firstVersion ? 0 : 4, bottom: 2),
-              child: Text(label,
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                  letterSpacing: 0.3)),
-            ));
-            for (final loc in byVersion[version]!) {
-              rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
-            }
-            firstVersion = false;
-          }
+        rows.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(gameName,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.primary,
+              letterSpacing: 0.3)),
+        ));
+        for (final loc in merged) {
+          rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
         }
       }
     }
