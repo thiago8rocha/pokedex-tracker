@@ -24,21 +24,21 @@ class PokedexDataService {
   Future<void> load() async {
     if (_loaded) return;
     try {
-      // Lê os 3 arquivos em paralelo (I/O assíncrono, não bloqueia a UI)
       final results = await Future.wait([
         rootBundle.loadString(_assetPath),
         rootBundle.loadString(_namesPath),
         rootBundle.loadString(_formsPath),
       ]);
 
-      // Decodifica os JSONs em isolates separados (off main thread)
-      final decoded      = await compute(_decodePokedex,  results[0]);
-      final decodedNames = await compute(_decodeNames,    results[1]);
-      final decodedForms = await compute(_decodeForms,    results[2]);
-
-      _data  = decoded;
-      _names = decodedNames;
-      _forms = decodedForms;
+      if (kDebugMode) {
+        _data  = _decodePokedex(results[0]);
+        _names = _decodeNames(results[1]);
+        _forms = _decodeForms(results[2]);
+      } else {
+        _data  = await compute(_decodePokedex,  results[0]);
+        _names = await compute(_decodeNames,    results[1]);
+        _forms = await compute(_decodeForms,    results[2]);
+      }
       _loaded = true;
     } catch (_) {}
   }

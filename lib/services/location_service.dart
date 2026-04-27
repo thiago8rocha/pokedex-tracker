@@ -22,10 +22,14 @@ class LocationService {
 
   Future<void> _doWarmup() async {
     final raw = await rootBundle.loadString('assets/locations.json');
-    _data = await compute<String, Map<String, dynamic>>(
-      (s) => json.decode(s) as Map<String, dynamic>,
-      raw,
-    );
+    if (kDebugMode) {
+      _data = json.decode(raw) as Map<String, dynamic>;
+    } else {
+      _data = await compute<String, Map<String, dynamic>>(
+        (s) => json.decode(s) as Map<String, dynamic>,
+        raw,
+      );
+    }
   }
 
   /// Returns locations for a species in a specific dex/game.

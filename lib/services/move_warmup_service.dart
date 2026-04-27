@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:dexcurator/core/app_constants.dart';
 import 'package:dexcurator/screens/detail/detail_shared.dart' show kPokeApiBase;
@@ -30,8 +31,7 @@ class MoveWarmupService {
   }
 
   static Future<void> _run() async {
-    // Pequeno delay para não competir com o carregamento inicial da UI
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 8));
 
     final lastDex = await StorageService().getLastPokedexId();
     if (lastDex == null ||
@@ -66,7 +66,10 @@ class MoveWarmupService {
           final res = await http.get(Uri.parse('$kPokeApiBase/pokemon/$id'))
               .timeout(const Duration(seconds: 8));
           if (res.statusCode != 200) return;
-          final data  = jsonDecode(res.body) as Map<String, dynamic>;
+          final data = kDebugMode
+              ? json.decode(res.body) as Map<String, dynamic>
+              : await compute<String, Map<String, dynamic>>(
+                  (s) => json.decode(s) as Map<String, dynamic>, res.body);
           final moves = data['moves'] as List<dynamic>? ?? [];
           for (final m in moves) {
             final name = m['move']['name'] as String;
@@ -91,7 +94,10 @@ class MoveWarmupService {
           final res = await http.get(Uri.parse(e.value))
               .timeout(const Duration(seconds: 8));
           if (res.statusCode == 200) {
-            cache[e.value] = jsonDecode(res.body) as Map<String, dynamic>;
+            cache[e.value] = kDebugMode
+                ? json.decode(res.body) as Map<String, dynamic>
+                : await compute<String, Map<String, dynamic>>(
+                    (s) => json.decode(s) as Map<String, dynamic>, res.body);
           }
         } catch (_) {}
       }));
