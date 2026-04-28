@@ -2784,11 +2784,11 @@ class EncounterRow extends StatelessWidget {
     final tags = <String>[];
     if (time.isNotEmpty) {
       final t = encounterTimePt(time);
-      if (t != 'Dia') tags.add(t);
+      if (t != 'Dia' && t != 'Dia Todo' && t != 'Sempre') tags.add(t);
     }
     if (weather.isNotEmpty) {
       final w = encounterWeatherPt(weather);
-      if (w != 'Dia') tags.add(w);
+      if (w != 'Dia' && w != 'Dia Todo') tags.add(w);
     }
 
     return Padding(
@@ -2808,6 +2808,222 @@ class EncounterRow extends StatelessWidget {
               style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
           ),
       ]),
+    );
+  }
+}
+
+// ─── HELPERS COMPARTILHADOS: chip + sheet ────────────────────────
+
+String _locationChipText(Map<String, dynamic> enc) {
+  const giftMethods = {
+    'gift', 'Gift', 'gift-egg', 'Gift Egg',
+    'Starter Pokemon', 'Starter Pokémon',
+  };
+  const giftGivers = <String, String>{
+    'Starter Pokemon|Lumiose City':     'do Prof. Sycamore',
+    'Starter Pokémon|Lumiose City':     'do Prof. Sycamore',
+    'Gift|Lumiose City':                'do Prof. Sycamore',
+    'Starter Pokemon|Pallet Town':      'do Prof. Oak',
+    'Starter Pokémon|Pallet Town':      'do Prof. Oak',
+    'Gift|Pallet Town':                 'do Prof. Oak',
+    'Starter Pokemon|New Bark Town':    'do Prof. Elm',
+    'Starter Pokémon|New Bark Town':    'do Prof. Elm',
+    'Starter Pokemon|Littleroot Town':  'do Prof. Birch',
+    'Starter Pokémon|Littleroot Town':  'do Prof. Birch',
+    'Starter Pokemon|Twinleaf Town':    'do Prof. Rowan',
+    'Starter Pokémon|Twinleaf Town':    'do Prof. Rowan',
+    'Starter Pokemon|Nuvema Town':      'do Prof. Juniper',
+    'Starter Pokémon|Nuvema Town':      'do Prof. Juniper',
+    'Starter Pokemon|Aspertia City':    'do Prof. Juniper',
+    'Starter Pokémon|Aspertia City':    'do Prof. Juniper',
+    'Starter Pokemon|Iki Town':         'do Prof. Kukui',
+    'Starter Pokémon|Iki Town':         'do Prof. Kukui',
+    'Starter Pokemon|Postwick':         'de Leon',
+    'Starter Pokémon|Postwick':         'de Leon',
+    'Starter Pokemon|Cabo Poco':        'do Prof. Sada/Turo',
+    'Starter Pokémon|Cabo Poco':        'do Prof. Sada/Turo',
+  };
+  final rawLoc  = enc['location'] as String? ?? '';
+  final method  = enc['method']  as String? ?? '';
+  final location = normalizeLocationName(rawLoc);
+  if (giftMethods.contains(method) && !location.startsWith('Presente')) {
+    final giver = giftGivers['$method|$rawLoc'];
+    return giver != null ? 'Presente $giver em $location' : 'Presente em $location';
+  }
+  return location;
+}
+
+String _translateMethod(String method) {
+  const map = {
+    '':                       'Encontro Selvagem',
+    'Walk':                   'Caminhando',
+    'walk':                   'Caminhando',
+    'Grass':                  'Grama Alta',
+    'Cave':                   'Caverna',
+    'Water':                  'Água',
+    'Surf':                   'Surfando',
+    'Surfing':                'Surfando',
+    'Old Rod':                'Vara Velha',
+    'Good Rod':               'Vara Boa',
+    'Super Rod':              'Super Vara',
+    'Rock Smash':             'Quebrar Pedra',
+    'Headbutt':               'Cabeçada',
+    'HeadButt':               'Cabeçada',
+    'Gift':                   'Presente',
+    'gift':                   'Presente',
+    'gift-egg':               'Ovo Presente',
+    'Gift Egg':               'Ovo Presente',
+    'Starter Pokemon':        'Pokémon Inicial',
+    'Starter Pokémon':        'Pokémon Inicial',
+    'Trade':                  'Troca',
+    'trade':                  'Troca',
+    'Event':                  'Evento',
+    'Honey Tree':             'Árvore do Mel',
+    'Poke Radar':             'Poké Radar',
+    'Swarm':                  'Enxame',
+    'Max Raid Battle':        'Raid Max',
+    'Gigantamax Raid Battle': 'Raid Gigamax',
+    'Tera Raid Battle':       'Tera Raid',
+    'Static':                 'Encontro Fixo',
+    'Fixed':                  'Encontro Fixo',
+    'Wandering':              'Vagando',
+    'Sand':                   'Areia',
+    'Overworld':              'Mundo Aberto',
+  };
+  return map[method] ?? (method.isEmpty ? 'Selvagem' : method);
+}
+
+// ─── WIDGET: CHIP CLICÁVEL DE LOCALIZAÇÃO ────────────────────────
+
+class LocationChip extends StatelessWidget {
+  final Map<String, dynamic> enc;
+  final List<String> pokemonTypes;
+
+  const LocationChip({super.key, required this.enc, required this.pokemonTypes});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme  = Theme.of(context).colorScheme;
+    final display = _locationChipText(enc);
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 6, bottom: 6),
+      child: Material(
+        color: scheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: scheme.outlineVariant, width: 0.8),
+        ),
+        child: InkWell(
+          customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8)),
+          onTap: () => showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+            builder: (_) => LocationDetailSheet(
+                enc: enc, pokemonTypes: pokemonTypes),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            child: Text(display,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: scheme.onSurface,
+              )),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── WIDGET: SHEET DE DETALHE DE LOCALIZAÇÃO ─────────────────────
+
+class _LocDetailRow {
+  final String label, value;
+  const _LocDetailRow(this.label, this.value);
+}
+
+class LocationDetailSheet extends StatelessWidget {
+  final Map<String, dynamic> enc;
+  final List<String> pokemonTypes;
+
+  const LocationDetailSheet(
+      {super.key, required this.enc, required this.pokemonTypes});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme  = Theme.of(context).colorScheme;
+    final method  = enc['method']   as String? ?? '';
+    final minLv   = enc['minLevel'] as String? ?? '';
+    final maxLv   = enc['maxLevel'] as String? ?? '';
+    final rarity  = enc['rarity']   as String? ?? '';
+    final time    = enc['time']     as String? ?? '';
+    final weather = enc['weather']  as String? ?? '';
+
+    final display = _locationChipText(enc);
+
+    final details = <_LocDetailRow>[
+      _LocDetailRow('Método', _translateMethod(method)),
+    ];
+    if (minLv.isNotEmpty) {
+      final lvStr = (maxLv.isNotEmpty && maxLv != minLv)
+          ? '$minLv – $maxLv'
+          : minLv;
+      details.add(_LocDetailRow('Nível', lvStr));
+    }
+    if (rarity.isNotEmpty) details.add(_LocDetailRow('Raridade', rarity));
+    final timePt = encounterTimePt(time);
+    if (time.isNotEmpty &&
+        timePt != 'Dia' && timePt != 'Dia Todo' && timePt != 'Sempre') {
+      details.add(_LocDetailRow('Horário', timePt));
+    }
+    final weatherPt = encounterWeatherPt(weather);
+    if (weather.isNotEmpty && weatherPt != 'Dia' && weatherPt != 'Dia Todo') {
+      details.add(_LocDetailRow('Clima', weatherPt));
+    }
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          20, 12, 20, MediaQuery.of(context).viewInsets.bottom + 28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 36, height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: scheme.onSurfaceVariant.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2)),
+            ),
+          ),
+          Text(display,
+            style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w700,
+              color: scheme.onSurface)),
+          const SizedBox(height: 14),
+          ...details.map((d) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(children: [
+              SizedBox(width: 80,
+                child: Text(d.label,
+                  style: TextStyle(
+                    fontSize: 12, fontWeight: FontWeight.w500,
+                    color: scheme.onSurfaceVariant))),
+              Expanded(
+                child: Text(d.value,
+                  style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w600,
+                    color: scheme.onSurface))),
+            ]),
+          )),
+        ],
+      ),
     );
   }
 }

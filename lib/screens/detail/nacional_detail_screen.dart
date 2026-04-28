@@ -430,9 +430,14 @@ class _NacionalInfoTab extends StatelessWidget {
           final key = '${loc['location']}|${loc['method']}|${loc['minLevel']}|${loc['maxLevel']}|${loc['rarity']}|${loc['time']}|${loc['weather']}';
           if (seen.add(key)) merged.add(loc);
         }
-        for (final loc in merged) {
-          rows.add(EncounterRow(enc: loc, pokemonTypes: pokemon.types));
-        }
+        rows.add(Padding(
+          padding: const EdgeInsets.only(top: 2, bottom: 2),
+          child: Wrap(
+            children: merged.map((loc) => LocationChip(
+              enc: loc, pokemonTypes: pokemon.types,
+            )).toList(),
+          ),
+        ));
       }
     }
 
