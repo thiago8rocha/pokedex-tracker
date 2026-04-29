@@ -2955,8 +2955,9 @@ String? locationRegion(String location, String dexId) {
   switch (dexId) {
     case 'sword___shield':            return _swShieldRegion(location);
     case 'heartgold___soulsilver':    return _hgssRegion(location);
-    case 'firered___leafgreen_(gba)': return _frlgRegion(location);
-    case 'legends_arceus':            return _legendsArceusArea(location);
+    case 'firered___leafgreen_(gba)':
+    case 'firered___leafgreen':       return _frlgRegion(location);
+    case 'legends:_arceus':           return _legendsArceusArea(location);
     case 'scarlet___violet':          return _scarletVioletRegion(location);
     default: return null;
   }
@@ -3053,12 +3054,12 @@ Color dexColor(String dexId) {
     case 'omega_ruby___alpha_sapphire':       return const Color(0xFFE53935);
     case 'sun___moon':                        return const Color(0xFFFF8F00);
     case 'ultra_sun___ultra_moon':            return const Color(0xFFFF6F00);
-    case 'lets_go_pikachu___eevee':           return const Color(0xFFFDD835);
+    case "let's_go_pikachu___eevee":          return const Color(0xFFFDD835);
     case 'sword___shield':                    return const Color(0xFF42A5F5);
     case 'brilliant_diamond___shining_pearl': return const Color(0xFF42A5F5);
-    case 'legends_arceus':                    return const Color(0xFFFFCA28);
+    case 'legends:_arceus':                   return const Color(0xFFFFCA28);
     case 'scarlet___violet':                  return const Color(0xFFEF6C00);
-    case 'legends_z-a':                       return const Color(0xFF546E7A);
+    case 'legends:_z-a':                      return const Color(0xFF546E7A);
     default:                                  return const Color(0xFF546E7A);
   }
 }
@@ -3177,7 +3178,7 @@ String _formatLevels(String levels) {
 
 const _nonWildMethods = {
   'Gift', 'gift', 'gift-egg', 'Gift Egg', 'Trade', 'trade', 'Transfer',
-  'Event', 'Evolve', 'Glitch', 'Time Capsule', 'Pokémon Bank', 'only-one',
+  'Event', 'Time Capsule', 'Pokémon Bank', 'only-one',
   'Starter Pokemon', 'Starter Pokémon', 'Pokémon Colosseum Bonus Disc (US)\nPokémon Channel (EU)',
   'Floaroma Town (Only one*)',
 };

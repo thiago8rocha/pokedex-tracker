@@ -12,6 +12,7 @@ class LocationService {
   Map<String, dynamic>? _data;
   Future<void>? _warmupFuture;
 
+  // Mapeia TODOS os variantes de dexId usados no app → gameId do JSON
   static const _dexIdToGameId = <String, String>{
     'red___blue':                        'red-blue',
     'yellow':                            'yellow',
@@ -19,6 +20,7 @@ class LocationService {
     'crystal':                           'crystal',
     'ruby___sapphire':                   'ruby-sapphire',
     'firered___leafgreen_(gba)':         'firered-leafgreen',
+    'firered___leafgreen':               'firered-leafgreen',
     'emerald':                           'emerald',
     'diamond___pearl':                   'diamond-pearl',
     'platinum':                          'platinum',
@@ -30,11 +32,40 @@ class LocationService {
     'sun___moon':                        'sun-moon',
     'ultra_sun___ultra_moon':            'ultra-sun-ultra-moon',
     'lets_go_pikachu___eevee':           'lets-go-pikachu-eevee',
+    "let's_go_pikachu___eevee":          'lets-go-pikachu-eevee',
     'sword___shield':                    'sword-shield',
     'brilliant_diamond___shining_pearl': 'brilliant-diamond-shining-pearl',
+    'legends:_arceus':                   'legends-arceus',
     'legends_arceus':                    'legends-arceus',
     'scarlet___violet':                  'scarlet-violet',
+    'legends:_z-a':                      'legends-z-a',
     'legends_z-a':                       'legends-z-a',
+  };
+
+  // ID canônico (sem apóstrofo/dois-pontos) para cada gameId — usado em getAvailableDexIds
+  static const _gameIdToCanonicalDexId = <String, String>{
+    'red-blue':                      'red___blue',
+    'yellow':                        'yellow',
+    'gold-silver':                   'gold___silver',
+    'crystal':                       'crystal',
+    'ruby-sapphire':                 'ruby___sapphire',
+    'firered-leafgreen':             'firered___leafgreen_(gba)',
+    'emerald':                       'emerald',
+    'diamond-pearl':                 'diamond___pearl',
+    'platinum':                      'platinum',
+    'heartgold-soulsilver':          'heartgold___soulsilver',
+    'black-white':                   'black___white',
+    'black-2-white-2':               'black_2___white_2',
+    'x-y':                           'x___y',
+    'omega-ruby-alpha-sapphire':     'omega_ruby___alpha_sapphire',
+    'sun-moon':                      'sun___moon',
+    'ultra-sun-ultra-moon':          'ultra_sun___ultra_moon',
+    'lets-go-pikachu-eevee':         'lets_go_pikachu___eevee',
+    'sword-shield':                  'sword___shield',
+    'brilliant-diamond-shining-pearl': 'brilliant_diamond___shining_pearl',
+    'legends-arceus':                'legends:_arceus',
+    'scarlet-violet':                'scarlet___violet',
+    'legends-z-a':                   'legends:_z-a',
   };
 
   /// Safe to call concurrently — all callers share the same Future.
@@ -101,7 +132,7 @@ class LocationService {
         .toList();
   }
 
-  /// Returns all dexIds that have location data for a species.
+  /// Returns all dexIds that have location data for a species (canonical IDs).
   List<String> getAvailableDexIds(int speciesId) {
     if (_data == null) return [];
     final raw = _data![speciesId.toString()] as List<dynamic>?;
@@ -111,8 +142,10 @@ class LocationService {
         .map((e) => e['game'] as String? ?? '')
         .where((g) => g.isNotEmpty)
         .toSet();
-    final reverse = {for (final e in _dexIdToGameId.entries) e.value: e.key};
-    return gameIds.map((g) => reverse[g]).whereType<String>().toList();
+    return gameIds
+        .map((g) => _gameIdToCanonicalDexId[g])
+        .whereType<String>()
+        .toList();
   }
 
   bool get isLoaded => _data != null;
