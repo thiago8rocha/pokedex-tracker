@@ -182,7 +182,7 @@ class _LastDexLoaderState extends State<_LastDexLoader> {
 
   Future<void> _load() async {
     // Aguarda PokedexDataService terminar o carregamento em background
-    while (!PokedexDataService.instance.isLoaded || !LocationService.instance.isLoaded) {
+    while (!PokedexDataService.instance.isLoaded) {
       await Future.delayed(const Duration(milliseconds: 50));
       if (!mounted) return;
     }
