@@ -2770,40 +2770,110 @@ String _locationChipText(Map<String, dynamic> enc) {
 
 String _translateMethod(String method) {
   const map = {
-    '':                       'Encontro Selvagem',
-    'Walk':                   'Caminhando',
-    'walk':                   'Caminhando',
-    'Grass':                  'Grama Alta',
-    'Cave':                   'Caverna',
-    'Water':                  'Água',
-    'Surf':                   'Surfando',
-    'Surfing':                'Surfando',
-    'Old Rod':                'Vara Velha',
-    'Good Rod':               'Vara Boa',
-    'Super Rod':              'Super Vara',
-    'Rock Smash':             'Quebrar Pedra',
-    'Headbutt':               'Cabeçada',
-    'HeadButt':               'Cabeçada',
-    'Gift':                   'Presente',
-    'gift':                   'Presente',
-    'gift-egg':               'Ovo Presente',
-    'Gift Egg':               'Ovo Presente',
-    'Starter Pokemon':        'Pokémon Inicial',
-    'Starter Pokémon':        'Pokémon Inicial',
-    'Trade':                  'Troca',
-    'trade':                  'Troca',
-    'Event':                  'Evento',
-    'Honey Tree':             'Árvore do Mel',
-    'Poke Radar':             'Poké Radar',
-    'Swarm':                  'Enxame',
-    'Max Raid Battle':        'Raid Max',
-    'Gigantamax Raid Battle': 'Raid Gigamax',
-    'Tera Raid Battle':       'Tera Raid',
-    'Static':                 'Encontro Fixo',
-    'Fixed':                  'Encontro Fixo',
-    'Wandering':              'Vagando',
-    'Sand':                   'Areia',
-    'Overworld':              'Mundo Aberto',
+    // Genérico
+    '':                              'Encontro Selvagem',
+    'walk':                          'Grama Alta',
+    'Walk':                          'Grama Alta',
+    'Grass':                         'Grama Alta',
+    'Tall Grass':                    'Grama Alta',
+    'grass-spots':                   'Manchas de Grama',
+    'dark-grass':                    'Grama Escura',
+    'Walking / Grass':               'Grama Alta',
+    'Walking / Grass - SOS only':    'Grama Alta (SOS)',
+    'Cave':                          'Caverna',
+    'cave-spots':                    'Manchas de Caverna',
+    'Water':                         'Água',
+    'Water - Rare Spawns':           'Água (Raro)',
+    'Surf':                          'Surfando',
+    'surf':                          'Surfando',
+    'Surfing':                       'Surfando',
+    'Surf - SOS only':               'Surfando (SOS)',
+    'Surf Special':                  'Surf Especial',
+    'surf-spots':                    'Manchas de Surf',
+    'Wandering Surf':                'Errante (Surf)',
+    'Old Rod':                       'Vara Velha',
+    'old-rod':                       'Vara Velha',
+    'Good Rod':                      'Vara Boa',
+    'good-rod':                      'Vara Boa',
+    'Super Rod':                     'Super Vara',
+    'super-rod':                     'Super Vara',
+    'super-rod-spots':               'Manchas de Pesca (Super)',
+    'Fish':                          'Pescando',
+    'Fishing':                       'Pescando',
+    'Fish - SOS only':               'Pescando (SOS)',
+    'Fish Special':                  'Pesca Especial',
+    'Fish Special - SOS only':       'Pesca Especial (SOS)',
+    'Rock Smash':                    'Quebrar Pedra',
+    'rock-smash':                    'Quebrar Pedra',
+    'Headbutt':                      'Cabeçada',
+    'HeadButt':                      'Cabeçada',
+    'Headbutt N.':                   'Cabeçada',
+    'Headbutt Sp.':                  'Cabeçada (Raro)',
+    'Shaking':                       'Grama Agitada',
+    'Shaking Grass':                 'Grama Agitada',
+    'Shaking Grass - SOS only':      'Grama Agitada (SOS)',
+    'Shaking Trees':                 'Árvore Agitada',
+    'Shaking Trees - SOS only':      'Árvore Agitada (SOS)',
+    'Honey Tree':                    'Árvore do Mel',
+    'Honey Tree - Rare':             'Árvore do Mel (Raro)',
+    'Honey Tree - Very Rare':        'Árvore do Mel (Muito Raro)',
+    'Berry':                         'Árvore de Bagas',
+    'Berry Tree':                    'Árvore de Bagas',
+    'Swarm':                         'Enxame',
+    'Horde':                         'Horda',
+    'Roaming in Grass':              'Errante na Grama',
+    'Roaming in the Grass':          'Errante na Grama',
+    'Roaming in the Cave':           'Errante na Caverna',
+    'Overworld':                     'Mundo Aberto',
+    'Wandering':                     'Errante',
+    'Random':                        'Grama Alta',
+    'Static':                        'Encontro Fixo',
+    'Fixed':                         'Encontro Fixo',
+    'only-one':                      'Único',
+    'Interact':                      'Interagir',
+    'Flying':                        'Voando',
+    'In the Sky':                    'No Céu',
+    'In the Sky - Rare Spawns':      'No Céu (Raro)',
+    'Underground':                   'Gran Subterrâneo',
+    'Sand':                          'Areia',
+    'Swamp':                         'Pântano',
+    'rough-terrain':                 'Terreno Irregular',
+    'seaweed':                       'Alga Marinha',
+    'bridge-spots':                  'Manchas de Ponte',
+    'PokeRadar':                     'Poké Radar',
+    'Poke Radar':                    'Poké Radar',
+    'DexNav':                        'DexNav',
+    'Island Scan':                   'Island Scan',
+    'Weather SOS Battle':            'SOS (Clima)',
+    'Curry':                         'Curry Dex',
+    'Grass - Rare Spawns':           'Grama Alta (Raro)',
+    'Gift':                          'Presente',
+    'gift':                          'Presente',
+    'gift-egg':                      'Ovo Presente',
+    'Gift Egg':                      'Ovo Presente',
+    'Starter Pokemon':               'Pokémon Inicial',
+    'Starter Pokémon':               'Pokémon Inicial',
+    'From totem after completion of game': 'Totem (pós-jogo)',
+    'Trade':                         'Troca',
+    'trade':                         'Troca',
+    'Event':                         'Evento',
+    'Special':                       'Especial',
+    'Max Raid Battle':               'Raid Max',
+    'Gigantamax Raid Battle':        'Raid Gigamax',
+    'Tera Raid Battle':              'Tera Raid',
+    'purple-flowers':                'Flores Roxas',
+    'red-flowers':                   'Flores Vermelhas',
+    'yellow-flowers':                'Flores Amarelas',
+    'squirt-bottle':                 'Garrafa d\'Água',
+    'wailmer-pail':                  'Regador Wailmer',
+    'pokeflute':                     'Poké Flauta',
+    'Wimpod':                        'Fuga do Wimpod',
+    'Sharpedo':                      'Surfando no Sharpedo',
+    'Requires Dialga & Palkia':      'Requer Dialga & Palkia',
+    'Requires Entei & Raikou':       'Requer Entei & Raikou',
+    'Requires Kyogre & Groudon':     'Requer Kyogre & Groudon',
+    'Requires Reshiram & Zekrom':    'Requer Reshiram & Zekrom',
+    'Requires Tornadus & Thundurus': 'Requer Tornadus & Thundurus',
   };
   return map[method] ?? (method.isEmpty ? 'Selvagem' : method);
 }
@@ -2814,15 +2884,149 @@ Map<String, List<Map<String, dynamic>>> groupEncounters(
     List<Map<String, dynamic>> entries) {
   final groups = <String, List<Map<String, dynamic>>>{};
   for (final e in entries) {
-    final key = '${e['location']}|${e['method']}|${e['time']}|${e['weather']}';
+    final loc = e['location'] as String? ?? '';
+    if (loc.startsWith('Unknown') || loc.startsWith('unknown')) continue;
+    final key = '$loc|${e['method']}|${e['time']}|${e['weather']}';
     groups.putIfAbsent(key, () => []).add(e);
   }
   return groups;
 }
 
+/// Groups encounters by region for multi-region games.
+/// Returns ordered map: region → (groupKey → entries).
+Map<String, Map<String, List<Map<String, dynamic>>>> groupEncountersByRegion(
+    List<Map<String, dynamic>> entries, String dexId) {
+  final byRegion = <String, List<Map<String, dynamic>>>{};
+  for (final e in entries) {
+    final region = locationRegion(e['location'] as String? ?? '', dexId) ?? '';
+    byRegion.putIfAbsent(region, () => []).add(e);
+  }
+  final result = <String, Map<String, List<Map<String, dynamic>>>>{};
+  for (final entry in byRegion.entries) {
+    result[entry.key] = groupEncounters(entry.value);
+  }
+  return result;
+}
+
+// ─── HELPER: REGIÃO POR JOGO ─────────────────────────────────────
+
+/// Returns the region name for a location in the given dex.
+/// Returns null for single-region games (no grouping needed).
+String? locationRegion(String location, String dexId) {
+  switch (dexId) {
+    case 'sword___shield':            return _swShieldRegion(location);
+    case 'heartgold___soulsilver':    return _hgssRegion(location);
+    case 'firered___leafgreen_(gba)': return _frlgRegion(location);
+    case 'legends_arceus':            return _legendsArceusArea(location);
+    case 'scarlet___violet':          return _scarletVioletRegion(location);
+    default: return null;
+  }
+}
+
+String _swShieldRegion(String location) {
+  const isle = {
+    'Fields of Honor', 'Soothing Wetlands', 'Forest of Focus',
+    'Challenge Beach', 'Challenge Road', "Brawlers' Cave", 'Courageous Cavern',
+    'Loop Lagoon', 'Warm-Up Tunnel', 'Potbottom Desert', 'Workout Sea',
+    'Stepping-Stone Sea', 'Insular Sea', 'Honeycalm Sea', 'Honeycalm Island',
+    'Training Lowlands',
+  };
+  if (isle.any((k) => location.startsWith(k))) return 'Ilha da Armadura';
+  if (location.contains('Crown Tundra') || location.contains('Crown Shrine') ||
+      location.contains('Dynamax Adventures') || location.contains("Giant's Bed") ||
+      location.contains('Ballimere Lake') || location.contains("Giant's Foot") ||
+      location.contains('Snowslide Slope') || location.contains('Slippery Slope') ||
+      location.contains('Frostpoint Field') || location.contains('Frigid Sea') ||
+      location.contains('Dyna Tree Hill') || location.contains('Three-Point Pass') ||
+      location.contains('Lakeside Cave') || location.contains('Old Cemetery') ||
+      location.contains('Roaring-Sea Caves'))
+    return 'Coroa de Tundra';
+  return 'Galar';
+}
+
+String _hgssRegion(String location) {
+  final routeMatch = RegExp(r'^Route (\d+)$').firstMatch(location);
+  if (routeMatch != null) {
+    final num = int.parse(routeMatch.group(1)!);
+    return num <= 28 ? 'Kanto' : 'Johto';
+  }
+  final seaRouteMatch = RegExp(r'^Sea Route (\d+)$').firstMatch(location);
+  if (seaRouteMatch != null) {
+    final num = int.parse(seaRouteMatch.group(1)!);
+    return num <= 21 ? 'Kanto' : 'Johto';
+  }
+  const kanto = {
+    'Viridian Forest', 'Cerulean Cave', 'Mt. Moon', 'Rock Tunnel',
+    'Seafoam Islands', "Diglett's Cave", 'Victory Road',
+    'Celadon City', 'Cerulean City', 'Fuchsia City', 'Saffron City',
+    'Vermilion City', 'Pallet Town', 'Viridian City', 'Cinnabar Island',
+    'Mt. Silver',
+  };
+  return kanto.contains(location) ? 'Kanto' : 'Johto';
+}
+
+String _frlgRegion(String location) {
+  const sevii = {
+    'One Island', 'Two Island', 'Three Island', 'Four Island',
+    'Five Island', 'Six Island', 'Seven Island', 'Kindle Road',
+    'Icefall Cave', 'Lost Cave', 'Pattern Bush', 'Ruin Valley',
+    'Altering Cave', 'Birth Island', 'Outcast Island', 'Tanoby Ruins',
+    'Water Labyrinth', 'Resort Gorgeous', 'Water Path', 'Green Path',
+    'Memorial Pillar', 'Fortune Island', 'Quest Island',
+  };
+  return sevii.contains(location) ? 'Ilhas Sevii' : 'Kanto';
+}
+
+String _legendsArceusArea(String location) {
+  if (location.contains('Obsidian Fieldlands')) return 'Terras de Obsidiana';
+  if (location.contains('Crimson Mirelands'))   return 'Pântanos Carmesim';
+  if (location.contains('Cobalt Coastlands'))   return 'Costas de Cobalto';
+  if (location.contains('Coronet Highlands'))   return 'Terras Altas do Coronet';
+  if (location.contains('Alabaster Icelands'))  return 'Terras de Alabastro';
+  return 'Hisui';
+}
+
+String _scarletVioletRegion(String location) {
+  if (location.startsWith('The Teal Mask')) return 'Kitakami';
+  if (location.contains('Blueberry Academy') ||
+      location.startsWith('After clearing Area Zero')) return 'Blueberry Academy';
+  return 'Paldea';
+}
+
+// ─── HELPER: COR DO DEX ──────────────────────────────────────────
+
+/// Retorna a cor primária do jogo, idêntica à usada na barra de seleção da Pokédex.
+Color dexColor(String dexId) {
+  switch (dexId) {
+    case 'red___blue':                        return const Color(0xFFE53935);
+    case 'yellow':                            return const Color(0xFFFDD835);
+    case 'gold___silver':                     return const Color(0xFFFFCA28);
+    case 'crystal':                           return const Color(0xFF29B6F6);
+    case 'ruby___sapphire':                   return const Color(0xFFE53935);
+    case 'firered___leafgreen_(gba)':         return const Color(0xFFEF5350);
+    case 'emerald':                           return const Color(0xFF43A047);
+    case 'diamond___pearl':                   return const Color(0xFF90CAF9);
+    case 'platinum':                          return const Color(0xFF78909C);
+    case 'heartgold___soulsilver':            return const Color(0xFFFFCA28);
+    case 'black___white':                     return const Color(0xFF424242);
+    case 'black_2___white_2':                 return const Color(0xFF1A237E);
+    case 'x___y':                             return const Color(0xFF1565C0);
+    case 'omega_ruby___alpha_sapphire':       return const Color(0xFFE53935);
+    case 'sun___moon':                        return const Color(0xFFFF8F00);
+    case 'ultra_sun___ultra_moon':            return const Color(0xFFFF6F00);
+    case 'lets_go_pikachu___eevee':           return const Color(0xFFFDD835);
+    case 'sword___shield':                    return const Color(0xFF42A5F5);
+    case 'brilliant_diamond___shining_pearl': return const Color(0xFF42A5F5);
+    case 'legends_arceus':                    return const Color(0xFFFFCA28);
+    case 'scarlet___violet':                  return const Color(0xFFEF6C00);
+    case 'legends_z-a':                       return const Color(0xFF546E7A);
+    default:                                  return const Color(0xFF546E7A);
+  }
+}
+
 String _formatGameVersion(String game) {
   if (game.isEmpty) return '';
-  return game[0].toUpperCase() + game.substring(1);
+  return encounterGameName(game);
 }
 
 // ─── WIDGET: LINHA DE LOCALIZAÇÃO (ESTILO MASTERDEX) ─────────────
@@ -2928,25 +3132,151 @@ class LocationRow extends StatelessWidget {
   }
 }
 
+Color _versionTagColor(String game) {
+  switch (game) {
+    case 'Sword':             return const Color(0xFF42A5F5);
+    case 'Shield':            return const Color(0xFFEF5350);
+    case 'Scarlet':           return const Color(0xFFEF6C00);
+    case 'Violet':            return const Color(0xFF7B1FA2);
+    case 'Legends: Arceus':   return const Color(0xFFFFCA28);
+    case 'Legends: Z-A':      return const Color(0xFF546E7A);
+    case 'Brilliant Diamond': return const Color(0xFF42A5F5);
+    case 'Shining Pearl':     return const Color(0xFFEC407A);
+    case 'HeartGold':         return const Color(0xFFFFCA28);
+    case 'SoulSilver':        return const Color(0xFFB0BEC5);
+    case "Let's Go Pikachu":  return const Color(0xFFFDD835);
+    case "Let's Go Eevee":    return const Color(0xFF8D6E63);
+    case 'Ultra Sun':         return const Color(0xFFFF6F00);
+    case 'Ultra Moon':        return const Color(0xFF4A148C);
+    case 'Sun':               return const Color(0xFFFF8F00);
+    case 'Moon':              return const Color(0xFF7B1FA2);
+    case 'X':                 return const Color(0xFF1565C0);
+    case 'Y':                 return const Color(0xFFE53935);
+    case 'Omega Ruby':        return const Color(0xFFE53935);
+    case 'Alpha Sapphire':    return const Color(0xFF1E88E5);
+    case 'Black':             return const Color(0xFF424242);
+    case 'White':             return const Color(0xFF78909C);
+    case 'Black 2':           return const Color(0xFF1A237E);
+    case 'White 2':           return const Color(0xFFBDBDBD);
+    case 'Diamond':           return const Color(0xFF90CAF9);
+    case 'Pearl':             return const Color(0xFFF48FB1);
+    case 'Platinum':          return const Color(0xFF78909C);
+    case 'Gold':              return const Color(0xFFFFCA28);
+    case 'Silver':            return const Color(0xFFB0BEC5);
+    case 'Crystal':           return const Color(0xFF29B6F6);
+    case 'FireRed':           return const Color(0xFFEF5350);
+    case 'LeafGreen':         return const Color(0xFF43A047);
+    case 'Emerald':           return const Color(0xFF43A047);
+    case 'Ruby':              return const Color(0xFFE53935);
+    case 'Sapphire':          return const Color(0xFF1E88E5);
+    case 'Red':               return const Color(0xFFE53935);
+    case 'Blue':              return const Color(0xFF1565C0);
+    case 'Yellow':            return const Color(0xFFFDD835);
+    default:                  return const Color(0xFF546E7A);
+  }
+}
+
 class _VersionTag extends StatelessWidget {
   final String game;
   const _VersionTag({required this.game});
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final color = _versionTagColor(game);
+    final textColor = color.computeLuminance() > 0.35 ? Colors.black87 : Colors.white;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
       decoration: BoxDecoration(
-        color: scheme.primaryContainer,
+        color: color,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(game,
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: scheme.onPrimaryContainer,
+          color: textColor,
         )),
+    );
+  }
+}
+
+// ─── WIDGET: SEÇÃO RECOLHÍVEL POR REGIÃO ─────────────────────────
+
+class ExpandableRegionSection extends StatefulWidget {
+  final String region;
+  final Map<String, List<Map<String, dynamic>>> groups;
+  final List<String> pokemonTypes;
+  final bool initiallyExpanded;
+
+  const ExpandableRegionSection({
+    super.key,
+    required this.region,
+    required this.groups,
+    required this.pokemonTypes,
+    this.initiallyExpanded = false,
+  });
+
+  @override
+  State<ExpandableRegionSection> createState() => _ExpandableRegionSectionState();
+}
+
+class _ExpandableRegionSectionState extends State<ExpandableRegionSection> {
+  late bool _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.initiallyExpanded;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: scheme.outlineVariant, width: 0.8),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => setState(() => _expanded = !_expanded),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(widget.region,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      )),
+                  ),
+                  Icon(
+                    _expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_expanded) ...[
+            Divider(height: 1, thickness: 0.8, color: scheme.outlineVariant),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Column(
+                children: widget.groups.values
+                    .map((g) => LocationRow(entries: g, pokemonTypes: widget.pokemonTypes))
+                    .toList(),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

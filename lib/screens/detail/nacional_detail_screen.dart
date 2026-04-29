@@ -407,12 +407,22 @@ class _NacionalInfoTab extends StatelessWidget {
 
       if (rows.isNotEmpty) rows.add(const Divider(height: 12, thickness: 0.5));
 
+      final gameColor = dexColor(dexId);
+      final gameTextColor = gameColor.computeLuminance() > 0.35
+          ? Colors.black87 : Colors.white;
       rows.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text(gameName,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-            color: Theme.of(context).colorScheme.primary,
-            letterSpacing: 0.3)),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: gameColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(gameName,
+            style: TextStyle(
+              fontSize: 11, fontWeight: FontWeight.w700,
+              color: gameTextColor, letterSpacing: 0.3)),
+        ),
       ));
 
       final locs = encounters[dexId];
@@ -424,20 +434,23 @@ class _NacionalInfoTab extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ));
       } else {
-        final seen = <String>{};
-        final merged = <Map<String, dynamic>>[];
-        for (final loc in locs) {
-          final key = '${loc['location']}|${loc['method']}|${loc['minLevel']}|${loc['maxLevel']}|${loc['rarity']}|${loc['time']}|${loc['weather']}';
-          if (seen.add(key)) merged.add(loc);
-        }
-        rows.add(Padding(
-          padding: const EdgeInsets.only(top: 2, bottom: 2),
-          child: Wrap(
-            children: merged.map((loc) => LocationChip(
-              enc: loc, pokemonTypes: pokemon.types,
+        final regionGroups = groupEncountersByRegion(locs, dexId);
+        if (regionGroups.length <= 1) {
+          final groups = groupEncounters(locs);
+          rows.add(Column(
+            children: groups.values
+                .map((g) => LocationRow(entries: g, pokemonTypes: pokemon.types))
+                .toList(),
+          ));
+        } else {
+          rows.add(Column(
+            children: regionGroups.entries.map((e) => ExpandableRegionSection(
+              region: e.key,
+              groups: e.value,
+              pokemonTypes: pokemon.types,
             )).toList(),
-          ),
-        ));
+          ));
+        }
       }
     }
 
