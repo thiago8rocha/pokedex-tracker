@@ -142,18 +142,14 @@ class _NacionalDetailScreenState extends State<NacionalDetailScreen>
     });
 
     // Localizations from bundled asset
-    try {
-      final locationSvc = LocationService.instance;
-      if (!locationSvc.isLoaded) await locationSvc.warmup();
-      if (mounted) {
-        final enc = <String, List<Map<String, dynamic>>>{};
-        for (final dexId in locationSvc.getAvailableDexIds(id)) {
-          enc[dexId] = locationSvc.getLocations(id, dexId);
-        }
-        setState(() { _encounters = enc; _loadingEncounters = false; });
+    final locationSvc = LocationService.instance;
+    if (!locationSvc.isLoaded) await locationSvc.warmup();
+    if (mounted) {
+      final enc = <String, List<Map<String, dynamic>>>{};
+      for (final dexId in locationSvc.getAvailableDexIds(id)) {
+        enc[dexId] = locationSvc.getLocations(id, dexId);
       }
-    } catch (_) {
-      if (mounted) setState(() => _loadingEncounters = false);
+      setState(() { _encounters = enc; _loadingEncounters = false; });
     }
   }
 

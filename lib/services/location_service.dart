@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 /// Provides in-game location data for all main-series games.
@@ -76,10 +76,14 @@ class LocationService {
 
   Future<void> _doWarmup() async {
     final raw = await rootBundle.loadString('assets/locations.json');
-    _data = await compute<String, Map<String, dynamic>>(
-      (s) => json.decode(s) as Map<String, dynamic>,
-      raw,
-    );
+    if (kDebugMode) {
+      _data = json.decode(raw) as Map<String, dynamic>;
+    } else {
+      _data = await compute<String, Map<String, dynamic>>(
+        (s) => json.decode(s) as Map<String, dynamic>,
+        raw,
+      );
+    }
   }
 
   static String _timeOfDayString(dynamic timeOfDay) {
