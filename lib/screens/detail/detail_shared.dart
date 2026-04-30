@@ -3138,7 +3138,6 @@ class LocationRow extends StatelessWidget {
     final time      = encounterTimePt(first['time'] as String? ?? '');
     final weather   = encounterWeatherPt(first['weather'] as String? ?? '');
 
-    // Agrupa versões por (levels, rarity); cada entrada já carrega sua lista de games
     final statGroups = <String, List<String>>{};
     for (final e in entries) {
       final statsKey = '${e['levels']}|${e['rarity']}';
@@ -3151,13 +3150,12 @@ class LocationRow extends StatelessWidget {
       }
     }
 
-    final subtitleParts = <String>[];
-    if (method.isNotEmpty) subtitleParts.add(method);
+    final detailParts = <String>[];
     if (time.isNotEmpty && time != 'Dia' && time != 'Dia Todo' && time != 'Sempre') {
-      subtitleParts.add(time);
+      detailParts.add(time);
     }
     if (weather.isNotEmpty && weather != 'Dia' && weather != 'Dia Todo') {
-      subtitleParts.add(weather);
+      detailParts.add(weather);
     }
 
     return Container(
@@ -3175,10 +3173,10 @@ class LocationRow extends StatelessWidget {
             Text(location,
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
                 color: scheme.onSurface)),
-            if (subtitleParts.isNotEmpty) ...[
+            if (method.isNotEmpty) ...[
               const SizedBox(height: 3),
-              Text(subtitleParts.join(' · '),
-                style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
+              Text(method,
+                style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)),
             ],
             const SizedBox(height: 6),
             ...statGroups.entries.map((sg) {
@@ -3189,27 +3187,28 @@ class LocationRow extends StatelessWidget {
 
               final levelStr  = _formatLevels(levels);
               final rarityStr = _formatRarity(rarity, rawMethod);
+              final infoLine  = [
+                ...detailParts,
+                if (levelStr.isNotEmpty) levelStr,
+                if (rarityStr.isNotEmpty) rarityStr,
+              ].join(' · ');
 
               return Padding(
                 padding: const EdgeInsets.only(top: 2),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (games.isNotEmpty)
                       Wrap(
                         spacing: 4,
+                        runSpacing: 4,
                         children: games.map((g) => _VersionTag(game: g)).toList(),
                       ),
-                    if (games.isNotEmpty && (levelStr.isNotEmpty || rarityStr.isNotEmpty))
-                      const SizedBox(width: 8),
-                    if (levelStr.isNotEmpty)
-                      Text(levelStr,
-                        style: TextStyle(fontSize: 11, color: scheme.onSurface)),
-                    if (levelStr.isNotEmpty && rarityStr.isNotEmpty)
-                      Text(' · ',
+                    if (infoLine.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(infoLine,
                         style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
-                    if (rarityStr.isNotEmpty)
-                      Text(rarityStr,
-                        style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
+                    ],
                   ],
                 ),
               );
@@ -3326,13 +3325,12 @@ class _LocationSubRow extends StatelessWidget {
       }
     }
 
-    final subtitleParts = <String>[];
-    if (method.isNotEmpty) subtitleParts.add(method);
+    final detailParts = <String>[];
     if (time.isNotEmpty && time != 'Dia' && time != 'Dia Todo' && time != 'Sempre') {
-      subtitleParts.add(time);
+      detailParts.add(time);
     }
     if (weather.isNotEmpty && weather != 'Dia' && weather != 'Dia Todo') {
-      subtitleParts.add(weather);
+      detailParts.add(weather);
     }
 
     return Padding(
@@ -3340,10 +3338,11 @@ class _LocationSubRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (subtitleParts.isNotEmpty)
-            Text(subtitleParts.join(' · '),
-              style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
-          const SizedBox(height: 2),
+          if (method.isNotEmpty)
+            Text(method,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500,
+                color: scheme.onSurface)),
+          const SizedBox(height: 4),
           ...statGroups.entries.map((sg) {
             final parts = sg.key.split('|');
             final levels = parts[0];
@@ -3351,26 +3350,27 @@ class _LocationSubRow extends StatelessWidget {
             final games = sg.value;
             final levelStr = _formatLevels(levels);
             final rarityStr = _formatRarity(rarity, rawMethod);
+            final infoLine = [
+              ...detailParts,
+              if (levelStr.isNotEmpty) levelStr,
+              if (rarityStr.isNotEmpty) rarityStr,
+            ].join(' · ');
             return Padding(
               padding: const EdgeInsets.only(top: 2),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (games.isNotEmpty)
                     Wrap(
                       spacing: 4,
+                      runSpacing: 4,
                       children: games.map((g) => _VersionTag(game: g)).toList(),
                     ),
-                  if (games.isNotEmpty && (levelStr.isNotEmpty || rarityStr.isNotEmpty))
-                    const SizedBox(width: 8),
-                  if (levelStr.isNotEmpty)
-                    Text(levelStr,
-                      style: TextStyle(fontSize: 11, color: scheme.onSurface)),
-                  if (levelStr.isNotEmpty && rarityStr.isNotEmpty)
-                    Text(' · ',
+                  if (infoLine.isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    Text(infoLine,
                       style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
-                  if (rarityStr.isNotEmpty)
-                    Text(rarityStr,
-                      style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant)),
+                  ],
                 ],
               ),
             );
