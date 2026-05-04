@@ -2927,8 +2927,22 @@ String _translateMethod(String method) {
     'Evolve':                        'Evolução',
     'Glitch':                        'Glitch',
     'Pokémon Bank':                  'Pokémon Bank',
+    // Métodos do ProKedex
+    'Walking':                       'Grama Alta',
+    'Walking - Overworld':           'Mundo Aberto',
+    'Flying':                        'Voando',
+    'Surfing':                       'Surf',
+    'Good Rod':                      'Vara Boa',
+    'Old Rod':                       'Vara Velha',
+    'Super Rod':                     'Super Vara',
+    'Rock Smash':                    'Quebrar Pedra',
+    'Headbutt':                      'Cabeçada',
+    'PokeRadar':                     'PokéRadar',
+    'Honey Tree':                    'Árvore com Mel',
+    'Interact':                      'Interação',
+    'Shaking Trees':                 'Sacudir Árvores',
   };
-  // Ignora entradas que são nomes de locais com método embutido (dados de raid)
+  // Métodos com nome de local embutido (raids)
   if (method.contains('(Max Raid Battle)') || method.contains('(Max Raid Den)')) {
     return 'Raid Max';
   }
@@ -3137,6 +3151,7 @@ class LocationRow extends StatelessWidget {
     final method    = _translateMethod(rawMethod);
     final time      = encounterTimePt(first['time'] as String? ?? '');
     final weather   = encounterWeatherPt(first['weather'] as String? ?? '');
+    final details   = first['details'] as String? ?? '';
 
     final statGroups = <String, List<String>>{};
     for (final e in entries) {
@@ -3157,6 +3172,7 @@ class LocationRow extends StatelessWidget {
     if (weather.isNotEmpty && weather != 'Dia' && weather != 'Dia Todo') {
       detailParts.add(weather);
     }
+    if (details.isNotEmpty) detailParts.add(details);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -3312,6 +3328,7 @@ class _LocationSubRow extends StatelessWidget {
     final method = _translateMethod(rawMethod);
     final time = encounterTimePt(first['time'] as String? ?? '');
     final weather = encounterWeatherPt(first['weather'] as String? ?? '');
+    final details = first['details'] as String? ?? '';
 
     final statGroups = <String, List<String>>{};
     for (final e in entries) {
@@ -3332,6 +3349,7 @@ class _LocationSubRow extends StatelessWidget {
     if (weather.isNotEmpty && weather != 'Dia' && weather != 'Dia Todo') {
       detailParts.add(weather);
     }
+    if (details.isNotEmpty) detailParts.add(details);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -3382,7 +3400,7 @@ class _LocationSubRow extends StatelessWidget {
 }
 
 String _formatLevels(String levels) {
-  if (levels.isEmpty) return '';
+  if (levels.isEmpty || levels.contains('mdash')) return '';
   if (levels.contains('-')) return 'Lv. ${levels.replaceAll('-', '–')}';
   return 'Lv. $levels';
 }
@@ -3390,20 +3408,30 @@ String _formatLevels(String levels) {
 const _nonWildMethods = {
   'Gift', 'gift', 'gift-egg', 'Gift Egg', 'Trade', 'trade', 'Transfer',
   'Event', 'Time Capsule', 'Pokémon Bank', 'only-one',
-  'Starter Pokemon', 'Starter Pokémon', 'Pokémon Colosseum Bonus Disc (US)\nPokémon Channel (EU)',
+  'Starter Pokemon', 'Starter Pokémon',
+  'Pokémon Colosseum Bonus Disc (US)\nPokémon Channel (EU)',
+  'Pokémon Colosseum Bonus Disc (US)\r\nPokémon Channel (EU)',
   'Floaroma Town (Only one*)',
+  'Evolve', 'Interact',
 };
 
 String _formatRarity(String rarity, String method) {
-  if (rarity.isEmpty) return '';
+  if (rarity.isEmpty || rarity == '0') return '';
   if (_nonWildMethods.contains(method)) return '';
   const textMap = {
-    'UNCOMMON': 'Incomum',
-    'LIMITED':  'Limitado',
-    'COMMON':   'Comum',
-    '?':        '?',
+    // Legado (maiúsculas)
+    'UNCOMMON': 'Incomum', 'LIMITED': 'Limitado', 'COMMON': 'Comum', '?': '?',
+    // Novo formato (título)
+    'Uncommon': 'Incomum', 'Limited': 'Limitado', 'Common': 'Comum', 'Rare': 'Raro',
   };
   if (textMap.containsKey(rarity)) return textMap[rarity]!;
+  // Já tem sufixo % — retorna direto
+  if (rarity.endsWith('%')) {
+    final num = double.tryParse(rarity.replaceAll('%', ''));
+    if (num != null && num <= 1) return '';
+    return rarity;
+  }
+  // Número sem %
   final num = double.tryParse(rarity);
   if (num == null) return rarity;
   if (num <= 1) return '';

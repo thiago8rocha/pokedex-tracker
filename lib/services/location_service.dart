@@ -91,22 +91,23 @@ class LocationService {
     }
   }
 
-  static String _timeOfDayString(dynamic timeOfDay) {
-    if (timeOfDay == null) return '';
-    final list = (timeOfDay as List<dynamic>).cast<String>();
+  // Aceita tanto ["morning","day","night"] (legado) quanto ["Morning","Day","Night"] (novo)
+  static String _timeOfDayString(dynamic timeField) {
+    if (timeField == null) return '';
+    final list = (timeField as List<dynamic>).cast<String>();
     if (list.isEmpty) return '';
-    final has = list.toSet();
+    final has = list.map((s) => s.toLowerCase()).toSet();
     if (has.containsAll({'morning', 'day', 'night'})) return '';
     if (has.contains('morning') && has.contains('day') && !has.contains('night')) return 'Dia';
     if (has.contains('morning') && !has.contains('day') && has.contains('night')) return 'Manhã e Noite';
     if (list.length == 1) {
-      switch (list.first) {
+      switch (list.first.toLowerCase()) {
         case 'morning': return 'Manhã';
         case 'day':     return 'Dia';
         case 'night':   return 'Noite';
       }
     }
-    return list.join(', ');
+    return list.map((s) => s[0].toUpperCase() + s.substring(1).toLowerCase()).join(', ');
   }
 
   static String _weatherString(String weather) {
@@ -115,14 +116,14 @@ class LocationService {
   }
 
   /// Returns locations for a species in a specific dex/game.
-  /// Each entry has: location, games (List<String>), method, levels, rarity, time, weather
+  /// Each entry has: location, games, method, levels, rarity, time, weather, details
   List<Map<String, dynamic>> getLocations(int speciesId, String dexId) {
     if (_data == null) return [];
     final gameId = _dexIdToGameId[dexId];
     if (gameId == null) return [];
     final rawEntry = _data![speciesId.toString()];
     if (rawEntry is! List<dynamic>) return [];
-    return rawEntry
+    final entries = rawEntry
         .cast<Map<String, dynamic>>()
         .where((e) => e['game'] == gameId)
         .map((e) => {
@@ -131,10 +132,42 @@ class LocationService {
               'method':   e['method'] as String? ?? '',
               'levels':   e['levels'] as String? ?? '',
               'rarity':   e['rarity'] as String? ?? '',
-              'time':     _timeOfDayString(e['time_of_day']),
+              // Suporta campo novo 'times' (capitalizado) e legado 'time_of_day'
+              'time':     _timeOfDayString(e['times'] ?? e['time_of_day']),
               'weather':  _weatherString(e['weather'] as String? ?? ''),
+              'details':  e['details'] as String? ?? '',
             })
         .toList();
+    if (gameId == 'legends-arceus') return _enrichLegendsArceus(entries);
+    return entries;
+  }
+
+  // Legends: Arceus entries exist in two formats:
+  // - "Area: Location" with empty method (area markers, no encounter detail)
+  // - "Location" with method data but no area prefix
+  // This merges them: enrich non-prefixed entries with area, drop pure area markers.
+  static List<Map<String, dynamic>> _enrichLegendsArceus(
+      List<Map<String, dynamic>> entries) {
+    final areaOf = <String, String>{};
+    for (final e in entries) {
+      final loc = e['location'] as String;
+      if ((e['method'] as String).isEmpty && loc.contains(': ')) {
+        final idx = loc.indexOf(': ');
+        areaOf[loc.substring(idx + 2)] = loc.substring(0, idx);
+      }
+    }
+    final result = <Map<String, dynamic>>[];
+    for (final e in entries) {
+      final loc = e['location'] as String;
+      final method = e['method'] as String;
+      if (method.isEmpty && loc.contains(': ')) continue;
+      if (!loc.contains(': ') && areaOf.containsKey(loc)) {
+        result.add({...e, 'location': '${areaOf[loc]}: $loc'});
+      } else {
+        result.add(e);
+      }
+    }
+    return result;
   }
 
   /// Returns all dexIds that have location data for a species (canonical IDs).
