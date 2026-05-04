@@ -68,15 +68,15 @@ class LocationService {
     'legends-z-a':                   'legends:_z-a',
   };
 
-  /// Safe to call concurrently — all callers share the same Future.
-  /// Resets on failure so subsequent calls retry automatically.
-  Future<void> warmup() {
-    if (_data != null) return Future.value();
-    _warmupFuture ??= _doWarmup();
-    return _warmupFuture!.catchError((Object e) {
+  Future<void> warmup() async {
+    if (_data != null) return;
+    if (_warmupFuture != null) { await _warmupFuture; return; }
+    _warmupFuture = _doWarmup();
+    try {
+      await _warmupFuture;
+    } catch (_) {
       _warmupFuture = null;
-      throw e;
-    });
+    }
   }
 
   Future<void> _doWarmup() async {
